@@ -1,0 +1,236 @@
+{
+    "input_field_msg": "💈 Perfect Barber",
+
+    "🇺🇿 uz": {
+        "errors": {
+            "unknown_command": "❗ Kechirasiz, bu buyruq tushunarsiz. Quyidagi menyudan birini tanlang.",
+            "photo_required_msg": "📸 Iltimos, rasmni bevosita surat sifatida yuboring. Fayl shaklida yubormang.",
+            "invalid_button_format": "❗ Tugma noto‘g‘ri formatda. Iltimos, <code>Matn - havola</code> ko‘rinishida kiriting."
+        },
+
+        "user": {
+            "message": {
+            },
+
+            "button": {
+            }
+        },
+
+        "barber": {
+            "message": {
+            },
+
+            "button": {
+            }
+        },
+
+        "admin": {
+            "message": {
+            },
+
+            "button": {
+            }
+        },
+
+        "director": {
+            "message": {
+                "start_msg": "👋 <b>Assalomu alaykum!</b>\n\nBotdan foydalanishni boshlash uchun quyidagi menyudan kerakli bo‘limni tanlang.",
+                "main_menu_msg": "🏠 <b>Asosiy menyu</b> — kerakli bo‘limni tanlang:",
+
+                "notifications_msg": "📢 <b>Bildirishnomalar va xabarnomalar</b>\n\nMijozlarga yangi xizmatlar, aksiyalar yoki eslatmalar yuborish uchun bu bo‘limdan foydalaning. Xabar matnini yozing, surat va tugmalar qo‘shing — biz uni barcha kerakli foydalanuvchilarga yetkazamiz.",
+                "input_text_msg": "✍️ Post matnini kiriting yoki yuboring:",
+                "text_accepted_msg": "✅ Siz yuborgan xabar qabul qilindi:\n\n<b>{}</b>",
+                "input_photo_msg": "🖼 Suratni yuboring (agar mavjud bo‘lsa):",
+                "photo_accepted_msg": "✅ Surat qabul qilindi.",
+                "input_button_msg": "🔗 Tugma uchun matn va havolani kiriting.\nMasalan: <code>Vebsayt - https://example.com</code>",
+                "button_list_title": "Jami tugmalar:",
+                "check_post_msg": "✅ Post ko‘rinishini tekshiring. Hammasi to‘g‘rimi?",
+                "confirm_post_msg": "📨 Ushbu xabarni yuborishni istaysizmi?\n\n✅ Yuborish uchun 'Tasdiqlash' tugmasini bosing.\n❌ Bekor qilish uchun 'Bekor qilish' tugmasini tanlang.",
+                "post_sent_result": "📤 Xabar yuborildi: {success} ta foydalanuvchiga\n❌ Xatolik: {failed} ta",
+
+                "bookings_msg": "📅 <b>Buyurtmalar</b>\nAktiv va kelgusi bronlar ro‘yxatini ko‘rishingiz mumkin.",            
+                "today_books_msg": "📅 Bugungi bronlarni ko‘rish uchun, iltimos, barberni tanlang.",
+                "other_day_books_msg": "📆 Bronlarni ko‘rish uchun sanani tanlang.",
+                "cancel_books_msg": "❌ Bronni bekor qilish uchun, avval barberni tanlang.",
+                "reschedule_books_msg": "🔁 Bronni boshqa sanaga yoki boshqa barberga o‘tkazish uchun avval barberni tanlang.",
+
+                "settings_msg": "⚙️ <b>Sozlamalar</b>\nBot ishini o‘zingizga mos ravishda sozlang.",
+                "payment_methods_msg": "💳 <b>To‘lov usullari</b>\n\nBotda mavjud to‘lov usullarini ko‘rishingiz va ularni faollashtirishingiz yoki o‘chirish imkoniyati mavjud.",
+                "services_prices_msg": "💈 <b>Xizmatlar va narxlar</b>\n\nBotdagi mavjud xizmatlarni va ularning narxlarini ko‘rishingiz mumkin. Har bir xizmat uchun narxni alohida sozlashingiz mumkin.",
+                "service_types_msg": "💇‍♂️ <b>{barber}</b> uchun mavjud xizmat turlarini quyida ko‘rishingiz mumkin. Har bir xizmat turi alohida sozlanadi.",
+                "no_services_msg": "⚠️ Hozircha hech qanday xizmat turlari mavjud emas.\n\n➕ Yangi xizmat turini qo‘shishingiz mumkin.",
+                "service_type_add_msg": "➕ Yangi xizmat turi nomini kiriting. Masalan: \"Bolalar strijkasi\"",
+                "add_type_succes_msg": "✅ \"{service_name}\" nomli xizmat turi muvaffaqiyatli qo‘shildi.",
+                "service_type_delete_msg": "🗑 <b>Ushbu xizmat turini o‘chirishni xohlaysizmi?</b>\n\n❗ Bu amal qaytarilmaydi.\n\nTasdiqlaysizmi?",
+                "delete_type_succes_msg": "✅ \"{service_name}\" nomli xizmat turi muvaffaqiyatli o‘chirildi.",
+                "service_services_msg": "✂️ <b>{service_name}</b> uchun mavjud xizmatlar ro‘yxati quyida. Keraklisini tanlang yoki yangi xizmat qo‘shing.",
+                "service_detail_msg": "📜 Servis haqida: {description}\n⏱ Davomiyligi: {duration}\n💵 Narxi: {price} so‘m",
+                "add_service_msg": "",
+                "delete_service_msg": "",
+                "working_hours_msg": "",
+
+                "barbers_msg": "💈 <b>Barberlar ro‘yxati</b>\nUstalar haqida ma’lumot va ularning ish holatini kuzatish uchun.",
+                "barber_not_found_msg": "😕 Bunday ismli barber topilmadi. Iltimos, roʻyxatdan birortasini tanlang yoki ortga qayting.",
+                "add_barber_msg": "✂️ Yangi barber qo‘shish uchun quyidagi ma'lumotlarni kiriting:",
+                "add_phone_msg": "📞 Barber telefon raqamini kiriting:",
+                "barber_phone": "💇‍♂️ <b>Telefon raqami:</b>",
+                "add_phone_saved_msg": "✅ Telefon raqami saqlandi.\n\n🧾 Endi barber qolgan ma'lumotlarni kiriting.\n\nAgar tayyor bo‘lsangiz, \"💾 Saqlash\" tugmasini bosing.",
+                "add_description_msg": "📝 Barber haqida qisqacha tavsif kiriting:",
+                "barber_description": "\n📄 <b>Tavsif:</b>",
+                "add_description_saved_msg": "📎 Tavsif saqlandi.\n\n✏️ Endi qolgan ma'lumotlarni kiriting.",
+                "add_photo_msg": "📸 Barber rasmini yuboring:",
+                "barber_photo": "\n 🖼 <b>Rasm:</b>",
+                "add_photo_saved_msg": "🖼 Rasm saqlandi.\n\n✅ Agar hammasi tayyor bo‘lsa, \"💾 Saqlash\" tugmasini bosing.",
+                "save_barber_fail_msg": "🚫 Barber yaratish uchun telefon raqami kerak.\n\nTelefon raqamini kiriting va qayta urinib ko‘ring.",
+                "save_barber_success_msg": "🎉 Yangi barber muvaffaqiyatli saqlandi!",
+                "delete_barber_msg": "🗑 Qaysi barberni oʻchirmoqchisiz? Ismini yozing yoki roʻyxatdan tanlang.",
+                "delete_barber_confirm_reject_msg": "❗️Siz <b>{barber_name}</b> nomli barberni oʻchirmoqchisiz. Ishonchingiz komilmi?",
+                "barber_deleted_msg": "🗑️ Barber muvaffaqiyatli o'chirib tashlandi.",
+                "cancelled_delete_barber_msg": "❌ O'chirish bekor qilindi.",
+
+                "admins_msg": "👨‍💼 <b>Administratorlar</b>\nBot boshqaruvida qatnashadigan adminlar ro‘yxati.",
+
+                "clients_msg": "🧑‍🤝‍🧑 <b>Mijozlar</b>\nMijozlar haqidagi ma’lumotlar va ularning faolligi.",
+
+                "analytics_msg": "📊 <b>Statistika</b>\nKunlik va oylik ishlash natijalari, daromadlar va faollik tahlili.",
+
+                "finance_msg": "💰 <b>Moliya</b>\nKirim-chiqim, xizmatlar narxlari va hisob-kitoblar.",
+                
+                "journal_msg": "📝 <b>Jurnal</b>\nSo‘nggi harakatlar va tizimdagi o‘zgarishlar tarixi.",
+
+                "feedback_msg": "💬 <b>Fikr-mulohazalar</b>\nMijozlar fikrlari va baholarini ko‘rib chiqing.",
+                "rating_barbers_msg": "🏆 <b>Barberlar reytingi:</b>",
+
+                "language_msg": "🌐 <b>Tilni tanlash</b>\nSizga qulay bo‘lgan interfeys tilini belgilang.",
+                "language_selected_msg": "✅ Til tanlandi!",
+
+                "user_menu_msg": "📋 <b>Asosiy menyu</b>\nKerakli bo‘limni tanlang:"
+            },
+
+            "button": {
+                "yes": "✅ Ha",
+                "no": "❌ Yo‘q",
+                "confirm": "✅ Tasdiqlash",
+                "reject": "🚫 Bekor qilish",
+                "back": "🔙 Orqaga",
+                "back_main": "🏠 Asosiy menyu",
+
+                "notifications": "📮 Xabarnoma",
+                "input_text": "📝 Matnni kiriting",
+                "input_photo": "🖼 Rasmni yuboring",
+                "input_button": "🔘 Tugmalarni kiriting",
+                "check_post": "📋 Yakuniy tekshiruv",
+                "preview_post": "👁 Postni ko‘rish",
+                "confirm_post": "✅ Postni yuborish",
+
+                "bookings": "🧾 Buyurtmalar",
+                "today_books": "📅 Bugungi bronlar",
+                "all_today_bookings": "📋 Barcha bugungi bronlar",
+                "other_day_books": "📆 Boshqa kunlar",
+                "cancel_books": "❌ Bronni bekor qilish",
+                "reschedule_books": "⏭️ Bronni o‘tkazish",
+
+                "settings": "⚙️ Sozlamalar",
+                "payment_methods": "💳 To‘lov usullari",
+                "click_payment": "💳 Click",
+                "payme_payment": "🅿️ Payme",
+                "cash_payment": "💵 Naqd",
+                "services_prices": "🧾 Xizmatlar va narxlar",
+                "add_service_type": "➕ Yangi xizmat turini qo‘shish",
+                "delete_service_type": "🗑 Xizmat turini o‘chirish",
+                "add_service": "➕ Yangi xizmat qo‘shish",
+                "edit_service": "✏️ Xizmatni tahrirlash",
+                "delete_service": "🗑 Xizmatni o‘chirish",
+                "working_hours": "🕒 Ish soati",
+
+                "barbers": "🧔 Barberlar",
+                "add_barber": "➕ Barber qo'shish",
+                "add_phone": "📞 Barber telefoni",
+                "add_description": "🧾 Barber haqida",
+                "add_photo": "📸 Barber rasmi",
+                "save_barber": "💾 Saqlash",
+                "delete_barber": "🗑️ Barber o'chirish",
+                "barber_deleted": "🗑️ Barber muvaffaqiyatli o'chirib tashlandi.",
+                "cancelled_delete_barber": "❌ O'chirish bekor qilindi.",
+
+                "admins": "👨‍💼 Adminlar",
+                "clients": "👥 Mijozlar",
+                "analytics": "📊 Tahlil",
+                "finance": "🧮 Moliya",
+                "journal": "📜 Tarix",
+                "feedback": "📝 Fikrlar",
+                "feedback_rating": "💈 Barberlar reytingi",
+                "feedback_reviews": "💬 Mijozlar otzivlari",
+                "feedback_complaints": "🚫 Shikoyatlar",
+                "feedback_pinned": "📌 Muhim otziv/shikoyatlar",
+
+                "language": "🌐 Til",
+
+                "user_menu": "🔰 Menyu"
+            }
+        }
+    },
+
+    "🇷🇺 ru": {
+        "errors": {
+            "unknown_command": "❗ Kechirasiz, bu buyruq tushunarsiz. Quyidagi menyudan birini tanlang."
+        },
+
+        "user": {
+            "message": {
+            },
+
+            "button": {
+            }
+        },
+
+        "barber": {
+            "message": {
+            },
+
+            "button": {
+            }
+        },
+
+        "admin": {
+            "message": {
+            },
+
+            "button": {
+            }
+        },
+
+        "director": {
+            "message": {
+                "start_msg": "",
+                "notifications_msg": "",
+                "bookings_msg": "",
+                "settings_msg": "",
+                "barbers_msg": "",
+                "admins_msg": "",
+                "clients_msg": "",
+                "analytics_msg": "",
+                "finance_msg": "",
+                "journal_msg": "",
+                "feedback_msg": "",
+                "language_msg": "",
+                "user_menu_msg": ""
+            },
+
+            "button": {
+                "notifications": "📮 Уведомления",
+                "bookings": "🧾 Бронирования",
+                "settings": "⚙️ Настройки",
+                "barbers": "🧔 Барберы",
+                "admins": "👨‍💼 Админы",
+                "clients": "👥 Клиенты",
+                "analytics": "📊 Аналитика",
+                "finance": "🧮 Финансы",
+                "journal": "📜 Журнал",
+                "feedback": "📝 Отзывы",
+                "language": "🌐 Язык",
+                "user_menu": "🔰 Меню"
+            }
+        }
+    }
+}
