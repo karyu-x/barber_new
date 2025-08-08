@@ -1,19 +1,19 @@
 #### SERVICE ####
 
-GET_barber_types = {
+GET_barber_types = [
     {
         "id": 1,                # TYPE ID   
         "name": "Strijka",      # TYPE NAME
         "barbaer": 123456789    # BARBER TG_ID
     }
-}
+]
 
 POST_barber_type_add = {
     "name": "Strijka",      # TYPE NAME
     "barber": 123456789,    # BARBER TG_ID
 }
 
-GET_barber_services = {
+GET_barber_services = [
     {
         "id": 1,                                        # SERVICE ID
         "name": "Fade strijka",                         # SERVICE NAME
@@ -22,7 +22,7 @@ GET_barber_services = {
         "price": 100.000,                               # SERVICE PRICE
         "service_type": 1                               # TYPE ID
     }
-}
+]
 
 GET_barber_service_with_id = {
     "id": 1,                                        # SERVICE ID
@@ -40,6 +40,17 @@ POST_barber_service_add = {
     "price": 100.000,                               # SERVICE PRICE
     "service_type": 1                               # TYPE ID
 }
+
+GET_barbers_all = [
+    {
+        "id": 1,
+        "tg_id": 123456789,
+        "name": "Ali",
+        "description": "Ali haqida ma'lumot",
+        "photo": photo_id,
+        "rating": 4.5,
+    }
+]
 
 
 

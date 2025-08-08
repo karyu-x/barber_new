@@ -40,8 +40,7 @@ async def cmd_bot(message: Message, state: FSMContext):
     if old_state:
         return
 
-    lang = db_user.select_language(user_id) or "🇺🇿 uz"
-
+    lang = await db_user.select_language(user_id) or "🇺🇿 uz"
     roles = [
         ("director", db_director.select_director(user_id), st_director.director.main_menu, kb_director.main_menu),
         ("admin", db_admin.select_admin(user_id), st_admin.admin.main_menu, kb_admin.main_menu),

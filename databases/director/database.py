@@ -9,7 +9,7 @@ def all_users():
     return [5012184829, 888999000]
 
 
-async def all_barbers():
+async def all_barbers_name():
     return [
         {
             "tg_id": 1,
@@ -25,6 +25,43 @@ async def all_barbers():
         }
     ]
 
+async def get_all_users():
+    return [
+        {
+            "id": 1,
+            "telegram_id": 1001,
+            "first_name": None,
+            "phone_number": "998901234567",
+            "photo": None,
+            "name": "Ali",
+            "description": None,
+            "rating": None,
+            "default_from_hour": "09:00:00",
+            "default_to_hour": "18:00:00",
+            "roles": [1]
+        },
+        {
+            "id": 2,
+            "telegram_id": 1002,
+            "first_name": None,
+            "phone_number": "998903241212",
+            "photo": None,
+            "name": "Karim",
+            "description": None,
+            "rating": None,
+            "default_from_hour": "09:00:00",
+            "default_to_hour": "18:00:00",
+            "roles": [2]
+        }
+    ]
+
+async def get_all_barbers():
+    users = await get_all_users()
+    return [item for item in users if 1 in item["roles"]]
+
+async def get_barber_by_telegram_id(telegram_id):
+    barbers = await get_all_barbers()
+    return next((item for item in barbers if item["telegram_id"] == telegram_id), None)
 
 async def all_barber_types():
     return [

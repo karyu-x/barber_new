@@ -16,7 +16,9 @@ class director(StatesGroup):
     cancel_books = State()
     reschedule_books = State()
 
+    #####################
     settings = State()
+
     services_prices = State()
     barber_types = State()
     add_type = State()
@@ -29,9 +31,16 @@ class director(StatesGroup):
     edit_service_description = State()
     edit_service_duration = State()
     edit_service_price = State()
+    
+    barbers = State()
+    barber_detail= State()
+    edit_barber_phone = State()
+    edit_barber_description = State()
+    edit_barber_photo = State()
+    edit_barber_time = State()
+
     working_hours = State()
 
-    barbers = State()
     add_barber = State()
     add_phone = State()
     add_description = State()
