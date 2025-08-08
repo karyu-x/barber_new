@@ -133,6 +133,7 @@ def settings(lang):
     keyboard.row(KeyboardButton(text=cf.get_text(lang, role, "button", "back")))
     return keyboard.as_markup(resize_keyboard=True, input_field_placeholder=cf.translations["input_field_msg"])
 
+#### SERVICE MENU
 async def services_prices(lang):
     keyboard = ReplyKeyboardBuilder()
     barbers = await db.all_barbers()
@@ -142,6 +143,7 @@ async def services_prices(lang):
     keyboard.row(KeyboardButton(text=cf.get_text(lang, role, "button", "back_main")), KeyboardButton(text=cf.get_text(lang, role, "button", "back")))
     return keyboard.as_markup(resize_keyboard=True, input_field_placeholder=cf.translations["input_field_msg"])
 
+#### BARBER TYPES MENU
 async def barber_types(lang, barber_id):
     keyboard = ReplyKeyboardBuilder()
     types = await db.all_barber_types()
@@ -153,6 +155,7 @@ async def barber_types(lang, barber_id):
     keyboard.row(KeyboardButton(text=cf.get_text(lang, role, "button", "back_main")), KeyboardButton(text=cf.get_text(lang, role, "button", "back")))
     return keyboard.as_markup(resize_keyboard=True, input_field_placeholder=cf.translations["input_field_msg"])
 
+#### BARBER SERVICES MENU
 async def barber_services(lang, type_id):
     keyboard = ReplyKeyboardBuilder()
     services = await db.all_barber_services()
@@ -167,10 +170,22 @@ async def barber_services(lang, type_id):
     keyboard.row(KeyboardButton(text=cf.get_text(lang, role, "button", "back_main")), KeyboardButton(text=cf.get_text(lang, role, "button", "back")))
     return keyboard.as_markup(resize_keyboard=True, input_field_placeholder=cf.translations["input_field_msg"])
 
+#### SERVICE DETAIL MENU
 def service_detail(lang):
     keyboard = ReplyKeyboardBuilder()
+    keyboard.add(
+        KeyboardButton(text=cf.get_text(lang, role, "button", "delete_service")),
+        KeyboardButton(text=cf.get_text(lang, role, "button", "edit_service_name")), KeyboardButton(text=cf.get_text(lang, role, "button", "edit_service_description")),
+        KeyboardButton(text=cf.get_text(lang, role, "button", "edit_service_duration")), KeyboardButton(text=cf.get_text(lang, role, "button", "edit_service_price")),
+        KeyboardButton(text=cf.get_text(lang, role, "button", "back_main")), KeyboardButton(text=cf.get_text(lang, role, "button", "back"))
+    )
+    keyboard.adjust(1, 2)
+    return keyboard.as_markup(resize_keyboard=True, input_field_placeholder=cf.translations["input_field_msg"])
+
+def edit_service(lang):
+    keyboard = ReplyKeyboardBuilder()
     keyboard.row(
-        KeyboardButton(text=cf.get_text(lang, role, "button", "delete_service")), KeyboardButton(text=cf.get_text(lang, role, "button", "edit_service")),
+        
         KeyboardButton(text=cf.get_text(lang, role, "button", "back_main")), KeyboardButton(text=cf.get_text(lang, role, "button", "back")),
         width=2
     )

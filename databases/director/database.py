@@ -51,25 +51,32 @@ async def all_barber_types():
     ]
 
 
+services = [
+    {
+        "id": 1,
+        "name": "Fade strijka",
+        "description": "Fade strijka haqida ma'lumot.",
+        "duration": "30 minut",
+        "price": 100000,
+        "service_type": 1
+    },
+    {
+        "id": 2,
+        "name": "Premium strijka",
+        "description": "Professional stilistdan VIP qirqim va styling.",
+        "duration": "40 minut",
+        "price": 150000,
+        "service_type": 1
+    }
+]
+
+async def get_service_by_id(service_id):
+    for item in services:
+        if service_id == item["id"]:
+            return item
+
 async def all_barber_services():
-    return [
-        {
-            "id": 1,
-            "name": "Fade strijka",
-            "description": "Fade strijka haqida ma'lumot.",
-            "duration": "30 minut",
-            "price": 100000,
-            "service_type": 1
-        },
-        {
-            "id": 2,
-            "name": "Premium strijka",
-            "description": "Professional stilistdan VIP qirqim va styling.",
-            "duration": "40 minut",
-            "price": 150000,
-            "service_type": 1
-        }
-    ]
+    return services
 
 
 # async def all_services():

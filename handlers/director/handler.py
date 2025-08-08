@@ -506,7 +506,7 @@ async def settings(message: Message, state: FSMContext):
         text=cf.get_text(lang, "errors", "unknown_command")
     )
 
-### SERVICE & PRICE
+#### SERVICE & PRICE
 @router.message(st.director.services_prices)
 async def services_prices(message: Message, state: FSMContext):
     user_id = message.from_user.id
@@ -539,12 +539,20 @@ async def services_prices(message: Message, state: FSMContext):
         if text == item["name"]:
             await state.update_data(barber_tg_id=item["tg_id"],
                                     barber_name=item["name"])
-            await message.bot.send_message(
-                chat_id=user_id,
-                text=cf.get_text(lang, role, "message", "service_types_msg").format(barber=text),
-                parse_mode="HTML",
-                reply_markup=await kb_r.barber_types(lang, item["tg_id"])
-            )
+            barber_types = await db.all_barber_types()
+            if barber_types:
+                await message.bot.send_message(
+                    chat_id=user_id,
+                    text=cf.get_text(lang, role, "message", "service_types_msg").format(barber=text),
+                    parse_mode="HTML",
+                    reply_markup=await kb_r.barber_types(lang, item["tg_id"])
+                )
+            else:
+                await message.bot.send_message(
+                    chat_id=user_id,
+                    text=cf.get_text(lang, role, "message", "no_service_type_msg"),
+                    reply_markup=await kb_r.barber_types(lang, item["tg_id"])
+                )           
             await state.set_state(st.director.barber_types)
             return
 
@@ -553,6 +561,7 @@ async def services_prices(message: Message, state: FSMContext):
         text=cf.get_text(lang, "errors", "unknown_command")
     )
 
+#### BARBER TYPES
 @router.message(st.director.barber_types)
 async def barber_types(message: Message, state: FSMContext):
     user_id = message.from_user.id
@@ -596,7 +605,7 @@ async def barber_types(message: Message, state: FSMContext):
     for item in barber_types:
         if text == item["name"]:
             await state.update_data(service_type_id=item["id"],
-                                    service_name=text)
+                                    service_type_name=text)
 
             services = await db.all_barber_services()
             filtered_services = [s for s in services if s["service_type"] == item["id"]]
@@ -627,6 +636,7 @@ async def barber_types(message: Message, state: FSMContext):
         text=cf.get_text(lang, "errors", "unknown_command")
     )
 
+#### ADD TYPE
 @router.message(st.director.add_type)
 async def add_type(message: Message, state: FSMContext):
     user_id = message.from_user.id
@@ -666,13 +676,14 @@ async def add_type(message: Message, state: FSMContext):
     )
     await state.set_state(st.director.barber_types)
 
+#### DELETE TYPE
 @router.message(st.director.delete_type)
 async def delete_type(message: Message, state: FSMContext):
     user_id = message.from_user.id
     data = await state.get_data()
     lang = data.get("lang", "🇺🇿 uz")
     text = message.text
-    barber_id, barber_name, service_name = data.get("barber_tg_id"), data.get("barber_name"), data.get("service_name")
+    barber_id, barber_name, service_name = data.get("barber_tg_id"), data.get("barber_name"), data.get("service_type_name")
     back_actions = {
         cf.get_text(lang, role, "button", "back"): {
             "text": cf.get_text(lang, role, "message", "service_types_msg").format(barber=barber_name),
@@ -722,118 +733,7 @@ async def delete_type(message: Message, state: FSMContext):
         text=cf.get_text(lang, "errors", "unknown_command")
     )
 
-@router.message(st.director.add_service)
-async def add_service(message: Message, state: FSMContext):
-    user_id = message.from_user.id
-    data = await state.get_data()
-    lang = data.get("lang", "🇺🇿 uz")
-    text = message.text
-    back_actions = {
-        # cf.get_text(lang, role, "button", "back"): {
-        #     "text": cf.get_text(lang, role, "message", "service_services_msg").format(service_name=),
-        #     "reply_markup": await kb_r.barber_services(lang),
-        #     "state": st.director.barber_types
-        # },
-        cf.get_text(lang, role, "button", "back_main"): {
-            "text": cf.get_text(lang, role, "message", "main_menu_msg"),
-            "reply_markup": kb_r.main_menu(lang),
-            "state": st.director.main_menu
-        }
-    }
-    action = back_actions.get(text)
-    
-    if action:
-        await message.bot.send_message(
-            chat_id=user_id,
-            text=action["text"],
-            parse_mode="HTML",
-            reply_markup=action["reply_markup"]
-        )
-        await state.set_state(action["state"])
-        return
-
-
-@router.message(st.director.delete_sevice)
-async def delete_service(message: Message, state: FSMContext):
-    user_id = message.from_user.id
-    data = await state.get_data()
-    lang = data.get("lang", "🇺🇿 uz")
-    type_id, service_name = data.get("service_type_id"), data.get("service_name")
-    text_confirm = cf.get_text(lang, role, "button", "confirm")
-    text_reject = cf.get_text(lang, role, "button", "reject")
-    text_back = cf.get_text(lang, role, "button", "back")
-    text_main = cf.get_text(lang, role, "button", "back_main")
-
-    async def handle_confirm():
-        # baza delete service
-        await message.bot.send_message(
-            chat_id=user_id,
-            text=cf.get_text(lang, role, "message", "delete_service_succes_msg"),
-            reply_markup=await kb_r.barber_services(lang, type_id)
-        )
-        await state.set_state(st.director.barber_services)
-
-    async def handle_reject():
-        await message.bot.send_message(
-            chat_id=user_id,
-            text=cf.get_text(lang, role, "message", "delete_service_cancel_msg"),
-            reply_markup=await kb_r.barber_services(lang, type_id)
-        )
-        await state.set_state(st.director.barber_services)
-
-
-    async def handle_back():
-        services = await db.all_barber_services()
-        filtered_services = [s for s in services if s["service_type"] == type_id]
-
-        if filtered_services:
-            service_lines = [
-                f"• <b>{s['name']}</b> — {s['price']:,}\n🕒 {s['duration']}\n📝 {s['description']}"
-                for s in filtered_services
-            ]
-            services_text = "\n\n".join(service_lines)
-        else:
-            services_text = cf.get_text(lang, role, "message", "no_services_msg")
-
-        reply_text = cf.get_text(lang, role, "message", "service_services_msg").format(service_name=service_name)
-        full_text = f"{reply_text}\n\n{services_text}"
-
-        await message.bot.send_message(
-            chat_id=user_id,
-            text=full_text,
-            parse_mode="HTML",
-            reply_markup=await kb_r.barber_services(lang, type_id)
-        )
-        await state.set_state(st.director.barber_services)
-
-    async def handle_main():
-        await message.bot.send_message(
-            chat_id=user_id,
-            text=cf.get_text(lang, role, "message", "main_menu_msg"),
-            parse_mode="HTML",
-            reply_markup=kb_r.main_menu(lang),
-        )
-        await state.set_state(st.director.main_menu)
-
-    handlers = {
-        text_confirm: handle_confirm,
-        text_reject: handle_reject,
-        text_back: handle_back,
-        text_main: handle_main
-    }
-
-    handle = handlers.get(message.text)
-
-    if handle:
-        await handle()
-        return
-    
-    await message.bot.send_message(
-        chat_id=user_id,
-        text=cf.get_text(lang, "errors", "unknown_command")
-    )
-
-
+#### BARBER SERVICES
 @router.message(st.director.barber_services)
 async def barber_services(message: Message, state: FSMContext):
     user_id = message.from_user.id
@@ -875,6 +775,15 @@ async def barber_services(message: Message, state: FSMContext):
         await state.set_state(st.director.delete_type)
         return
 
+    elif text == cf.get_text(lang, role, "button", "add_service"):
+        await message.bot.send_message(
+            chat_id=user_id,
+            text=cf.get_text(lang, role, "message", "add_service_msg"),
+            reply_markup=kb_r.back_main(lang)
+        )
+        await state.set_state(st.director.add_service)
+        return
+
     barber_services = await db.all_barber_services()
     for item in barber_services:
         if text == item["name"]:
@@ -896,6 +805,503 @@ async def barber_services(message: Message, state: FSMContext):
             )
             await state.set_state(st.director.service_detail)
             return
+    
+    await message.bot.send_message(
+        chat_id=user_id,
+        text=cf.get_text(lang, "errors", "unknown_command")
+    )
+
+#### ADD SERVICE
+@router.message(st.director.add_service)
+async def add_service(message: Message, state: FSMContext):
+    user_id = message.from_user.id
+    data = await state.get_data()
+    lang = data.get("lang", "🇺🇿 uz")
+    type_id, service_name = data.get("service_type_id"), data.get("service_type_name")
+    text = message.text
+    text_back = cf.get_text(lang, role, "button", "back")
+    text_main = cf.get_text(lang, role, "button", "back_main")
+
+    async def handle_back():
+        services = await db.all_barber_services()
+        filtered_services = [s for s in services if s["service_type"] == type_id]
+
+        if filtered_services:
+            service_lines = [
+                f"• <b>{s['name']}</b> — {s['price']:,}\n🕒 {s['duration']}\n📝 {s['description']}"
+                for s in filtered_services
+            ]
+            services_text = "\n\n".join(service_lines)
+        else:
+            services_text = cf.get_text(lang, role, "message", "no_services_msg")
+
+        reply_text = cf.get_text(lang, role, "message", "service_services_msg").format(service_name=service_name)
+        full_text = f"{reply_text}\n\n{services_text}"
+
+        await message.bot.send_message(
+            chat_id=user_id,
+            text=full_text,
+            parse_mode="HTML",
+            reply_markup=await kb_r.barber_services(lang)
+        )
+        await state.set_state(st.director.barber_services)
+
+    async def handle_main():
+        await message.bot.send_message(
+            chat_id=user_id,
+            text=cf.get_text(lang, role, "message", "main_menu_msg"),
+            parse_mode="HTML",
+            reply_markup=kb_r.main_menu(lang),
+        )
+        await state.set_state(st.director.main_menu)
+
+    handlers = {
+        text_back: handle_back,
+        text_main: handle_main
+    }
+    handle = handlers.get(text)
+
+    if handle:
+        await handle()
+        return
+
+    # baza service add
+    await message.bot.send_message(
+        chat_id=user_id,
+        text=cf.get_text(lang, role, "message", "add_service_success_msg"),
+        reply_markup=await kb_r.barber_services(lang, type_id)
+    )
+    await state.set_state(st.director.barber_services)
+
+#### DELETE SERVICE
+@router.message(st.director.delete_sevice)
+async def delete_service(message: Message, state: FSMContext):
+    user_id = message.from_user.id
+    data = await state.get_data()
+    lang = data.get("lang", "🇺🇿 uz")
+    type_id, service_name, service_id = data.get("service_type_id"), data.get("service_name"), data.get("service_id")
+    text_confirm = cf.get_text(lang, role, "button", "confirm")
+    text_reject = cf.get_text(lang, role, "button", "reject")
+    text_back = cf.get_text(lang, role, "button", "back")
+    text_main = cf.get_text(lang, role, "button", "back_main")
+
+    async def handle_confirm():
+        # baza delete service
+        await message.bot.send_message(
+            chat_id=user_id,
+            text=cf.get_text(lang, role, "message", "delete_service_success_msg"),
+            reply_markup=await kb_r.barber_services(lang, type_id)
+        )
+        await state.set_state(st.director.barber_services)
+
+    async def handle_reject():
+        await message.bot.send_message(
+            chat_id=user_id,
+            text=cf.get_text(lang, role, "message", "delete_service_cancel_msg"),
+            reply_markup=await kb_r.barber_services(lang, type_id)
+        )
+        await state.set_state(st.director.barber_services)
+
+
+    async def handle_back():
+        service = await db.get_service_by_id(service_id)
+        if service:
+            services_text = cf.get_text(lang, role, "message", "service_detail_msg").format(
+                description=service['description'],
+                duration=service['duration'],
+                price=f"{service['price']:,}"
+            )
+        else:
+            services_text = cf.get_text(lang, role, "message", "no_services_msg")
+
+        full_text = f"<b>{service_name}</b>\n\n{services_text}"
+
+        await message.bot.send_message(
+            chat_id=user_id,
+            text=full_text,
+            parse_mode="HTML",
+            reply_markup=kb_r.service_detail(lang)
+        )
+        await state.set_state(st.director.service_detail)
+
+    async def handle_main():
+        await message.bot.send_message(
+            chat_id=user_id,
+            text=cf.get_text(lang, role, "message", "main_menu_msg"),
+            parse_mode="HTML",
+            reply_markup=kb_r.main_menu(lang),
+        )
+        await state.set_state(st.director.main_menu)
+
+    handlers = {
+        text_confirm: handle_confirm,
+        text_reject: handle_reject,
+        text_back: handle_back,
+        text_main: handle_main
+    }
+
+    handle = handlers.get(message.text)
+
+    if handle:
+        await handle()
+        return
+    
+    await message.bot.send_message(
+        chat_id=user_id,
+        text=cf.get_text(lang, "errors", "unknown_command")
+    )
+
+#### EDIT SERVICE NAME
+@router.message(st.director.edit_service_name)
+async def edit_service_name(message: Message, state: FSMContext):
+    user_id = message.from_user.id
+    data = await state.get_data()
+    lang = data.get("lang", "🇺🇿 uz")
+    service_name, service_id = data.get("service_name"), data.get("service_id")
+    text_back = cf.get_text(lang, role, "button", "back")
+    text_main = cf.get_text(lang, role, "button", "back_main")
+    service = await db.get_service_by_id(service_id)
+    if service:
+        services_text = cf.get_text(lang, role, "message", "service_detail_msg").format(
+            description=service['description'],
+            duration=service['duration'],
+            price=f"{service['price']:,}"
+        )
+    else:
+        services_text = cf.get_text(lang, role, "message", "no_services_msg")
+
+    full_text = f"<b>{service_name}</b>\n\n{services_text}"
+
+    async def handle_back():
+        await message.bot.send_message(
+            chat_id=user_id,
+            text=full_text,
+            parse_mode="HTML",
+            reply_markup=kb_r.service_detail(lang)
+        )
+        await state.set_state(st.director.service_detail)
+
+    async def handle_main():
+        await message.bot.send_message(
+            chat_id=user_id,
+            text=cf.get_text(lang, role, "message", "main_menu_msg"),
+            parse_mode="HTML",
+            reply_markup=kb_r.main_menu(lang),
+        )
+        await state.set_state(st.director.main_menu)
+
+    handlers = {
+        text_back: handle_back,
+        text_main: handle_main
+    }
+    handle = handlers.get(message.text)
+    
+    if handle:
+        await handle()
+        return
+
+    # baza edit name
+    await message.bot.send_message(
+        chat_id=user_id,
+        text=cf.get_text(lang, role, "message", "edit_service_name_succes_msg")
+    )
+    await message.bot.send_message(
+        chat_id=user_id,
+        text=full_text,
+        parse_mode="HTML",
+        reply_markup=kb_r.service_detail(lang)
+    )
+    await state.set_state(st.director.service_detail)
+
+#### EDIT SERVICE DESCRIPTION
+@router.message(st.director.edit_service_description)
+async def edit_service_description(message: Message, state: FSMContext):
+    user_id = message.from_user.id
+    data = await state.get_data()
+    lang = data.get("lang", "🇺🇿 uz")
+    service_name, service_id = data.get("service_name"), data.get("service_id")
+    text_back = cf.get_text(lang, role, "button", "back")
+    text_main = cf.get_text(lang, role, "button", "back_main")
+    service = await db.get_service_by_id(service_id)
+    if service:
+        services_text = cf.get_text(lang, role, "message", "service_detail_msg").format(
+            description=service['description'],
+            duration=service['duration'],
+            price=f"{service['price']:,}"
+        )
+    else:
+        services_text = cf.get_text(lang, role, "message", "no_services_msg")
+
+    full_text = f"<b>{service_name}</b>\n\n{services_text}"
+
+    async def handle_back():
+        await message.bot.send_message(
+            chat_id=user_id,
+            text=full_text,
+            parse_mode="HTML",
+            reply_markup=kb_r.service_detail(lang)
+        )
+        await state.set_state(st.director.service_detail)
+
+    async def handle_main():
+        await message.bot.send_message(
+            chat_id=user_id,
+            text=cf.get_text(lang, role, "message", "main_menu_msg"),
+            parse_mode="HTML",
+            reply_markup=kb_r.main_menu(lang),
+        )
+        await state.set_state(st.director.main_menu)
+
+    handlers = {
+        text_back: handle_back,
+        text_main: handle_main
+    }
+    handle = handlers.get(message.text)
+    
+    if handle:
+        await handle()
+        return
+    
+    # baza edit description
+    await message.bot.send_message(
+        chat_id=user_id,
+        text=cf.get_text(lang, role, "message", "edit_service_description_success_msg")
+    )
+    await message.bot.send_message(
+        chat_id=user_id,
+        text=full_text,
+        parse_mode="HTML",
+        reply_markup=kb_r.service_detail(lang)
+    )
+    await state.set_state(st.director.service_detail)
+
+#### EDIT SERVICE DURATION
+@router.message(st.director.edit_service_duration)
+async def edit_service_duration(message: Message, state: FSMContext):
+    user_id = message.from_user.id
+    data = await state.get_data()
+    lang = data.get("lang", "🇺🇿 uz")
+    service_name, service_id = data.get("service_name"), data.get("service_id")
+    text_back = cf.get_text(lang, role, "button", "back")
+    text_main = cf.get_text(lang, role, "button", "back_main")
+
+    service = await db.get_service_by_id(service_id)
+    if service:
+        services_text = cf.get_text(lang, role, "message", "service_detail_msg").format(
+            description=service['description'],
+            duration=service['duration'],
+            price=f"{service['price']:,}"
+        )
+    else:
+        services_text = cf.get_text(lang, role, "message", "no_services_msg")
+
+    full_text = f"<b>{service_name}</b>\n\n{services_text}"
+
+    async def handle_back():
+        await message.bot.send_message(
+            chat_id=user_id,
+            text=full_text,
+            parse_mode="HTML",
+            reply_markup=kb_r.service_detail(lang)
+        )
+        await state.set_state(st.director.service_detail)
+
+    async def handle_main():
+        await message.bot.send_message(
+            chat_id=user_id,
+            text=cf.get_text(lang, role, "message", "main_menu_msg"),
+            parse_mode="HTML",
+            reply_markup=kb_r.main_menu(lang),
+        )
+        await state.set_state(st.director.main_menu)
+
+    handlers = {
+        text_back: handle_back,
+        text_main: handle_main
+    }
+    handle = handlers.get(message.text)
+    
+    if handle:
+        await handle()
+        return
+    
+    # baza edit duration
+    await message.bot.send_message(
+        chat_id=user_id,
+        text=cf.get_text(lang, role, "message", "edit_service_duration_success_msg")
+    )
+    await message.bot.send_message(
+        chat_id=user_id,
+        text=full_text,
+        parse_mode="HTML",
+        reply_markup=kb_r.service_detail(lang)
+    )
+    await state.set_state(st.director.service_detail)
+
+#### EDIT SERVICE PRICE
+@router.message(st.director.edit_service_price)
+async def edit_service_price(message: Message, state: FSMContext):
+    user_id = message.from_user.id
+    data = await state.get_data()
+    lang = data.get("lang", "🇺🇿 uz")
+    service_name, service_id = data.get("service_name"), data.get("service_id")
+    text_back = cf.get_text(lang, role, "button", "back")
+    text_main = cf.get_text(lang, role, "button", "back_main")
+    service = await db.get_service_by_id(service_id)
+    if service:
+        services_text = cf.get_text(lang, role, "message", "service_detail_msg").format(
+            description=service['description'],
+            duration=service['duration'],
+            price=f"{service['price']:,}"
+        )
+    else:
+        services_text = cf.get_text(lang, role, "message", "no_services_msg")
+
+    full_text = f"<b>{service_name}</b>\n\n{services_text}"
+
+    async def handle_back():
+        await message.bot.send_message(
+            chat_id=user_id,
+            text=full_text,
+            parse_mode="HTML",
+            reply_markup=kb_r.service_detail(lang)
+        )
+        await state.set_state(st.director.service_detail)
+
+    async def handle_main():
+        await message.bot.send_message(
+            chat_id=user_id,
+            text=cf.get_text(lang, role, "message", "main_menu_msg"),
+            parse_mode="HTML",
+            reply_markup=kb_r.main_menu(lang),
+        )
+        await state.set_state(st.director.main_menu)
+
+    handlers = {
+        text_back: handle_back,
+        text_main: handle_main
+    }
+    handle = handlers.get(message.text)
+    
+    if handle:
+        await handle()
+        return
+
+    # baza edit price
+    await message.bot.send_message(
+        chat_id=user_id,
+        text=cf.get_text(lang, role, "message", "edit_service_price_success_msg")
+    )
+    await message.bot.send_message(
+        chat_id=user_id,
+        text=full_text,
+        parse_mode="HTML",
+        reply_markup=kb_r.service_detail(lang)
+    )
+    await state.set_state(st.director.service_detail)
+
+#### SERVICE DETAIL
+@router.message(st.director.service_detail)
+async def service_detail(message: Message, state: FSMContext):
+    user_id = message.from_user.id
+    data = await state.get_data()
+    lang = data.get("lang", "🇺🇿 uz")
+    type_id, service_name = data.get("service_type_id"), data.get("service_type_name")
+    text_back = cf.get_text(lang, role, "button", "back")
+    text_main = cf.get_text(lang, role, "button", "back_main")
+    text_delete = cf.get_text(lang, role, "button", "delete_service")
+    text_name = cf.get_text(lang, role, "button", "edit_service_name")
+    text_description = cf.get_text(lang, role, "button", "edit_service_description")
+    text_duration = cf.get_text(lang, role, "button", "edit_service_duration")
+    text_price = cf.get_text(lang, role, "button", "edit_service_price")
+
+    async def handle_name():
+        await message.bot.send_message(
+            chat_id=user_id,
+            text=cf.get_text(lang, role, "message", "edit_service_name_msg"),
+            reply_markup=kb_r.back_main(lang)
+        )
+        await state.set_state(st.director.edit_service_name)
+
+    async def handle_description():
+        await message.bot.send_message(
+            chat_id=user_id,
+            text=cf.get_text(lang, role, "message", "edit_service_description_msg"),
+            reply_markup=kb_r.back_main(lang)
+        )
+        await state.set_state(st.director.edit_service_description)
+
+    async def handle_duration():
+        await message.bot.send_message(
+            chat_id=user_id,
+            text=cf.get_text(lang, role, "message", "edit_service_duration_msg"),
+            reply_markup=kb_r.back_main(lang)
+        )
+        await state.set_state(st.director.edit_service_duration)
+
+    async def handle_price():
+        await message.bot.send_message(
+            chat_id=user_id,
+            text=cf.get_text(lang, role, "message", "edit_service_price_msg"),
+            reply_markup=kb_r.back_main(lang)
+        )
+        await state.set_state(st.director.edit_service_price)
+
+    async def handle_back():
+        services = await db.all_barber_services()
+        filtered_services = [s for s in services if s["service_type"] == type_id]
+
+        if filtered_services:
+            service_lines = [
+                f"• <b>{s['name']}</b> — {s['price']:,}\n🕒 {s['duration']}\n📝 {s['description']}"
+                for s in filtered_services
+            ]
+            services_text = "\n\n".join(service_lines)
+        else:
+            services_text = cf.get_text(lang, role, "message", "no_services_msg")
+
+        reply_text = cf.get_text(lang, role, "message", "service_services_msg").format(service_name=service_name)
+        full_text = f"{reply_text}\n\n{services_text}"
+
+        await message.bot.send_message(
+            chat_id=user_id,
+            text=full_text,
+            parse_mode="HTML",
+            reply_markup=await kb_r.barber_services(lang, type_id)
+        )
+        await state.set_state(st.director.barber_services)
+
+    async def handle_main():
+        await message.bot.send_message(
+            chat_id=user_id,
+            text=cf.get_text(lang, role, "message", "main_menu_msg"),
+            parse_mode="HTML",
+            reply_markup=kb_r.main_menu(lang),
+        )
+        await state.set_state(st.director.main_menu)
+
+    async def handle_delete():
+        await message.bot.send_message(
+            chat_id=user_id,
+            text=cf.get_text(lang, role, "message", "delete_service_msg"),
+            reply_markup=kb_r.confirm_reject(lang)
+        )
+        await state.set_state(st.director.delete_sevice)
+
+    handlers = {
+        text_back: handle_back,
+        text_main: handle_main,
+        text_delete: handle_delete,
+        text_name: handle_name,
+        text_description: handle_description,
+        text_duration: handle_duration,
+        text_price: handle_price
+    }
+    handle = handlers.get(message.text)
+
+    if handle:
+        await handle()
+        return
     
     await message.bot.send_message(
         chat_id=user_id,
@@ -1405,7 +1811,6 @@ async def feedback(message: Message, state: FSMContext):
         feedbacks = await db.all_feedbacks()
 
         
-
         await message.bot.send_message(
             chat_id=user_id,
             text=cf.get_text(lang, role, "message", "all_feedback_msg"),
