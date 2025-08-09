@@ -85,10 +85,10 @@ def bookings(lang):
 
 async def today_books(lang):
     keyboard = ReplyKeyboardBuilder()
-    barbers = await db.all_barbers_name()
+    barbers = await db.get_all_barbers()
     keyboard.row(KeyboardButton(text=cf.get_text(lang, role, "button", "all_today_bookings")))
     for barber in barbers:
-        keyboard.add(KeyboardButton(text=f"💇‍♂️ {barber}"))
+        keyboard.add(KeyboardButton(text=barber["first_name"]))
     keyboard.adjust(1, 2)
     keyboard.row(KeyboardButton(text=cf.get_text(lang, role, "button", "back_main")), KeyboardButton(text=cf.get_text(lang, role, "button", "back")))
     return keyboard.as_markup(resize_keyboard=True, input_field_placeholder=cf.translations["input_field_msg"])
@@ -136,9 +136,9 @@ def settings(lang):
 #### SERVICE MENU
 async def services_prices(lang):
     keyboard = ReplyKeyboardBuilder()
-    barbers = await db.all_barbers_name()
+    barbers = await db.get_all_barbers()
     for item in barbers:
-        keyboard.add(KeyboardButton(text=item["name"]))
+        keyboard.add(KeyboardButton(text=item["first_name"]))
     keyboard.adjust(2)
     keyboard.row(KeyboardButton(text=cf.get_text(lang, role, "button", "back_main")), KeyboardButton(text=cf.get_text(lang, role, "button", "back")))
     return keyboard.as_markup(resize_keyboard=True, input_field_placeholder=cf.translations["input_field_msg"])
@@ -195,10 +195,10 @@ def edit_service(lang):
 #### BARBERS MENU
 async def barbers(lang):
     keyboard = ReplyKeyboardBuilder()
-    barbers = await db.all_barbers_name()
+    barbers = await db.get_all_barbers()
     keyboard.row(KeyboardButton(text=cf.get_text(lang, role, "button", "add_barber")))
     for item in barbers:
-        keyboard.add(KeyboardButton(text=item["name"]))
+        keyboard.add(KeyboardButton(text=item["first_name"]))
     keyboard.adjust(1, 2)
     keyboard.row(KeyboardButton(text=cf.get_text(lang, role, "button", "back_main")), KeyboardButton(text=cf.get_text(lang, role, "button", "back")))
     return keyboard.as_markup(resize_keyboard=True, input_field_placeholder=cf.translations["input_field_msg"])
@@ -217,6 +217,11 @@ def barber_detail(lang):
     )
     return keyboard.as_markup(resize_keyboard=True, input_field_placeholder=cf.translations["input_field_msg"])
 
+async def admins(lang):
+    keyboard = ReplyKeyboardBuilder()
+
+    return keyboard.as_markup(resize_keyboard=True, input_field_placeholder=cf.translations["input_field_msg"])
+
 #### WORKING HOURS MENU
 def working_hours(lang):
     keyboard = ReplyKeyboardBuilder()
@@ -226,11 +231,13 @@ def working_hours(lang):
     )
     return keyboard.as_markup(resize_keyboard=True, input_field_placeholder=cf.translations["input_field_msg"])
 
-##################################################################################################################
-
-async def admins(lang):
+#### LANGUAGE MENU
+def language(lang):
     keyboard = ReplyKeyboardBuilder()
-
+    keyboard.row(
+        KeyboardButton(text="🇺🇿 uz"), KeyboardButton(text="🇷🇺 ru"),
+        KeyboardButton(text=cf.get_text(lang, role, "button", "back_main")), KeyboardButton(text=cf.get_text(lang, role, "button", "back")), width=2
+    )
     return keyboard.as_markup(resize_keyboard=True, input_field_placeholder=cf.translations["input_field_msg"])
 
 ##################################################################################################################
@@ -285,11 +292,3 @@ def feedback(lang):
 #     return keyboard.as_markup(resize_keyboard=True, input_field_placeholder=cf.translations["input_field_msg"])
 
 ##################################################################################################################
-
-def language(lang):
-    keyboard = ReplyKeyboardBuilder()
-    keyboard.row(
-        KeyboardButton(text="🇺🇿 uz"), KeyboardButton(text="🇷🇺 ru"),
-        KeyboardButton(text=cf.get_text(lang, role, "button", "back")), width=2
-    )
-    return keyboard.as_markup(resize_keyboard=True, input_field_placeholder=cf.translations["input_field_msg"])

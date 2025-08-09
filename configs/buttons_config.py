@@ -114,6 +114,11 @@ BOOKINGS_BUTTONS = {
 
 async def get_setting_buttons(lang):
     return {
+        "services_prices": {
+            "message": "services_prices_msg",
+            "keyboard": await kb_r.services_prices(lang),
+            "state": st.director.services_prices
+        },
         "barbers": {
             "message": "barbers_msg",
             "keyboard": await kb_r.barbers(lang),
@@ -124,15 +129,10 @@ async def get_setting_buttons(lang):
             "keyboard": await kb_r.admins(lang),
             "state": st.director.admins
         },
-        "services_prices": {
-            "message": "services_prices_msg",
-            "keyboard": await kb_r.services_prices(lang),
-            "state": st.director.services_prices
-        },
-        "working_hours": {
-            "message": "working_hours_msg",
-            "keyboard": kb_r.working_hours(lang),
-            "state": st.director.working_hours
+        "language": {
+            "message": "language_msg",
+            "keyboard": kb_r.language(lang),
+            "state": st.director.language
         },
         "back": {
             "message": "main_menu_msg",

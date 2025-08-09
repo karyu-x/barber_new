@@ -82,7 +82,7 @@
                 "edit_service_duration_succes_msg": "✅ Xizmat davomiyligi muvaffaqiyatli o‘zgartirildi.",
                 "edit_service_price_msg": "💵 Yangi narxni kiriting (so‘mda):",
                 "edit_service_price_succes_msg": "✅ Xizmat narxi muvaffaqiyatli o‘zgartirildi.",
-                "working_hours_msg": "",
+                "working_hours_msg": "vaqtla",
 
                 "barbers_msg": "💈 <b>Barberlar ro‘yxati</b>\nUstalar haqida ma’lumot va ularning ish holatini kuzatish uchun.",
                 "barber_not_found_msg": "😕 Bunday ismli barber topilmadi. Iltimos, roʻyxatdan birortasini tanlang yoki ortga qayting.",
@@ -146,6 +146,7 @@
                 "reschedule_books": "⏭️ Bronni o‘tkazish",
 
                 "settings": "⚙️ Sozlamalar",
+
                 "services_prices": "🧾 Xizmatlar va narxlar",
                 "add_service_type": "➕ Yangi xizmat turini qo‘shish",
                 "delete_service_type": "🗑 Xizmat turini o‘chirish",
@@ -156,6 +157,7 @@
                 "edit_service_description": "📝 Tavsifi",
                 "edit_service_duration": "⏱ Davomiyligi",
                 "edit_service_price": "💵 Narxi",
+
                 "barbers": "🧔 Barberlar",
                 "add_barber": "➕ Barber qo'shish",
                 "edit_barber_phone": "📞 Barber telefoni",
@@ -165,20 +167,24 @@
                 "delete_barber": "🗑️ Barberni o'chirish",
                 "barber_deleted": "🗑️ Barber muvaffaqiyatli o'chirib tashlandi.",
                 "cancelled_delete_barber": "❌ O'chirish bekor qilindi.",
+
                 "admins": "👨‍💼 Adminlar",
+
                 "working_hours": "🕒 Ish soati",
+
+                "language": "🌐 Til",
                 
                 "clients": "👥 Mijozlar",
                 "analytics": "📊 Tahlil",
                 "finance": "🧮 Moliya",
                 "journal": "📜 Tarix",
+
                 "feedback": "📝 Fikrlar",
                 "feedback_rating": "💈 Barberlar reytingi",
                 "feedback_reviews": "💬 Mijozlar otzivlari",
                 "feedback_complaints": "🚫 Shikoyatlar",
                 "feedback_pinned": "📌 Muhim otziv/shikoyatlar",
 
-                "language": "🌐 Til",
 
                 "user_menu": "🔰 Menyu"
             }
