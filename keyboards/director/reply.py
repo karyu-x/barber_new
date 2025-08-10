@@ -85,7 +85,7 @@ def bookings(lang):
 
 async def today_books(lang):
     keyboard = ReplyKeyboardBuilder()
-    barbers = await db.get_all_barbers()
+    barbers = await db.get_barbers_all()
     keyboard.row(KeyboardButton(text=cf.get_text(lang, role, "button", "all_today_bookings")))
     for barber in barbers:
         keyboard.add(KeyboardButton(text=barber["first_name"]))
@@ -136,7 +136,7 @@ def settings(lang):
 #### SERVICE MENU
 async def services_prices(lang):
     keyboard = ReplyKeyboardBuilder()
-    barbers = await db.get_all_barbers()
+    barbers = await db.get_barbers_all()
     for item in barbers:
         keyboard.add(KeyboardButton(text=item["first_name"]))
     keyboard.adjust(2)
@@ -146,7 +146,7 @@ async def services_prices(lang):
 #### BARBER TYPES MENU
 async def barber_types(lang, barber_id):
     keyboard = ReplyKeyboardBuilder()
-    types = await db.all_barber_types()
+    types = await db.get_barber_types(barber_id)
     keyboard.row(KeyboardButton(text=cf.get_text(lang, role, "button", "add_service_type")))
     for item in types:
         if barber_id == item["barber"]:
@@ -158,12 +158,11 @@ async def barber_types(lang, barber_id):
 #### BARBER SERVICES MENU
 async def barber_services(lang, type_id):
     keyboard = ReplyKeyboardBuilder()
-    services = await db.all_barber_services()
+    services = await db.get_barber_services(type_id)
     keyboard.row(
         KeyboardButton(text=cf.get_text(lang, role, "button", "delete_service_type")),
     )
     for item in services:
-        if type_id == item["service_type"]:
             keyboard.add(KeyboardButton(text=item["name"]))
     keyboard.adjust(1, 2)
     keyboard.row(KeyboardButton(text=cf.get_text(lang, role, "button", "add_service")))
@@ -195,7 +194,7 @@ def edit_service(lang):
 #### BARBERS MENU
 async def barbers(lang):
     keyboard = ReplyKeyboardBuilder()
-    barbers = await db.get_all_barbers()
+    barbers = await db.get_barbers_all()
     keyboard.row(KeyboardButton(text=cf.get_text(lang, role, "button", "add_barber")))
     for item in barbers:
         keyboard.add(KeyboardButton(text=item["first_name"]))

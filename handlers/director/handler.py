@@ -69,7 +69,6 @@ async def notifications(message: Message, state: FSMContext):
     )
 
 ### INPUT TEXT
-
 @router.message(st.director.input_text)
 async def input_text(message: Message, state: FSMContext):
     user_id = message.from_user.id
@@ -110,7 +109,6 @@ async def input_text(message: Message, state: FSMContext):
     await state.set_state(st.director.notifications)
 
 ### INPUT PHOTO
-
 @router.message(st.director.input_photo)
 async def input_text(message: Message, state: FSMContext):
     user_id = message.from_user.id
@@ -160,7 +158,6 @@ async def input_text(message: Message, state: FSMContext):
     )
 
 ### INPUT BUTTON
-
 @router.message(st.director.input_button)
 async def input_button(message: Message, state: FSMContext):
     user_id = message.from_user.id
@@ -224,7 +221,6 @@ async def input_button(message: Message, state: FSMContext):
     await state.set_state(st.director.notifications)
 
 ### CHECK POST
-
 @router.message(st.director.check_post)
 async def check_post(message: Message, state: FSMContext):
     user_id = message.from_user.id
@@ -299,7 +295,6 @@ async def check_post(message: Message, state: FSMContext):
     )
 
 ### CONFIRM POST
-
 @router.message(st.director.confirm_post)
 async def confirm_post(message: Message, state: FSMContext):
     user_id = message.from_user.id
@@ -333,13 +328,13 @@ async def confirm_post(message: Message, state: FSMContext):
         photo = data.get("photo")
         buttons = data.get("buttons", [])
         reply_markup = kb_i.post_button(buttons) if buttons else None
-        users = db.all_users()
+        users = await db.get_users_all()
         success, failed = 0, 0
-        for tg_id in users:
+        for user in users:
             try:
                 if photo:
                     await message.bot.send_photo(
-                        chat_id=tg_id,
+                        chat_id=user["telegram_id"],
                         photo=photo,
                         caption=description,
                         reply_markup=reply_markup,
@@ -347,7 +342,7 @@ async def confirm_post(message: Message, state: FSMContext):
                     )
                 else:
                     await message.bot.send_message(
-                        chat_id=tg_id,
+                        chat_id=user["telegram_id"],
                         text=description,
                         reply_markup=reply_markup,
                         parse_mode="HTML"
@@ -355,7 +350,7 @@ async def confirm_post(message: Message, state: FSMContext):
                 success += 1
                 await asyncio.sleep(0.05)
             except Exception as e:
-                print(f"Не удалось отправить сообщение пользователю {tg_id}: {e}")
+                print(f"Не удалось отправить сообщение пользователю {user['telegram_id']}: {e}")
                 failed += 1
 
         await state.update_data(description=None, photo=None, buttons=None)
@@ -546,24 +541,24 @@ async def services_prices(message: Message, state: FSMContext):
         await state.set_state(st.director.main_menu)
         return
 
-    barbers = await db.get_all_barbers()
+    barbers = await db.get_barbers_all()
     for item in barbers:
-        if text == item["name"]:
+        if text == item["first_name"]:
             await state.update_data(barber_tg_id=item["telegram_id"],
                                     barber_name=item["first_name"])
-            barber_types = await db.all_barber_types()
+            barber_types = await db.get_barber_types(item["telegram_id"])
             if barber_types:
                 await message.bot.send_message(
                     chat_id=user_id,
                     text=cf.get_text(lang, role, "message", "service_types_msg").format(barber=text),
                     parse_mode="HTML",
-                    reply_markup=await kb_r.barber_types(lang, item["tg_id"])
+                    reply_markup=await kb_r.barber_types(lang, item["telegram_id"])
                 )
             else:
                 await message.bot.send_message(
                     chat_id=user_id,
                     text=cf.get_text(lang, role, "message", "no_service_type_msg"),
-                    reply_markup=await kb_r.barber_types(lang, item["tg_id"])
+                    reply_markup=await kb_r.barber_types(lang, item["telegram_id"])
                 )           
             await state.set_state(st.director.barber_types)
             return
@@ -579,6 +574,7 @@ async def barber_types(message: Message, state: FSMContext):
     user_id = message.from_user.id
     data = await state.get_data()
     lang = data.get("lang", "🇺🇿 uz")
+    barber_id = data.get("barber_tg_id")
     text = message.text
     back_actions = {
         cf.get_text(lang, role, "button", "back"): {
@@ -613,13 +609,13 @@ async def barber_types(message: Message, state: FSMContext):
         await state.set_state(st.director.add_type)
         return
 
-    barber_types = await db.all_barber_types()
+    barber_types = await db.get_barber_types(barber_id)
     for item in barber_types:
         if text == item["name"]:
             await state.update_data(service_type_id=item["id"],
                                     service_type_name=text)
 
-            services = await db.all_barber_services()
+            services = await db.get_barber_services(item["id"])
             filtered_services = [s for s in services if s["service_type"] == item["id"]]
 
             if filtered_services:
@@ -680,7 +676,7 @@ async def add_type(message: Message, state: FSMContext):
         await state.set_state(action["state"])
         return
 
-    ## bazaga qo'shish type
+    # TODO: await db.create_barber_type(barber_id, data)
     await message.bot.send_message(
         chat_id=user_id,
         text=cf.get_text(lang, role, "message", "add_type_succes_msg").format(service_name=text),
@@ -721,7 +717,7 @@ async def delete_type(message: Message, state: FSMContext):
         return
 
     elif text == cf.get_text(lang, role, "button", "confirm"):
-            ## bazaga delete type
+        # TODO: await db.delete_barber_type_by_id(type_id)
         await message.bot.send_message(
             chat_id=user_id,
             text=cf.get_text(lang, role, "message", "delete_type_succes_msg").format(service_name=service_name),
@@ -752,7 +748,7 @@ async def barber_services(message: Message, state: FSMContext):
     data = await state.get_data()
     lang = data.get("lang", "🇺🇿 uz")
     text = message.text
-    barber_id, barber_name = data.get("barber_tg_id"), data.get("barber_name")
+    barber_id, barber_name, type_id = data.get("barber_tg_id"), data.get("barber_name"), data.get("service_type_id")
     back_actions = {
         cf.get_text(lang, role, "button", "back"): {
             "text": cf.get_text(lang, role, "message", "service_types_msg").format(barber=barber_name),
@@ -796,7 +792,7 @@ async def barber_services(message: Message, state: FSMContext):
         await state.set_state(st.director.add_service)
         return
 
-    barber_services = await db.all_barber_services()
+    barber_services = await db.get_barber_services(type_id)
     for item in barber_services:
         if text == item["name"]:
             await state.update_data(service_id=item["id"],
@@ -835,8 +831,7 @@ async def add_service(message: Message, state: FSMContext):
     text_main = cf.get_text(lang, role, "button", "back_main")
 
     async def handle_back():
-        services = await db.all_barber_services()
-        filtered_services = [s for s in services if s["service_type"] == type_id]
+        filtered_services = await db.get_barber_services(type_id)
 
         if filtered_services:
             service_lines = [
@@ -877,7 +872,7 @@ async def add_service(message: Message, state: FSMContext):
         await handle()
         return
 
-    # baza service add
+    # TODO: await db.create_barber_service(data)
     await message.bot.send_message(
         chat_id=user_id,
         text=cf.get_text(lang, role, "message", "add_service_success_msg"),
@@ -898,7 +893,7 @@ async def delete_service(message: Message, state: FSMContext):
     text_main = cf.get_text(lang, role, "button", "back_main")
 
     async def handle_confirm():
-        # baza delete service
+        # TODO: await db.delete_barber_service_by_id(service_id)
         await message.bot.send_message(
             chat_id=user_id,
             text=cf.get_text(lang, role, "message", "delete_service_success_msg"),
@@ -916,7 +911,7 @@ async def delete_service(message: Message, state: FSMContext):
 
 
     async def handle_back():
-        service = await db.get_service_by_id(service_id)
+        service = await db.get_barber_service_by_id(service_id)
         if service:
             services_text = cf.get_text(lang, role, "message", "service_detail_msg").format(
                 description=service['description'],
@@ -972,7 +967,7 @@ async def edit_service_name(message: Message, state: FSMContext):
     service_name, service_id = data.get("service_name"), data.get("service_id")
     text_back = cf.get_text(lang, role, "button", "back")
     text_main = cf.get_text(lang, role, "button", "back_main")
-    service = await db.get_service_by_id(service_id)
+    service = await db.get_barber_service_by_id(service_id)
     if service:
         services_text = cf.get_text(lang, role, "message", "service_detail_msg").format(
             description=service['description'],
@@ -1012,7 +1007,7 @@ async def edit_service_name(message: Message, state: FSMContext):
         await handle()
         return
 
-    # baza edit name
+    # TODO: await db.update_barber_service_by_id(service_id, data)
     await message.bot.send_message(
         chat_id=user_id,
         text=cf.get_text(lang, role, "message", "edit_service_name_succes_msg")
@@ -1034,7 +1029,7 @@ async def edit_service_description(message: Message, state: FSMContext):
     service_name, service_id = data.get("service_name"), data.get("service_id")
     text_back = cf.get_text(lang, role, "button", "back")
     text_main = cf.get_text(lang, role, "button", "back_main")
-    service = await db.get_service_by_id(service_id)
+    service = await db.get_barber_service_by_id(service_id)
     if service:
         services_text = cf.get_text(lang, role, "message", "service_detail_msg").format(
             description=service['description'],
@@ -1074,7 +1069,7 @@ async def edit_service_description(message: Message, state: FSMContext):
         await handle()
         return
     
-    # baza edit description
+    # TODO: await db.update_barber_service_by_id(service_id, data)
     await message.bot.send_message(
         chat_id=user_id,
         text=cf.get_text(lang, role, "message", "edit_service_description_success_msg")
@@ -1097,7 +1092,7 @@ async def edit_service_duration(message: Message, state: FSMContext):
     text_back = cf.get_text(lang, role, "button", "back")
     text_main = cf.get_text(lang, role, "button", "back_main")
 
-    service = await db.get_service_by_id(service_id)
+    service = await db.get_barber_service_by_id(service_id)
     if service:
         services_text = cf.get_text(lang, role, "message", "service_detail_msg").format(
             description=service['description'],
@@ -1137,7 +1132,7 @@ async def edit_service_duration(message: Message, state: FSMContext):
         await handle()
         return
     
-    # baza edit duration
+    # TODO: await db.update_barber_service_by_id(service_id, data)
     await message.bot.send_message(
         chat_id=user_id,
         text=cf.get_text(lang, role, "message", "edit_service_duration_success_msg")
@@ -1159,7 +1154,7 @@ async def edit_service_price(message: Message, state: FSMContext):
     service_name, service_id = data.get("service_name"), data.get("service_id")
     text_back = cf.get_text(lang, role, "button", "back")
     text_main = cf.get_text(lang, role, "button", "back_main")
-    service = await db.get_service_by_id(service_id)
+    service = await db.get_barber_service_by_id(service_id)
     if service:
         services_text = cf.get_text(lang, role, "message", "service_detail_msg").format(
             description=service['description'],
@@ -1199,7 +1194,7 @@ async def edit_service_price(message: Message, state: FSMContext):
         await handle()
         return
 
-    # baza edit price
+    # TODO: await db.update_barber_service_by_id(service_id, data)
     await message.bot.send_message(
         chat_id=user_id,
         text=cf.get_text(lang, role, "message", "edit_service_price_success_msg")
@@ -1260,8 +1255,7 @@ async def service_detail(message: Message, state: FSMContext):
         await state.set_state(st.director.edit_service_price)
 
     async def handle_back():
-        services = await db.all_barber_services()
-        filtered_services = [s for s in services if s["service_type"] == type_id]
+        filtered_services = await db.get_barber_services(type_id)
 
         if filtered_services:
             service_lines = [
@@ -1361,7 +1355,7 @@ async def barbers(message: Message, state: FSMContext):
         await state.set_state(st.director.add_barber)
         return
 
-    barbers = await db.get_all_barbers()
+    barbers = await db.get_barbers_all()
     for barber in barbers:
         if text.lower() == barber["first_name"].strip().lower():
             barber_data = {
@@ -1582,7 +1576,7 @@ async def edit_barber_phone(message: Message, state: FSMContext):
         await message.bot.send_message(user_id, error_msg)
         return
 
-    # TODO: базага запрос едитга
+    # TODO: await db.update_barber_by_id(telegram_id, data)
     await message.bot.send_message(
             chat_id=user_id,
             text=cf.get_text(lang, role, "message", "edit_phone_success_msg"),
@@ -1633,7 +1627,7 @@ async def edit_barber_description(message: Message, state: FSMContext):
         await state.set_state(st.director.barber_detail)
         return
 
-    # TODO: сохранить новое описание в БД
+    # TODO: await db.update_barber_by_id(telegram_id, data)
     await message.bot.send_message(
         chat_id=user_id,
         text=cf.get_text(lang, role, "message", "edit_description_success_msg"),
@@ -1691,7 +1685,7 @@ async def edit_barber_photo(message: Message, state: FSMContext):
         )
         return
 
-    # TODO: сохранить новое фото в БД
+    # TODO: await db.update_barber_by_id(telegram_id, data)
     photo_id = message.photo[-1].file_id
     telegram_id = data.get("barber_tg_id")
 
@@ -1764,7 +1758,7 @@ async def edit_barber_time(message: Message, state: FSMContext):
         )
         return
 
-    # TODO: сохранить новое время в БД
+    # TODO: await db.update_barber_by_id(telegram_id, data)
     await message.bot.send_message(
         chat_id=user_id,
         text=cf.get_text(lang, role, "message", "edit_time_success_msg"),
@@ -1817,7 +1811,7 @@ async def delete_barber(message: Message, state:FSMContext):
         return
 
     if text == cf.get_text(lang, role, "button", "confirm"):
-        # TODO: удаление барбера в базе
+        # TODO: await db.delete_barber_by_id(telegram_id)
         await message.bot.send_message(
             chat_id=user_id,
             text=cf.get_text(lang, role, "message", "barber_deleted_msg"),
