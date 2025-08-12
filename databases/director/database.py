@@ -73,9 +73,14 @@ async def get_users_all():
         {"id": 2, "telegram_id": 1002, "first_name": "Karim", "phone_number": "998903241212", "language": "🇺🇿 uz", "photo": None, "description": "", "rating": None, "default_from_hour": "09:00:00", "default_to_hour": "18:00:00", "roles": [2]},
         {"id": 3, "telegram_id": 5012184829, "first_name": "Shoxa", "phone_number": "998900123912", "language": "🇺🇿 uz", "photo": None, "description": "", "rating": None, "default_from_hour": "09:00:00", "default_to_hour": "18:00:00", "roles": [3]},
         {"id": 4, "telegram_id": 1004, "first_name": "Samandar", "phone_number": "998900210160", "language": "🇺🇿 uz", "photo": None, "description": "", "rating": None, "default_from_hour": "09:00:00", "default_to_hour": "18:00:00", "roles": [4]},
-        {"id": 5, "telegram_id": 1005, "first_name": "Sulton", "phone_number": "998900210123", "language": "🇺🇿 uz", "photo": None, "description": "", "rating": None, "default_from_hour": "09:00:00", "default_to_hour": "18:00:00", "roles": [1]}
+        {"id": 5, "telegram_id": 1005, "first_name": "Sulton", "phone_number": "998900210123", "language": "🇺🇿 uz", "photo": None, "description": "", "rating": None, "default_from_hour": "09:00:00", "default_to_hour": "18:00:00", "roles": [1]},
+        {"id": 6, "telegram_id": 1006, "first_name": "Umar", "phone_number": "998900211234", "language": "🇺🇿 uz", "photo": None, "description": "", "rating": None, "default_from_hour": "09:00:00", "default_to_hour": "18:00:00", "roles": [4]},
     ]
 
+
+async def get_user_by_telegram(telegram_id):
+    users = await get_users_all()
+    return next((item for item in users if item["telegram_id"] == telegram_id), None)
 
 ################################# ==== ROLES ==== #################################
 

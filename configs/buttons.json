@@ -1,0 +1,22 @@
+{
+  "123456789": {
+    "buttons": [
+      "language"
+    ]
+  },
+  "1004": {
+    "buttons": [
+      "bookings",
+      "clients",
+      "notifications",
+      "settings"
+    ]
+  },
+  "1006": {
+    "buttons": [
+      "clients",
+      "journal",
+      "notifications"
+    ]
+  }
+}

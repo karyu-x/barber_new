@@ -3,17 +3,25 @@ from aiogram.fsm.state import State, StatesGroup
 class director(StatesGroup):
     main_menu = State()
 
+    #####################
     notifications = State()
+
     input_text = State()
     input_photo = State()
     input_button = State()
     check_post = State()
     confirm_post = State()
 
+    #####################
     bookings = State()
+
     today_books = State()
+    barber_books = State()
+
     other_day_books = State()
+
     cancel_books = State()
+
     reschedule_books = State()
 
     #####################
@@ -38,27 +46,35 @@ class director(StatesGroup):
     edit_barber_description = State()
     edit_barber_photo = State()
     edit_barber_time = State()
-
-    working_hours = State()
-
     add_barber = State()
     add_phone = State()
     add_description = State()
     add_photo = State()
-    save_barber = State()
     delete_barber = State()
-    delete_barber_confirm_reject = State()
 
     admins = State()
+    admin_detail = State()
+    add_admin = State()
+    edit_admin_phone = State()
+    edit_admin_button = State()
+    delete_admin = State()
 
+    working_hours = State()
+
+    #####################
     clients = State()
 
+    #####################
     analytics = State()
 
+    #####################
     finance = State()
 
+    #####################
     journal = State()
 
+    #####################
     feedback = State()
 
+    #####################
     language = State()

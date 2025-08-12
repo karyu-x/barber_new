@@ -103,7 +103,18 @@
                 "barber_deleted_msg": "🗑️ Barber muvaffaqiyatli o'chirib tashlandi.",
                 "cancelled_delete_barber_msg": "❌ O'chirish bekor qilindi.",
 
-                "admins_msg": "👨‍💼 <b>Administratorlar</b>\nBot boshqaruvida qatnashadigan adminlar ro‘yxati.",
+                "admins_msg": "👨‍💼 <b>Administratorlar</b>\nBot boshqaruvida qatnashadigan administratorlar roʻyxati.",
+                "add_admin_msg": "➕ <b>Yangi administrator qoʻshish</b>\nIltimos, qoʻshmoqchi boʻlgan administratorning 📱 telefon raqamini quyidagi formatda yuboring:\n\n<code>+998 XX XXX XX XX</code>",
+                "add_admin_success_msg": "✅ <b>Administrator muvaffaqiyatli qoʻshildi!</b>\nU endi bot boshqaruvida qatnashishi mumkin.",
+                "admin_info_msg": "ℹ️ <b>Administrator maʼlumotlari</b>\n👤 Ism: <b>{name}</b>\n📱 Telefon: <b>{phone}</b>\n\n🛠 <b>Mavjud tugmalar:</b>\n{buttons}",
+                "edit_admin_phone_msg": "📱 <b>Telefon raqamini oʻzgartirish</b>\nAdministratorning yangi telefon raqamini kiriting:\n\n<code>+998 XX XXX XX XX</code>",
+                "edit_admin_button_msg": "🎛 <b>Tugmalarni tahrirlash</b>\nAdministrator uchun mavjud bo‘lgan tugmalarni tanlang yoki o‘chirib tashlang.",
+                "edit_buttons_choice_msg": "⬇️ Tanlang:",
+                "edit_admin_button_success_msg": "✅ Tugmalar muvaffaqiyatli yangilandi!",
+                "edit_admin_button_cancel_msg": "❌ Tugma o'zgratirish bekor qilindi",
+                "delete_admin_confirm_reject_msg": "⚠️ <b>Administratorni oʻchirishni xohlaysizmi?</b>\n\n👤 {name}\n\n❗ Bu amal ortga qaytarilmaydi!",
+                "admin_deleted_msg": "🗑 <b>Administrator oʻchirildi!</b>\nU endi bot boshqaruvida qatnashmaydi.",
+                "cancelled_delete_admin_msg": "❌ <b>Administratorni oʻchirish bekor qilindi.</b>",
 
                 "clients_msg": "🧑‍🤝‍🧑 <b>Mijozlar</b>\nMijozlar haqidagi ma’lumotlar va ularning faolligi.",
 
@@ -165,10 +176,12 @@
                 "edit_barber_photo": "📸 Barber rasmi",
                 "edit_barber_time": "🕰 Barber ish vaqti",
                 "delete_barber": "🗑️ Barberni o'chirish",
-                "barber_deleted": "🗑️ Barber muvaffaqiyatli o'chirib tashlandi.",
-                "cancelled_delete_barber": "❌ O'chirish bekor qilindi.",
 
                 "admins": "👨‍💼 Adminlar",
+                "add_admin": "➕ Admin qo'shish",
+                "edit_admin_phone": "📞 Admin telefoni",
+                "edit_admin_button": "🖲 Admin knopkalari",
+                "delete_admin": "🗑️ Adminni o'chirish",
 
                 "working_hours": "🕒 Ish soati",
 

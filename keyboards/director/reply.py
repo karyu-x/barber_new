@@ -93,6 +93,14 @@ async def today_books(lang):
     keyboard.row(KeyboardButton(text=cf.get_text(lang, role, "button", "back_main")), KeyboardButton(text=cf.get_text(lang, role, "button", "back")))
     return keyboard.as_markup(resize_keyboard=True, input_field_placeholder=cf.translations["input_field_msg"])
 
+async def barber_books(lang, barber_id):
+    keyboard = ReplyKeyboardBuilder()
+    today_time = cf.get_time()
+    bookings = await db.get_barber_books(barber_id, )
+
+    keyboard.row(KeyboardButton(text=cf.get_text(lang, role, "button", "back_main")), KeyboardButton(text=cf.get_text(lang, role, "button", "back")))
+    return keyboard.as_markup(resize_keyboard=True, input_field_placeholder=cf.translations["input_field_msg"])
+
 def other_day_books(lang):
     keyboard = ReplyKeyboardBuilder()
     keyboard.add()
@@ -208,18 +216,32 @@ def barber_detail(lang):
     keyboard.add(
         KeyboardButton(text=cf.get_text(lang, role, "button", "delete_barber")),
         KeyboardButton(text=cf.get_text(lang, role, "button", "edit_barber_phone")), KeyboardButton(text=cf.get_text(lang, role, "button", "edit_barber_description")),
-        KeyboardButton(text=cf.get_text(lang, role, "button", "edit_barber_photo")), KeyboardButton(text=cf.get_text(lang, role, "button", "edit_barber_time"))
-    )
-    keyboard.adjust(1, 2)
-    keyboard.row(
+        KeyboardButton(text=cf.get_text(lang, role, "button", "edit_barber_photo")), KeyboardButton(text=cf.get_text(lang, role, "button", "edit_barber_time")),
         KeyboardButton(text=cf.get_text(lang, role, "button", "back_main")), KeyboardButton(text=cf.get_text(lang, role, "button", "back"))
     )
+    keyboard.adjust(1, 2)
     return keyboard.as_markup(resize_keyboard=True, input_field_placeholder=cf.translations["input_field_msg"])
 
 async def admins(lang):
     keyboard = ReplyKeyboardBuilder()
-
+    admins = await db.get_admins_all()
+    keyboard.row(KeyboardButton(text=cf.get_text(lang, role, "button", "add_admin")))
+    for item in admins:
+        keyboard.add(KeyboardButton(text=item["first_name"]))
+    keyboard.adjust(1, 2)
+    keyboard.row(KeyboardButton(text=cf.get_text(lang, role, "button", "back_main")), KeyboardButton(text=cf.get_text(lang, role, "button", "back")))
     return keyboard.as_markup(resize_keyboard=True, input_field_placeholder=cf.translations["input_field_msg"])
+
+def admin_detail(lang):
+    keyboard = ReplyKeyboardBuilder()
+    keyboard.add(
+        KeyboardButton(text=cf.get_text(lang, role, "button", "delete_admin")),
+        KeyboardButton(text=cf.get_text(lang, role, "button", "edit_admin_phone")), KeyboardButton(text=cf.get_text(lang, role, "button", "edit_admin_button")),
+        KeyboardButton(text=cf.get_text(lang, role, "button", "back_main")), KeyboardButton(text=cf.get_text(lang, role, "button", "back"))
+    )
+    keyboard.adjust(1, 2)
+    return keyboard.as_markup(resize_keyboard=True, input_field_placeholder=cf.translations["input_field_msg"])
+
 
 #### WORKING HOURS MENU
 def working_hours(lang):

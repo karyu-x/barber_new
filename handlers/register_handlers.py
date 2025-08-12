@@ -1,3 +1,4 @@
+# register_handlers.py
 from aiogram import Bot, Router, Dispatcher, F
 from aiogram.types import Message
 from aiogram.fsm.context import FSMContext
@@ -17,63 +18,69 @@ from states.barber import state as st_barber
 from states.admin import state as st_admin
 from states.director import state as st_director
 
-from databases.user import database as db_user
-from databases.barber import database as db_barber
-from databases.admin import database as db_admin
-from databases.director import database as db_director
-
-from handlers.user.handler import user_router
-from handlers.barber.handler import barber_router
-from handlers.admin.handler import admin_router
-from handlers.director.handler import director_router
+from databases.director import database as db
 
 bot = Bot(config("TOKEN"))
 dp = Dispatcher()
 router = Router()
 
+# Роли
+ROLE_BARBER, ROLE_CLIENT, ROLE_DIRECTOR, ROLE_ADMIN = 1, 2, 3, 4
+ROLE_ORDER = [ROLE_DIRECTOR, ROLE_ADMIN, ROLE_BARBER, ROLE_CLIENT]
+
+
+def pick_role(roles: list[int]) -> int:
+    """Возвращает приоритетную роль"""
+    for r in ROLE_ORDER:
+        if r in (roles or []):
+            return r
+    return ROLE_CLIENT
+
 
 @router.message(F.text, StateFilter(default_state))
 async def cmd_bot(message: Message, state: FSMContext):
-    user_id = message.from_user.id
-    old_state = await state.get_state()
+    uid = message.from_user.id
 
-    if old_state:
-        return
+    # Один запрос в БД
+    user = await db.get_user_by_telegram(uid) or {}
+    roles = user.get("roles") or []
+    lang = user.get("language") or "🇺🇿 uz"
 
-    lang = await db_user.select_language(user_id) or "🇺🇿 uz"
-    roles = [
-        ("director", await db_director.get_director_by_id(user_id), st_director.director.main_menu, kb_director.main_menu),
-        ("admin", db_admin.select_admin(user_id), st_admin.admin.main_menu, kb_admin.main_menu),
-        ("barber", db_barber.select_barber(user_id), st_barber.barber.main_menu, kb_barber.main_menu),
-        ("user", db_user.select_user(user_id), st_user.user.main_menu, kb_user.main_menu),
-    ]
+    # Определяем роль
+    role = pick_role(roles)
 
-    for role, is_match, next_state, keyboard in roles:
-        if is_match:
-            caption = cf.get_text(lang, role, "message", "start_msg")
-            photo = cf.get_logo_file()
-            if photo:
-                await bot.send_photo(
-                    chat_id=user_id,
-                    photo=photo,
-                    caption=caption,
-                    parse_mode="HTML",
-                    reply_markup=keyboard(lang),
-                )
-            await state.update_data(lang=lang)
-            await state.set_state(next_state)
-            return
+    # Соответствие роль → текст/клавиатура/состояние
+    caption_key = {
+        ROLE_DIRECTOR: ("director", kb_director.main_menu, st_director.director.main_menu),
+        ROLE_ADMIN:    ("admin",    kb_admin.main_menu,    st_admin.admin.main_menu),
+        ROLE_BARBER:   ("barber",   kb_barber.main_menu,   st_barber.barber.main_menu),
+        ROLE_CLIENT:   ("user",     kb_user.main_menu,     st_user.user.main_menu),
+    }[role]
+
+    role_key, kb_builder, st = caption_key
+    caption = cf.get_text(lang, role_key, "message", "start_msg")
 
     photo = cf.get_logo_file()
     if photo:
         await bot.send_photo(
-            chat_id=user_id,
+            chat_id=uid,
             photo=photo,
-            caption=cf.get_text(lang, "user", "message", ""),
+            caption=caption,
             parse_mode="HTML",
+            reply_markup=kb_builder(lang),
         )
-    await state.set_state(st_user.user.main_menu)
+    else:
+        await bot.send_message(uid, caption, reply_markup=kb_builder(lang))
 
+    await state.update_data(lang=lang)
+    await state.set_state(st)
+
+
+# остальные роутеры как и были
+from handlers.user.handler import user_router
+from handlers.barber.handler import barber_router
+from handlers.admin.handler import admin_router
+from handlers.director.handler import director_router
 
 router.include_router(user_router)
 router.include_router(barber_router)

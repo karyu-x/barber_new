@@ -1,5 +1,6 @@
 from states.director import state as st
 from keyboards.director import reply as kb_r
+from configs import functions as cf
 
 async def get_main_buttons(lang):
     return {
@@ -140,3 +141,18 @@ async def get_setting_buttons(lang):
             "state": st.director.main_menu
         }
     }
+
+AVAILABLE_BUTTONS = [
+    "notifications",
+    "bookings",
+    "settings",
+    "clients",
+    "analytics",
+    "finance",
+    "journal",
+    "feedback",
+    "user_menu"
+]
+
+def button_title(lang: str, role: str, button_id: str) -> str:
+    return cf.get_text(lang, role, "button", button_id)
