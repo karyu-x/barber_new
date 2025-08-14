@@ -34,7 +34,7 @@ class director(StatesGroup):
     barber_services = State()
     service_detail = State()
     add_service = State()
-    delete_sevice = State()
+    delete_service = State()
     edit_service_name = State()
     edit_service_description = State()
     edit_service_duration = State()

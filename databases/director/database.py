@@ -3,7 +3,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-BASE_URL = "https://fd94f62807e9.ngrok-free.app"
+BASE_URL = "http://20.124.93.156:8080"
 
 session: aiohttp.ClientSession | None = None
 
@@ -14,140 +14,211 @@ async def get_session():
     return session
 
 
-async def api_request(method: str, endpoint: str, json=None, params=None):
+async def api_request(method: str, endpoint: str, json=None, params=None, timeout=10):
     url = f"{BASE_URL}{endpoint}"
     sess = await get_session()
+
     try:
-        async with sess.request(method, url, json=json, params=params) as resp:
-            try:
-                data = await resp.json()
-            except aiohttp.ContentTypeError:
-                data = await resp.text()
+        async with sess.request(method, url, json=json, params=params, timeout=timeout) as resp:
+            if resp.status == 204:
+                # Статус 204 — успешное выполнение, но без данных
+                logger.info(f"[API] {method} {url} | Status: {resp.status} | No content returned")
+                return None
 
-            logger.info(f"[API] {method} {resp.url} | Status: {resp.status}")
-            if json:
-                logger.info(f"Payload: {json}")
-            if params:
-                logger.info(f"Params: {params}")
-            logger.info(f"Response: {data}")
+            if resp.status == 200:
+                try:
+                    data = await resp.json()  # Пробуем парсить JSON
+                except aiohttp.ContentTypeError:
+                    # Если это не JSON, пробуем текст
+                    data = await resp.text()
 
-            return data if resp.status == 200 else None
-    except Exception as e:
-        logger.error(f"API request error {method} {url}: {e}")
+                # Проверка на пустой ответ
+                if not data:
+                    logger.warning(f"[API] {method} {url} | Status: {resp.status} | No content returned")
+                    return None
+
+                logger.info(f"[API] {method} {resp.url} | Status: {resp.status}")
+                if json:
+                    logger.info(f"Payload: {json}")
+                if params:
+                    logger.info(f"Params: {params}")
+                logger.info(f"Response: {data}")
+
+                return data
+
+            # Если статус не 200, возвращаем None
+            logger.error(f"[API] {method} {url} | Error: {resp.status}")
+            return None
+
+    except aiohttp.ClientTimeout:
+        # Тайм-аут запроса
+        logger.error(f"[API] {method} {url} | Timeout occurred after {timeout} seconds")
         return None
+    except aiohttp.ClientError as e:
+        # Ошибки соединения, например, сервер недоступен
+        logger.error(f"[API] {method} {url} | ClientError: {e}")
+        return None
+    except Exception as e:
+        # Обработка любых других исключений
+        logger.error(f"[API] {method} {url} | Unexpected error: {e}")
+        return None
+
+
+# async def api_request(method: str, endpoint: str, json=None, params=None):
+#     url = f"{BASE_URL}{endpoint}"
+#     sess = await get_session()
+#     try:
+#         async with sess.request(method, url, json=json, params=params) as resp:
+#             try:
+#                 data = await resp.json()
+#             except aiohttp.ContentTypeError:
+#                 data = await resp.text()
+
+#             logger.info(f"[API] {method} {resp.url} | Status: {resp.status}")
+#             if json:
+#                 logger.info(f"Payload: {json}")
+#             if params:
+#                 logger.info(f"Params: {params}")
+#             logger.info(f"Response: {data}")
+
+#             return data if resp.status == 200 or resp.status == 204 else None
+#     except Exception as e:
+#         logger.error(f"API request error {method} {url}: {e}")
+#         return None
 
 
 
 
 ### ==== USERS ==== ###
 async def get_users_all():
-    # users = await api_request(
-    #     method="GET", 
-    #     endpoint="/api/auth/users/"
-    # )
-    # if not users:
-    #     return []
+    users = await api_request(
+        method="GET", 
+        endpoint="/api/auth/users/"
+    )
+    if not users:
+        return []
 
-    # data_base = []
-    # for user in users:
-    #     telegram_id = user.get("telegram_id")
-    #     if telegram_id:
-    #         lang_code = user.get("language").lower()
-    #         language = "🇺🇿 uz" if lang_code == "uz" else "🇷🇺 ru"
-    #         data_base.append({
-    #             "id": user.get("id"),
-    #             "telegram_id": telegram_id,
-    #             "first_name": user.get("first_name"),
-    #             "phone_number": user.get("phone_number"),
-    #             "language": language,
-    #             "photo": user.get("photo"),
-    #             "description": user.get("description"),
-    #             "rating": user.get("rating"),
-    #             "default_from_hour": user.get("default_from_hour"),
-    #             "default_to_hour": user.get("default_to_hour"),
-    #             "roles": user.get("roles", [])
-    #         })
-    # return data_base
-    return [
-        {"id": 1, "telegram_id": 1001, "first_name": "Ali", "phone_number": "998901234567", "language": "🇺🇿 uz", "photo": None, "description": "Yaxshi ishchi", "rating": 4.5, "default_from_hour": "09:00:00", "default_to_hour": "18:00:00", "roles": [1]},
-        {"id": 2, "telegram_id": 1002, "first_name": "Karim", "phone_number": "998903241212", "language": "🇺🇿 uz", "photo": None, "description": "", "rating": None, "default_from_hour": "09:00:00", "default_to_hour": "18:00:00", "roles": [2]},
-        {"id": 3, "telegram_id": 5012184829, "first_name": "Shoxa", "phone_number": "998900123912", "language": "🇺🇿 uz", "photo": None, "description": "", "rating": None, "default_from_hour": "09:00:00", "default_to_hour": "18:00:00", "roles": [3]},
-        {"id": 4, "telegram_id": 1004, "first_name": "Samandar", "phone_number": "998900210160", "language": "🇺🇿 uz", "photo": None, "description": "", "rating": None, "default_from_hour": "09:00:00", "default_to_hour": "18:00:00", "roles": [4]},
-        {"id": 5, "telegram_id": 1005, "first_name": "Sulton", "phone_number": "998900210123", "language": "🇺🇿 uz", "photo": None, "description": "", "rating": None, "default_from_hour": "09:00:00", "default_to_hour": "18:00:00", "roles": [1]},
-        {"id": 6, "telegram_id": 1006, "first_name": "Umar", "phone_number": "998900211234", "language": "🇺🇿 uz", "photo": None, "description": "", "rating": None, "default_from_hour": "09:00:00", "default_to_hour": "18:00:00", "roles": [4]},
-    ]
+    data_base = []
+    for user in users:
+        telegram_id = user.get("telegram_id")
+        if telegram_id:
+            lang_code = user.get("language").lower()
+            language = "🇺🇿 uz" if lang_code == "uz" else "🇷🇺 ru"
+            data_base.append({
+                "id": user.get("id"),
+                "telegram_id": telegram_id,
+                "first_name": user.get("first_name"),
+                "phone_number": user.get("phone_number"),
+                "language": language,
+                "photo": user.get("photo"),
+                "description": user.get("description"),
+                "rating": user.get("rating"),
+                "default_from_hour": user.get("default_from_hour"),
+                "default_to_hour": user.get("default_to_hour"),
+                "roles": user.get("roles", [])
+            })
+    return data_base
+    # return [
+    #     {"id": 1, "telegram_id": 1001, "first_name": "Ali", "phone_number": "998901234567", "language": "🇺🇿 uz", "photo": None, "description": "Yaxshi ishchi", "rating": 4.5, "default_from_hour": "09:00:00", "default_to_hour": "18:00:00", "roles": [1]},
+    #     {"id": 2, "telegram_id": 1002, "first_name": "Karim", "phone_number": "998903241212", "language": "🇺🇿 uz", "photo": None, "description": "", "rating": None, "default_from_hour": "09:00:00", "default_to_hour": "18:00:00", "roles": [2]},
+    #     {"id": 3, "telegram_id": 5012184829, "first_name": "Shoxa", "phone_number": "998900123912", "language": "🇺🇿 uz", "photo": None, "description": "", "rating": None, "default_from_hour": "09:00:00", "default_to_hour": "18:00:00", "roles": [3]},
+    #     {"id": 4, "telegram_id": 1004, "first_name": "Samandar", "phone_number": "998900210160", "language": "🇺🇿 uz", "photo": None, "description": "", "rating": None, "default_from_hour": "09:00:00", "default_to_hour": "18:00:00", "roles": [4]},
+    #     {"id": 5, "telegram_id": 1005, "first_name": "Sulton", "phone_number": "998900210123", "language": "🇺🇿 uz", "photo": None, "description": "", "rating": None, "default_from_hour": "09:00:00", "default_to_hour": "18:00:00", "roles": [1]},
+    #     {"id": 6, "telegram_id": 1006, "first_name": "Umar", "phone_number": "998900211234", "language": "🇺🇿 uz", "photo": None, "description": "", "rating": None, "default_from_hour": "09:00:00", "default_to_hour": "18:00:00", "roles": [4]},
+    # ]
 
 
 async def get_user_by_telegram(telegram_id):
-    users = await get_users_all()
-    return next((item for item in users if item["telegram_id"] == telegram_id), None)
+    # users = await get_users_all()
+    # return next((item for item in users if item["telegram_id"] == telegram_id), None)
+    user = await api_request(method="GET", endpoint=f"/api/auth/users/if_exists/{telegram_id}/")
+
+    if user is None:
+        return None
+    
+    lang_code = user.get("language").lower()
+    language = "🇺🇿 uz" if lang_code == "uz" else "🇷🇺 ru"
+    user["language"] = language
+
+    return user
 
 ################################# ==== ROLES ==== #################################
 
 # == DIRECTORS == #
 async def get_directors_all():
-    users = await get_users_all()
-    return [u for u in users if 3 in u["roles"]]
+    # users = await get_users_all()
+    # return [u for u in users if 3 in u["roles"]]
+    role = 3
+    return await api_request(method="GET", endpoint=f"/api/auth/users/by-role/{role}/")
 
 async def create_director_by_phone(director_phone):
-    data = {"roles": [3, 2]}
-    return await api_request("POST", f"/api/auth/users/{director_phone}/add_role", json=data)
+    data = {"role_id": 3}
+    return await api_request("POST", f"/api/auth/users/add_role/{director_phone}/", json=data)
 
 async def get_director_by_id(director_id):
     directors = await get_directors_all()
     return next((item for item in directors if item["telegram_id"] == director_id), None)
 
 async def update_director_by_id(director_id, data):
-    return await api_request("PATCH", f"/api/auth/users/{director_id}", json=data)
+    return await api_request("PATCH", f"/api/auth/users/{director_id}/", json=data)
 
-async def delete_director_by_id(director_id):
-    return await api_request("DELETE", f"/api/auth/users/{director_id}/remove_role")
+async def delete_director_by_phone(director_phone):
+    data = {"role_id": 3}
+    return await api_request("PATCH", f"/api/auth/users/remove_role/{director_phone}/", json=data)
 
 
 # == ADMINS == #
 async def get_admins_all():
-    users = await get_users_all()
-    return [u for u in users if 4 in u["roles"]]
+    # users = await get_users_all()
+    # return [u for u in users if 4 in u["roles"]]
+    role = 4
+    return await api_request(method="GET", endpoint=f"/api/auth/users/by-role/{role}/")
 
 async def create_admin_by_phone(admin_phone):
-    data = {"roles": [4, 2]}
-    return await api_request("POST", f"/api/auth/users/{admin_phone}/add_role", json=data)
+    data = {"role_id": 4}
+    return await api_request("PATCH", f"/api/auth/users/add_role/{admin_phone}/", json=data)
 
 async def get_admin_by_id(admin_id):
     admins = await get_admins_all()
     return next((item for item in admins if item["telegram_id"] == admin_id), None)
 
 async def update_admin_by_id(admin_id, data):
-    return await api_request("PATCH", f"/api/auth/users/{admin_id}", json=data)
+    return await api_request("PATCH", f"/api/auth/users/{admin_id}/", json=data)
 
-async def delete_admin_by_id(admin_id):
-    return await api_request("DELETE", f"/api/auth/users/{admin_id}/remove_role")
+async def delete_admin_by_phone(admin_phone):
+    data = {"role_id": 4}
+    return await api_request("PATCH", f"/api/auth/users/remove_role/{admin_phone}/", json=data)
 
 
 # == BARBERS == #
 async def get_barbers_all():
-    users = await get_users_all()
-    return [u for u in users if 1 in u["roles"]]
+    role = 1
+    return await api_request(method="GET", endpoint=f"/api/auth/users/by-role/{role}/")
+    # users = await get_users_all()
+    # return [u for u in users if 1 in u["roles"]]
 
 async def create_barber_by_phone(barber_phone):
-    data = {"roles": [1, 2]}
-    return await api_request("POST", f"/api/auth/users/{barber_phone}/add_role", json=data)
+    data = {"role_id": 1}
+    return await api_request("PATCH", f"/api/auth/users/add_role/{barber_phone}/", json=data)
 
 async def get_barber_by_id(barber_id):
     barbers = await get_barbers_all()
     return next((item for item in barbers if item["telegram_id"] == barber_id), None)
 
 async def update_barber_by_id(barber_id, data):
-    return await api_request("PATCH", f"/api/auth/users/{barber_id}", json=data)
+    return await api_request("PATCH", f"/api/auth/users/{barber_id}/", json=data)
 
-async def delete_barber_by_id(barber_id):
-    return await api_request("DELETE", f"/api/auth/users/{barber_id}/remove_role")
+async def delete_barber_by_phone(barber_phone):
+    data = {"role_id": 1}
+    return await api_request("PATCH", f"/api/auth/users/remove_role/{barber_phone}/", json=data)
 
 
 # == CLIENTS == #
 async def get_clients_all():
-    users = await get_users_all()
-    return [u for u in users if 2 in u["roles"]]
+    role = 2
+    return await api_request(method="GET", endpoint=f"/api/auth/users/by-role/{role}/")
+    # users = await get_users_all()
+    # return [u for u in users if 2 in u["roles"]]
 
 async def get_client_by_telegram_id(telegram_id):
     clients = await get_clients_all()
@@ -157,16 +228,16 @@ async def get_client_by_telegram_id(telegram_id):
 ################################# ==== BARBER TYPES ==== #################################
 
 async def get_barber_types(barber_id):
-    # return await api_request(
-    #     method="GET",
-    #     endpoint=f"/api/service-types/{barber_id}"
-    # ) or []
-    return [
-        {"id": 1, "name": "Detskaya strijka", "barber": 1001},
-        {"id": 2, "name": "Family strijka", "barber": 1005},
-        {"id": 3, "name": "Uxod za borodoy", "barber": 1001},
-        {"id": 4, "name": "Massaj", "barber": 1005}
-    ]
+    return await api_request(
+        method="GET",
+        endpoint=f"/api/service-types/only-type-by-telegram/{barber_id}/"
+    ) or []
+    # return [
+    #     {"id": 1, "name": "Detskaya strijka", "barber": 1001},
+    #     {"id": 2, "name": "Family strijka", "barber": 1005},
+    #     {"id": 3, "name": "Uxod za borodoy", "barber": 1001},
+    #     {"id": 4, "name": "Massaj", "barber": 1005}
+    # ]
 
 async def create_barber_type(data):
     return await api_request("POST", "/api/service-types/", json=data)
@@ -186,11 +257,11 @@ async def delete_barber_type_by_id(type_id):
 
 # == SERVICES == #
 async def get_barber_services(type_id):
-    # return await api_request("GET", f"/api/services/{type_id}/get_services/")
-    return [
-        {"id": 1, "name": "Fade strijka", "description": "Fade strijka haqida ma'lumot.", "duration": "30 minut", "price": 100000, "service_type": 1},
-        {"id": 2, "name": "Premium strijka", "description": "Professional stilistdan VIP qirqim va styling.", "duration": "40 minut", "price": 150000, "service_type": 1}
-    ]
+    return await api_request("GET", f"/api/services/{type_id}/get_services/") or []
+    # return [
+    #     {"id": 1, "name": "Fade strijka", "description": "Fade strijka haqida ma'lumot.", "duration": "30 minut", "price": 100000, "service_type": 1},
+    #     {"id": 2, "name": "Premium strijka", "description": "Professional stilistdan VIP qirqim va styling.", "duration": "40 minut", "price": 150000, "service_type": 1}
+    # ]
 
 async def create_barber_service(data):
     return await api_request("POST", "/api/services/", json=data)

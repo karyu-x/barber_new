@@ -189,16 +189,6 @@ def service_detail(lang):
     keyboard.adjust(1, 2)
     return keyboard.as_markup(resize_keyboard=True, input_field_placeholder=cf.translations["input_field_msg"])
 
-#### EDIT SERVICE MENU
-def edit_service(lang):
-    keyboard = ReplyKeyboardBuilder()
-    keyboard.row(
-        
-        KeyboardButton(text=cf.get_text(lang, role, "button", "back_main")), KeyboardButton(text=cf.get_text(lang, role, "button", "back")),
-        width=2
-    )
-    return keyboard.as_markup(resize_keyboard=True, input_field_placeholder=cf.translations["input_field_msg"])
-
 #### BARBERS MENU
 async def barbers(lang):
     keyboard = ReplyKeyboardBuilder()

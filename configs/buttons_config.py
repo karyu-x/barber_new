@@ -1,5 +1,6 @@
 from states.director import state as st
 from keyboards.director import reply as kb_r
+from keyboards.director import inline as kb_i
 from configs import functions as cf
 
 async def get_main_buttons(lang):
@@ -13,11 +14,6 @@ async def get_main_buttons(lang):
             "message": "bookings_msg",
             "keyboard": kb_r.bookings(lang),
             "state": st.director.bookings
-        },
-        "settings": {
-            "message": "settings_msg",
-            "keyboard": kb_r.settings(lang),
-            "state": st.director.settings
         },
         "clients": {
             "message": "clients_msg",
@@ -117,28 +113,28 @@ async def get_setting_buttons(lang):
     return {
         "services_prices": {
             "message": "services_prices_msg",
-            "keyboard": await kb_r.services_prices(lang),
+            "keyboard": await kb_i.services_prices(lang),
             "state": st.director.services_prices
         },
         "barbers": {
             "message": "barbers_msg",
-            "keyboard": await kb_r.barbers(lang),
+            "keyboard": await kb_i.barbers(lang),
             "state": st.director.barbers
         },
         "admins": {
             "message": "admins_msg",
-            "keyboard": await kb_r.admins(lang),
+            "keyboard": await kb_i.admins(lang),
             "state": st.director.admins
+        },
+        "working_hours": {
+            "message": "working_hours_msg",
+            "keyboard": kb_i.working_hours(lang),
+            "state": st.director.working_hours
         },
         "language": {
             "message": "language_msg",
-            "keyboard": kb_r.language(lang),
+            "keyboard": kb_i.language(lang),
             "state": st.director.language
-        },
-        "back": {
-            "message": "main_menu_msg",
-            "keyboard": kb_r.main_menu(lang),
-            "state": st.director.main_menu
         }
     }
 
