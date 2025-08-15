@@ -6,6 +6,15 @@ from decouple import config
 
 from handlers.register_handlers import bot, dp
 
+logging.basicConfig(
+    level=logging.INFO,  # уровень логирования: DEBUG, INFO, WARNING, ERROR
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    handlers=[
+        logging.StreamHandler(),  # вывод в консоль
+        logging.FileHandler("bot.log", mode="a", encoding="utf-8")  # запись в файл
+    ]
+)
+
 logger = logging.getLogger(__name__)
 
 WEBHOOK_PATH = "/webhook"

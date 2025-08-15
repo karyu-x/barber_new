@@ -63,6 +63,7 @@ class director(StatesGroup):
 
     #####################
     clients = State()
+    client_list = State()
 
     #####################
     analytics = State()

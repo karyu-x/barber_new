@@ -7,7 +7,7 @@
             "photo_required_msg": "📸 Iltimos, rasmni bevosita surat sifatida yuboring. Fayl shaklida yubormang.",
             "invalid_button_format": "❗ Tugma noto‘g‘ri formatda. Iltimos, <code>Matn - havola</code> ko‘rinishida kiriting.",
             "invalid_phone_number_msg": "❌ Noto‘g‘ri formatdagi telefon raqam. Iltimos, quyidagi formatda kiriting:\n998901234567 yoki +998901234567",
-            "invalid_duration_msg": "❌ Noto‘g‘ri davomiylik! Iltimos, davomiylikni daqiqalarda kiriting. Masalan: <b>30</b>",
+            "invalid_duration_msg": "❌ Noto‘g‘ri davomiylik! Davomiylikni daqiqalarda (masalan, 30) yoki HH:MM (masalan, 01:30).",
             "invalid_time_range_msg": "❌ Iltimos, ish vaqtini to‘g‘ri formatda kiriting (masalan: 09:00 - 18:00)",
             "invalid_price_msg": "❌ Noto‘g‘ri narx! Iltimos, narxni faqat raqam bilan kiriting. Masalan: <b>50000</b>"
         },
@@ -83,7 +83,7 @@
                 "service_edit_name_success_msg": "✅ Xizmat nomi muvaffaqiyatli o‘zgartirildi.",
                 "service_edit_description_msg": "📝 Yangi tavsifni kiriting:",
                 "service_edit_description_success_msg": "✅ Xizmat tavsifi muvaffaqiyatli o‘zgartirildi.",
-                "service_edit_duration_msg": "⏱ Yangi davomiylikni kiriting (masalan, 30 minut):",
+                "service_edit_duration_msg": "⏱ Davomiylikni kiriting: daqiqalarda (masalan, 30) yoki HH:MM (masalan, 01:30).",
                 "service_edit_duration_success_msg": "✅ Xizmat davomiyligi muvaffaqiyatli o‘zgartirildi.",
                 "service_edit_price_msg": "💵 Yangi narxni kiriting (so‘mda):",
                 "service_edit_price_success_msg": "✅ Xizmat narxi muvaffaqiyatli o‘zgartirildi.",
@@ -114,16 +114,18 @@
                 "admin_edit_phone_msg": "📱 <b>Telefon raqamini oʻzgartirish</b>\nAdministratorning yangi telefon raqamini kiriting:\n\n<code>+998 XX XXX XX XX</code>",
                 "admin_edit_phone_success_msg": "📞 Telefon raqami muvaffaqiyatli yangilandi.",
                 "admin_edit_button_msg": "🎛 <b>Tugmalarni tahrirlash</b>\nAdministrator uchun mavjud bo‘lgan tugmalarni tanlang yoki o‘chirib tashlang.",
-                "admin_buttons_edit_choice_msg": "⬇️ Tanlang:",
-                "admin_button_edit_success_msg": "✅ Tugmalar muvaffaqiyatli yangilandi!",
-                "admin_button_edit_cancel_msg": "❌ Tugma o'zgratirish bekor qilindi",
+                "admin_edit_buttons_choice_msg": "⬇️ Tanlang:",
+                "admin_edit_button_success_msg": "✅ Tugmalar muvaffaqiyatli yangilandi!",
                 "admin_delete_msg": "⚠️ <b>Administratorni oʻchirishni xohlaysizmi?</b>\n\n👤 {name}\n\n❗ Bu amal ortga qaytarilmaydi!",
                 "admin_deleted_msg": "🗑 <b>Administrator oʻchirildi!</b>\nU endi bot boshqaruvida qatnashmaydi.",
 
                 "language_msg": "🌐 <b>Tilni tanlash</b>\nSizga qulay bo‘lgan interfeys tilini belgilang.",
                 "language_selected_msg": "✅ Til tanlandi!",
 
-                "clients_msg": "🧑‍🤝‍🧑 <b>Mijozlar</b>\nMijozlar haqidagi ma’lumotlar va ularning faolligi.",
+                "clients_msg": "📕 <b>Mijozlar</b>\nMijozlar haqidagi ma’lumotlar va ularning faolligi.",
+                "client_list_msg": "📋 Mijozlar ro‘yxati",
+                "clients_not_msg": "📭 Hozircha mijozlar yo'q",
+                "client_item": "👤 <b>{idx}. {first_name}</b>\n📱 {phone_number}\n🌐 {language}\n📅 Bronlar soni: {bookings_count}\n\n",
 
                 "analytics_msg": "📊 <b>Statistika</b>\nKunlik va oylik ishlash natijalari, daromadlar va faollik tahlili.",
 
@@ -192,6 +194,9 @@
                 "language": "🌐 Til",
                 
                 "clients": "👥 Mijozlar",
+                "client_list": "📋 Klientlar ro‘yxati",
+                "client_search": "🔍 Klientni qidirish",
+
                 "analytics": "📊 Tahlil",
                 "finance": "🧮 Moliya",
                 "journal": "📜 Tarix",

@@ -18,5 +18,13 @@
       "journal",
       "notifications"
     ]
+  },
+  "123456789012346": {
+    "buttons": [
+      "analytics",
+      "finance",
+      "settings",
+      "user_menu"
+    ]
   }
 }

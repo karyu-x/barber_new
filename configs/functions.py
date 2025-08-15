@@ -2,10 +2,12 @@ import json
 import random
 import asyncio
 import logging
+import csv
+import io
 
 from datetime import datetime
 from pathlib import Path
-from aiogram.types import FSInputFile
+from aiogram.types import FSInputFile, BufferedInputFile
 
 logger = logging.getLogger(__name__)
 
@@ -105,3 +107,21 @@ async def get_random_modes(message, user_id, ReplyKeyboardRemove):
     msg = await message.bot.send_message(user_id, random.choice(SECRET_MESSAGES), reply_markup=ReplyKeyboardRemove())
     await asyncio.sleep(0.025)
     await msg.delete()
+
+def generate_clients_csv(clients: list[dict]) -> BufferedInputFile:
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow(["Ismi/Имя", "Telefon/Телефон", "Til/Язык", "Bronlar soni/Количество бронов"])
+
+    for c in clients:
+        writer.writerow([
+            c.get("first_name") or "❌",
+            c.get("phone_number") or "❌",
+            "O‘zbek" if c.get("language") == "uz" else "Рус",
+            # c.get("bookings_count", 0)
+        ])
+
+    output.seek(0)
+    csv_file = io.BytesIO(output.getvalue().encode("utf-8"))
+    csv_file.name = "clients.csv"
+    return BufferedInputFile(csv_file.getvalue(), filename="clients.csv")

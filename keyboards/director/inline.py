@@ -6,6 +6,13 @@ from databases.director import database as db
 
 role = "director"
 
+def back_main(lang):
+    kb = InlineKeyboardBuilder()
+    kb.row(
+        InlineKeyboardButton(text=cf.get_text(lang, role, "button", "back_main"), callback_data="main"),
+        InlineKeyboardButton(text=cf.get_text(lang, role, "button", "back"), callback_data="back"))
+    return kb.as_markup()
+
 def confirm_reject(lang):
     kb = InlineKeyboardBuilder()
     kb.row(
@@ -35,7 +42,9 @@ def settings(lang: str):
         InlineKeyboardButton(text=cf.get_text(lang, role, "button", "language"), callback_data="setting_btn:language"),
     )
     kb.adjust(1, 2)
-    kb.row(InlineKeyboardButton(text=cf.get_text(lang, role, "button", "back"), callback_data="setting_btn:back"))
+    kb.row(
+        InlineKeyboardButton(text=cf.get_text(lang, role, "button", "back_main"), callback_data="setting_btn:main"),
+        InlineKeyboardButton(text=cf.get_text(lang, role, "button", "back"), callback_data="setting_btn:back"))
     return kb.as_markup()
 
 async def services_prices(lang):
@@ -168,4 +177,16 @@ def working_hours(lang):
     kb = InlineKeyboardBuilder()
     kb.row(InlineKeyboardButton(text=cf.get_text(lang, role, "button", "back_main"), callback_data="hours:main"),
             InlineKeyboardButton(text=cf.get_text(lang, role, "button", "back"), callback_data="hours:back"))
+    return kb.as_markup()
+
+################################################################
+
+def clients(lang):
+    kb = InlineKeyboardBuilder()
+    kb.add(
+        InlineKeyboardButton(text=cf.get_text(lang, role, "button", "client_list"), callback_data="client_btn:list"),
+        InlineKeyboardButton(text=cf.get_text(lang, role, "button", "client_search"), callback_data="client_btn:search"),
+        InlineKeyboardButton(text=cf.get_text(lang, role, "button", "back"), callback_data="client_btn:back")
+    )
+    kb.adjust(2)
     return kb.as_markup()
