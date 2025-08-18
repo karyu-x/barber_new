@@ -82,6 +82,11 @@ async def show_error(entity, state, error_key: str = "unknown_command"):
         await entity.bot.send_message(chat_id=user_id, text=text)
 
 
+## Booking info
+def get_booking_info(lang, booking):
+    pass
+
+
 ## Barber card
 def get_barber_card(lang, barber):
     barber_data = {
@@ -103,23 +108,38 @@ async def send_barber_card(message, state, lang, barber):
 
 
 ## get clients info
-def get_clients_text(lang, clients):
+def get_clients_info(lang, clients):
     client_lines = []
     for s in clients:
-        line = (
-            f"• {s.get('first_name') or '❌'}\n"
-            f"📱 {s.get('phone_number') or '❌'}\n"
-            f"{'🇺🇿 O‘zbek' if s.get('language') == 'uz' else '🇷🇺 Рус'}"
-            # f"\n📅 {s.get('bookings_count', 0)} ta bron"
-        )
+        user_ban = 5 in (s.get("roles") or [])
+        datas = {
+            "first_name": s.get("first_name") or '❌',
+            "phone_number": s.get("phone_number") or "❌",
+            "language": '🇺🇿' if s.get('language') == 'uz' else '🇷🇺',
+            "total_bookings": s.get("total_bookings") or 0,
+            "status": "⛔️" if user_ban else "✅"
+        }
+        line = cf.get_text(lang, role, "message", "client_item_msg").format(**datas)
         client_lines.append(line)
 
-    reply_text = cf.get_text(lang, role, "message", "client_list_msg")
+    reply_text = cf.get_text(lang, role, "message", "client_last_list_msg")
     return f"{reply_text}\n\n" + "\n\n".join(client_lines)
+
+def get_client_card(lang, client):
+    user_ban = 5 in (client.get("roles") or [])
+    datas = {
+            "first_name": client.get("first_name") or '❌',
+            "phone_number": client.get("phone_number") or "❌",
+            "language": '🇺🇿' if client.get('language') == 'uz' else '🇷🇺',
+            "total_bookings": client.get("total_bookings") or 0,
+            "status": "⛔️" if user_ban else "✅"
+        }
+    reply_text = cf.get_text(lang, role, "message", "client_item_msg").format(**datas)
+    return reply_text
 
 
 ## get services info
-async def get_services_text(lang, role, type_id, type_name):
+async def get_services_info(lang, role, type_id, type_name):
     filtered_services = await db.get_barber_services(type_id)
     if filtered_services:
         service_lines = [
@@ -135,9 +155,7 @@ async def get_services_text(lang, role, type_id, type_name):
     reply_text = cf.get_text(lang, role, "message", "type_services_msg").format(type_name=type_name)
     return f"{reply_text}\n\n{services_text}"
 
-
-## get service info
-async def get_service_text(lang, role, item: dict) -> str:
+async def get_service_info(lang, role, item: dict) -> str:
     body = cf.get_text(lang, role, "message", "service_detail_msg").format(
         description=item.get("description") or "-",
         duration=item.get("duration") or "-",
@@ -220,18 +238,19 @@ async def notifications(message: Message, state: FSMContext):
     
     await show_error(message, state)
 
-### INPUT TEXT
+
 @router.message(st.director.input_text)
 async def input_text(message: Message, state: FSMContext):
     user_id, data, lang, text = await get_user_context(message, state)
+    
     back_actions = {
         cf.get_text(lang, role, "button", "back"): {
-            "text": cf.get_text(lang, role, "message", "notifications_msg"),
+            "text": "notifications_msg",
             "reply_markup": kb_r.notifications(lang),
             "state": st.director.notifications
         },
         cf.get_text(lang, role, "button", "back_main"): {
-            "text": cf.get_text(lang, role, "message", "main_menu_msg"),
+            "text": "main_menu_msg",
             "reply_markup": kb_r.main_menu(lang),
             "state": st.director.main_menu
         }
@@ -239,13 +258,7 @@ async def input_text(message: Message, state: FSMContext):
     action = back_actions.get(text)
 
     if action:
-        await message.bot.send_message(
-            chat_id=user_id,
-            text=action["text"],
-            parse_mode="HTML",
-            reply_markup=action["reply_markup"]
-        )
-        await state.set_state(action["state"])
+        await navigate_back_or_main(message, state, action["state"], action["text"], action["reply_markup"])
         return
 
     reply_text = cf.get_text(lang, role, "message", "text_accepted_msg").format(text)
@@ -258,18 +271,19 @@ async def input_text(message: Message, state: FSMContext):
     )
     await state.set_state(st.director.notifications)
 
-### INPUT PHOTO
+
 @router.message(st.director.input_photo)
 async def input_photo(message: Message, state: FSMContext):
     user_id, data, lang, text = await get_user_context(message, state)
+
     back_actions = {
         cf.get_text(lang, role, "button", "back"): {
-            "text": cf.get_text(lang, role, "message", "notifications_msg"),
+            "text": "notifications_msg",
             "reply_markup": kb_r.notifications(lang),
             "state": st.director.notifications
         },
         cf.get_text(lang, role, "button", "back_main"): {
-            "text": cf.get_text(lang, role, "message", "main_menu_msg"),
+            "text": "main_menu_msg",
             "reply_markup": kb_r.main_menu(lang),
             "state": st.director.main_menu
         }
@@ -277,13 +291,7 @@ async def input_photo(message: Message, state: FSMContext):
     action = back_actions.get(text)
 
     if action:
-        await message.bot.send_message(
-            chat_id=user_id,
-            text=action["text"],
-            parse_mode="HTML",
-            reply_markup=action["reply_markup"]
-        )
-        await state.set_state(action["state"])
+        await navigate_back_or_main(message, state, action["state"], action["text"], action["reply_markup"])
         return
     
     if message.photo:
@@ -302,18 +310,19 @@ async def input_photo(message: Message, state: FSMContext):
 
     await show_error(message, state, "photo_required_msg")
 
-### INPUT BUTTON
+
 @router.message(st.director.input_button)
 async def input_button(message: Message, state: FSMContext):
     user_id, data, lang, text = await get_user_context(message, state)
+    
     back_actions = {
         cf.get_text(lang, role, "button", "back"): {
-            "text": cf.get_text(lang, role, "message", "notifications_msg"),
+            "text": "notifications_msg",
             "reply_markup": kb_r.notifications(lang),
             "state": st.director.notifications
         },
         cf.get_text(lang, role, "button", "back_main"): {
-            "text": cf.get_text(lang, role, "message", "main_menu_msg"),
+            "text": "main_menu_msg",
             "reply_markup": kb_r.main_menu(lang),
             "state": st.director.main_menu
         }
@@ -321,13 +330,7 @@ async def input_button(message: Message, state: FSMContext):
     action = back_actions.get(text)
 
     if action:
-        await message.bot.send_message(
-            chat_id=user_id,
-            text=action["text"],
-            parse_mode="HTML",
-            reply_markup=action["reply_markup"]
-        )
-        await state.set_state(action["state"])
+        await navigate_back_or_main(message, state, action["state"], action["text"], action["reply_markup"])
         return
 
     buttons = data.get("buttons", [])
@@ -358,58 +361,53 @@ async def input_button(message: Message, state: FSMContext):
     )
     await state.set_state(st.director.notifications)
 
-### CHECK POST
+
 @router.message(st.director.check_post)
 async def check_post(message: Message, state: FSMContext):
     user_id, data, lang, text = await get_user_context(message, state)
+
     text_back = cf.get_text(lang, role, "button", "back")
     text_back_main = cf.get_text(lang, role, "button", "back_main")
     text_preview = cf.get_text(lang, role, "button", "preview_post")
     text_confirm = cf.get_text(lang, role, "button", "confirm_post")
 
     async def handle_back():
-        await message.bot.send_message(
-            chat_id=user_id,
-            text=cf.get_text(lang, role, "message", "notifications_msg"),
-            parse_mode="HTML",
-            reply_markup=kb_r.notifications(lang)
-        )
-        await state.set_state(st.director.notifications)
+        await navigate_back_or_main(message, state, st.director.notifications, "notifications_msg", kb_r.notifications(lang))
 
     async def handle_back_main():
-        await message.bot.send_message(
-            chat_id=user_id,
-            text=cf.get_text(lang, role, "message", "main_menu_msg"),
-            parse_mode="HTML",
-            reply_markup=kb_r.main_menu(lang)
-        )
-        await state.set_state(st.director.main_menu)
+        await navigate_back_or_main(message, state, st.director.main_menu, "main_menu_msg", kb_r.main_menu(lang))
 
     async def handle_preview():
-        text = data.get("description", "NO MESSAGE")
+        caption = data.get("description", "")
         photo = data.get("photo", "")
         buttons = data.get("buttons", [])
         markup = kb_i.post_button(buttons) if buttons else None
 
         if photo:
             await message.bot.send_photo(
-                chat_id=user_id,
+                user_id,
                 photo=photo,
-                caption=text,
+                caption=caption,
+                reply_markup=markup
+            )
+        elif caption:
+            await message.bot.send_message(
+                user_id,
+                text=caption,
                 reply_markup=markup
             )
         else:
             await message.bot.send_message(
-                chat_id=user_id,
-                text=text,
-                reply_markup=markup
+                user_id,
+                cf.get_text(lang, role, "message", "notification_not_found_msg")
             )
 
     async def handle_send():
+        await cf.get_random_modes(message, user_id, kb_r.ReplyKeyboardRemove)
         await message.bot.send_message(
             chat_id=user_id,
             text=cf.get_text(lang, role, "message", "confirm_post_msg"),
-            reply_markup=kb_r.confirm_reject(lang)
+            reply_markup=kb_i.confirm_reject(lang)
         )
         await state.set_state(st.director.confirm_post)
 
@@ -427,111 +425,310 @@ async def check_post(message: Message, state: FSMContext):
     
     await show_error(message, state)
 
-### CONFIRM POST
-@router.message(st.director.confirm_post)
-async def confirm_post(message: Message, state: FSMContext):
-    user_id, data, lang, _ = await get_user_context(message, state)
-    text = (message.text or "").strip()
-    if text != cf.get_text(lang, role, "button", "send"):
-        await show_error(message, state, "unknown_command")
+
+@router.callback_query(st.director.confirm_post)
+async def confirm_post(call: CallbackQuery, state: FSMContext):
+    user_id, data, lang, action = await get_user_context(call, state)
+
+    if action == "back":
+        await call.message.delete()
+        await call.bot.send_message(
+            user_id,
+            cf.get_text(lang, role, "message", "check_post_msg"),
+            parse_mode="HTML",
+            reply_markup=kb_r.check_post(lang)
+        )
+        await state.set_state(st.director.check_post)
+        await call.answer()
         return
 
-    description = data.get("description")
-    photo = data.get("photo")
-    buttons = data.get("buttons", [])
-    reply_markup = kb_i.post_button(buttons) if buttons else None
+    if action == "main":
+        await navigate_back_or_main(call, state, st.director.main_menu, "main_menu_msg", kb_r.main_menu(lang))
+        await call.answer()
+        return
+    
+    if action == "confirm":
+        description = data.get("description")
+        photo = data.get("photo")
+        buttons = data.get("buttons", [])
+        reply_markup = kb_i.post_button(buttons) if buttons else None
 
-    users = await db.get_users_all()
-    sem = asyncio.Semaphore(20)
-    success = 0
-    failed = 0
+        users = await db.get_users_all()
+        total = len(users)
+        sem = asyncio.Semaphore(20)
+        success = 0
+        failed = 0
 
-    async def send_one(uid: int):
-        nonlocal success, failed
-        async with sem:
-            try:
-                if photo:
-                    await message.bot.send_photo(uid, photo, caption=description, reply_markup=reply_markup, parse_mode="HTML")
-                else:
-                    await message.bot.send_message(uid, description, reply_markup=reply_markup, parse_mode="HTML")
-                success += 1
-            except Exception as e:
-                failed += 1
-                log.warning("Broadcast fail uid=%s: %s", uid, e)
+        def progress_bar(done: int, total: int, length: int = 20) -> str:
+            if total == 0:
+                return ""
+            filled = int(length * done / total)
+            return "█" * filled + "░" * (length - filled)
 
-    CHUNK = 200
-    for i in range(0, len(users), CHUNK):
-        chunk = users[i:i+CHUNK]
-        await asyncio.gather(*(send_one(u["telegram_id"]) for u in chunk))
+        status_msg = await call.message.edit_text(
+            f"📤 Начинаем рассылку...\n0 / {total}\n[░░░░░░░░░░░░░░░░░░░░]"
+        )
 
-    await state.update_data(description=None, photo=None, buttons=None)
-    await message.bot.send_message(user_id, f"📤 Отправлено: {success}\n❌ Ошибок: {failed}")
-    await message.bot.send_message(user_id, cf.get_text(lang, role, "message", "main_menu_msg"), parse_mode="HTML", reply_markup=kb_r.main_menu(lang))
-    await state.set_state(st.director.main_menu)
+        async def send_one(uid: int):
+            nonlocal success, failed
+            async with sem:
+                try:
+                    if photo:
+                        await call.bot.send_photo(uid, photo, caption=description, reply_markup=reply_markup, parse_mode="HTML")
+                    else:
+                        await call.bot.send_message(uid, description, reply_markup=reply_markup, parse_mode="HTML")
+                    success += 1
+                except Exception as e:
+                    failed += 1
+                    log.warning("Broadcast fail uid=%s: %s", uid, e)
+
+        CHUNK = 200
+        for i in range(0, total, CHUNK):
+            chunk = users[i:i+CHUNK]
+            await asyncio.gather(*(send_one(u["telegram_id"]) for u in chunk))
+
+            done = i + len(chunk)
+            bar = progress_bar(done, total)
+            await status_msg.edit_text(
+                f"📊 Прогресс: {done} / {total}\n[{bar}]"
+            )
+            await asyncio.sleep(0.1)
+
+        await state.update_data(description=None, photo=None, buttons=None)
+
+        datas = { "success": success, "failed": failed }
+        await status_msg.edit_text(cf.get_text(lang, role, "message", "post_sent_result").format(**datas), parse_mode="HTML")
+
+        await call.bot.send_message(user_id, cf.get_text(lang, role, "message", "main_menu_msg"), parse_mode="HTML", reply_markup=kb_r.main_menu(lang))
+        await state.set_state(st.director.main_menu)
+        await call.answer()
+        return
+
+    await show_error(call, state)
+##################################################################################################################
 
 @router.message(st.director.bookings)
 async def bookings(message: Message, state: FSMContext):
     user_id, data, lang, text = await get_user_context(message, state)
-    for key, config in butt_cf.BOOKINGS_BUTTONS.items():
-        if text == cf.get_text(lang, role, "button", key):
-            reply_text = cf.get_text(lang, role, "message", config["message"])
-            reply_markup = config["keyboard"](lang)
-            await message.bot.send_message(
-                chat_id=user_id,
-                text=reply_text,
-                parse_mode="HTML",
-                reply_markup=reply_markup
-            )
-            await state.set_state(config["state"])
-            return
+
+    t_back = cf.get_text(lang, role, "button", "back")
+    t_today = cf.get_text(lang, role, "button", "bookings_today")
+    t_otherday = cf.get_text(lang, role, "button", "bookings_otherday")
+    t_cancel = cf.get_text(lang, role, "button", "bookings_cancel")
+    t_forward = cf.get_text(lang, role, "button", "bookings_forward")
+
+    async def handle_back():
+        await message.bot.send_message(
+            user_id,
+            cf.get_text(lang, role, "message", "main_menu_msg"),
+            parse_mode="HTML",
+            reply_markup=kb_r.main_menu(lang)
+        )
+        await state.set_state(st.director.main_menu)
+
+    async def handle_books_today():
+        today = cf.get_today(lang)
+        await state.update_data(selected_day=today)
+        await message.bot.send_message(
+            user_id,
+            cf.get_text(lang, role, "message", "bookings_today_msg"),
+            parse_mode="HTML",
+            reply_markup=await kb_r.bookings_today(lang)
+        )
+        await state.set_state(st.director.bookings_today)
+
+    async def handle_books_otherday():
+        await message.bot.send_message(
+            user_id,
+            cf.get_text(lang, role, "message", "bookings_otherday_msg"),
+            parse_mode="HTML",
+            reply_markup=await kb_r.bookings_otherday(lang)
+        )
+        await state.set_state(st.director.bookings_otherday)
+
+    async def handle_books_cancel():
+        await message.bot.send_message(
+            user_id,
+            cf.get_text(lang, role, "message", "bookings_cancel_msg"),
+            parse_mode="HTML",
+            reply_markup=kb_r.back_main(lang)
+        )
+        await state.set_state(st.director.bookings_cancel)
+
+    async def handle_books_forward():
+        await message.bot.send_message(
+            user_id,
+            cf.get_text(lang, role, "message", "bookings_forward_msg"),
+            parse_mode="HTML",
+            reply_markup=kb_r.back_main(lang)
+        )
+        await state.set_state(st.director.bookings_forward)
         
+    handlers = {
+        t_back: handle_back,
+        t_today: handle_books_today,
+        t_otherday: handle_books_otherday,
+        t_cancel: handle_books_cancel,
+        t_forward: handle_books_forward
+    }
+    handle = handlers.get(text)
+
+    if handle:
+        await handle()
+        return
+    
     await show_error(message, state)
 
-### TODAY BOOKS
-@router.message(st.director.today_books)
+
+@router.message(st.director.bookings_today)
 async def today_books(message: Message, state: FSMContext):
     user_id, data, lang, text = await get_user_context(message, state)
 
     if text == cf.get_text(lang, role, "button", "back"):
-        await navigate_back_or_main(message, state, st.director.bookings, "bookings_msg", kb_r.bookings)
+        await navigate_back_or_main(message, state, st.director.bookings, "bookings_msg", kb_r.bookings(lang))
         return
     
     elif text == cf.get_text(lang, role, "button", "back_main"):
-        await navigate_back_or_main(message, state, st.director.main_menu, "main_menu_msg", kb_r.main_menu)
+        await navigate_back_or_main(message, state, st.director.main_menu, "main_menu_msg", kb_r.main_menu(lang))
         return
 
     barbers = await db.get_barbers_all()
     for item in barbers:
         if text == item["first_name"]:
-            await state.update_data(barber_tg_id=item["telegram_id"],
-                                    barber_name=text)
+            await state.update_data(barber=item)
+            await cf.get_random_modes(message, user_id, kb_r.ReplyKeyboardRemove)
+            day = data.get("selected_day")
             await message.bot.send_message(
                 chat_id=user_id,
-                text=cf.get_text(lang, role, "message", "barber_books_msg"),
-                reply_markup=await kb_r.barber_books(item["telegram_id"])
+                text=cf.get_text(lang, role, "message", "bookings_barber_msg"),
+                reply_markup=await kb_i.bookings_barber(lang, item["telegram_id"], day)
             )
-            await state.set_state(st.director.barber_books)
+            await state.set_state(st.director.bookings_barber)
             return
     
     await show_error(message, state)
 
 
-### OTHER DAY BOOKS
-@router.message(st.director.other_day_books)
+@router.message(st.director.bookings_otherday)
 async def other_day_books(message: Message, state: FSMContext):
     user_id, data, lang, text = await get_user_context(message, state)
 
+    if text == cf.get_text(lang, role, "button", "back"):
+        await navigate_back_or_main(message, state, st.director.bookings, "bookings_msg", kb_r.bookings(lang))
+        return
+    
+    elif text == cf.get_text(lang, role, "button", "back_main"):
+        await navigate_back_or_main(message, state, st.director.main_menu, "main_menu_msg", kb_r.main_menu(lang))
+        return
+
+    days = cf.get_days_from_today(lang)
+
+    if text in days:
+        await state.update_data(selected_day=text)
+        await message.bot.send_message(
+            user_id,
+            cf.get_text(lang, role, "message", "bookings_otherday_next_msg"),
+            reply_markup=await kb_r.bookings_today(lang)
+        )
+        await state.set_state(st.director.bookings_today)
+        return
+
     await show_error(message, state)
 
-### CANCEL BOOKS
-@router.message(st.director.cancel_books)
+
+@router.callback_query(F.data.startswith("bron:"), st.director.bookings_barber)
+async def bookings_barber(call: CallbackQuery, state: FSMContext):
+    user_id, data, lang, action = await get_user_context(call, state)
+
+    if action == "bron:back":
+        await call.message.delete()
+        await call.bot.send_message(
+            user_id,
+            cf.get_text(lang, role, "message", ""),
+            reply_markup=kb_r.bookings_today(lang)
+        )
+        await state.set_state(st.director.bookings_today)
+        return
+
+    if action == "bron:main":
+        await navigate_back_or_main(call, state, st.director.main_menu, "main_menu_msg", kb_r.main_menu(lang))
+        await call.answer()
+        return
+    
+    booking_id = action.split(":")[1]
+    booking = await db.get_booking_by_id(booking_id)
+
+    if booking:
+        await state.update_data(booking=booking)
+        msg = get_booking_info(lang, booking)
+        await call.message.edit_text(
+            msg,
+            parse_mode="HTML",
+            reply_markup=kb_i.booking_detail(lang)
+        )
+        await state.set_state(st.director)
+        await call.answer()
+
+
+@router.callback_query(F.data.startswith("booking_detail"), st.director.booking_detail)
+async def booking_detail(call: CallbackQuery, state: FSMContext):
+    user_id, data, lang, action = await get_user_context(call, state)
+
+    a_back = "booking_detail:back"
+    a_main = "booking_detail:main"
+    a_cancel = "booking_detail:cancel"
+    a_forward = "booking_detail:forward"
+
+    async def handle_back():
+        await navigate_back_or_main(call, state, st.director,)
+
+    async def handle_main():
+        await navigate_back_or_main(call, state, st.director.main_menu, "main_menu_msg", kb_r.main_menu(lang))
+
+    async def handle_cancel():
+        await call.message.delete()
+        await call.bot.send_message(
+            user_id,
+            cf.get_text(lang, role, "message", "bookings_cancel_msg"),
+            parse_mode="HTML",
+            reply_markup=kb_r.back_main(lang)
+        )
+        await state.set_state(st.director.bookings_cancel)
+
+    async def handle_forward():
+        await call.message.delete()
+        await call.bot.send_message(
+            user_id,
+            cf.get_text(lang, role, "message", "bookings_forward_msg"),
+            parse_mode="HTML",
+            reply_markup=kb_r.back_main(lang)
+        )
+        await state.set_state(st.director.bookings_forward)
+
+    handlers = {
+        a_back: handle_back,
+        a_main: handle_main,
+        a_cancel: handle_cancel,
+        a_forward: handle_forward
+    }
+    handle = handlers.get(action)
+
+    if handle:
+        await handle()
+        await call.answer()
+        return
+
+    await show_error(call, state)
+
+
+@router.message(st.director.bookings_cancel)
 async def cancel_books(message: Message, state: FSMContext):
     user_id, data, lang, text = await get_user_context(message, state)
 
     await show_error(message, state)
 
-### RESCHEDULE BOOKS
-@router.message(st.director.reschedule_books)
+
+@router.message(st.director.bookings_forward)
 async def reschedule_books(message: Message, state: FSMContext):
     user_id, data, lang, text = await get_user_context(message, state)
 
@@ -541,11 +738,8 @@ async def reschedule_books(message: Message, state: FSMContext):
 
 @router.callback_query(F.data.startswith("setting_btn:"), st.director.settings)
 async def settings(call: CallbackQuery, state: FSMContext):
-    user_id = call.from_user.id
-    data = await state.get_data()
-    lang = data.get("lang", "🇺🇿 uz")
+    user_id, data, lang, action = await get_user_context(call, state)
 
-    action = call.data
     t_services = "setting_btn:services_prices"
     t_barbers = "setting_btn:barbers"
     t_admins = "setting_btn:admins"
@@ -559,7 +753,7 @@ async def settings(call: CallbackQuery, state: FSMContext):
             parse_mode="HTML",
             reply_markup=await kb_i.services_prices(lang)
         )
-        await state.set_state(st.director.services_prices)
+        await state.set_state(st.director.services_menu)
 
     async def barbers():
         await call.message.edit_text(
@@ -622,13 +816,9 @@ async def settings(call: CallbackQuery, state: FSMContext):
 
 ########################################################## SERVICE & PRICE ##########################################################
 
-@router.callback_query(F.data.startswith("services_btn:"), st.director.services_prices)
+@router.callback_query(F.data.startswith("services_btn:"), st.director.services_menu)
 async def services_prices(call: CallbackQuery, state: FSMContext):
-    user_id = call.from_user.id
-    data = await state.get_data()
-    lang = data.get("lang", "🇺🇿 uz")
-
-    action = call.data
+    user_id, data, lang, action = await get_user_context(call, state)
 
     if action == "services_btn:back":
         await navigate_back_or_main(call, state, st.director.settings, "settings_msg", kb_i.settings(lang))
@@ -674,12 +864,8 @@ async def services_prices(call: CallbackQuery, state: FSMContext):
 
 @router.callback_query(F.data.startswith("types_btn:"), st.director.barber_types)
 async def barber_types(call: CallbackQuery, state: FSMContext):
-    user_id = call.from_user.id
-    data = await state.get_data()
-    lang = data.get("lang", "🇺🇿 uz")
+    user_id, data, lang, action = await get_user_context(call, state)
     barber_telegram_id = data.get("barber_tg_id")
-
-    action = call.data
 
     if action == "types_btn:back":
         await call.message.edit_text(
@@ -687,7 +873,7 @@ async def barber_types(call: CallbackQuery, state: FSMContext):
             parse_mode="HTML",
             reply_markup=await kb_i.services_prices(lang)
         )
-        await state.set_state(st.director.services_prices)
+        await state.set_state(st.director.services_menu)
         await call.answer()
         return
     
@@ -710,7 +896,7 @@ async def barber_types(call: CallbackQuery, state: FSMContext):
             cf.get_text(lang, role, "message", "type_add_msg"),
             reply_markup=kb_r.back_main(lang)
         )
-        await state.set_state(st.director.add_type)
+        await state.set_state(st.director.type_add)
         await call.answer()
         return
 
@@ -727,26 +913,26 @@ async def barber_types(call: CallbackQuery, state: FSMContext):
             service_type_name=service_type["name"]
         )
 
-        services_text = await get_services_text(lang, role, type_id, service_type["name"])
+        services_text = await get_services_info(lang, role, type_id, service_type["name"])
 
         await call.message.edit_text(
             services_text,
             parse_mode="HTML",
             reply_markup=await kb_i.barber_services(lang, type_id)
         )
-        await state.set_state(st.director.barber_services)
+        await state.set_state(st.director.type_services)
         await call.answer()
         return
 
 
-@router.message(st.director.add_type)
+@router.message(st.director.type_add)
 async def add_type(message: Message, state: FSMContext):
-    user_id = message.from_user.id
-    data = await state.get_data()
-    lang = data.get("lang", "🇺🇿 uz")
-    barber_id, barber_telegram_id, barber_name = data.get("barber_id"), data.get("barber_tg_id"), data.get("barber_name")
+    user_id, data, lang, text = await get_user_context(message, state)
 
-    text = message.text
+    barber_id = data.get("barber_id")
+    barber_telegram_id = data.get("barber_tg_id")
+    barber_name = data.get("barber_name")
+
     back = cf.get_text(lang, role, "button", "back")
     main = cf.get_text(lang, role, "button", "back_main")
     
@@ -782,27 +968,23 @@ async def add_type(message: Message, state: FSMContext):
     await state.set_state(st.director.barber_types)
 
 
-@router.callback_query(st.director.delete_type)
+@router.callback_query(st.director.type_delete)
 async def delete_type(call: CallbackQuery, state: FSMContext):
-    user_id = call.from_user.id
-    data = await state.get_data()
-    lang = data.get("lang", "🇺🇿 uz")
+    user_id, data, lang, action = await get_user_context(call, state)
 
     barber_telegram_id = data.get("barber_tg_id")
     barber_name = data.get("barber_name") 
     type_name = data.get("service_type_name")
     type_id = data.get("service_type_id")
 
-    action = call.data
-
     if action == "back":
-        services_text = await get_services_text(lang, role, type_id, type_name)
+        services_text = await get_services_info(lang, role, type_id, type_name)
         await call.message.edit_text(
             services_text,
             parse_mode="HTML",
             reply_markup=await kb_i.barber_services(lang, type_id)
         )
-        await state.set_state(st.director.barber_services)
+        await state.set_state(st.director.type_services)
         await call.answer()
         return
 
@@ -836,17 +1018,13 @@ async def delete_type(call: CallbackQuery, state: FSMContext):
     await call.answer(cf.get_text(lang, "errors", "unknown_command"))    
 
 
-@router.callback_query(F.data.startswith("service_btn:"), st.director.barber_services)
+@router.callback_query(F.data.startswith("service_btn:"), st.director.type_services)
 async def barber_services(call: CallbackQuery, state: FSMContext):
-    user_id = call.from_user.id
-    data = await state.get_data()
-    lang = data.get("lang", "🇺🇿 uz")
+    user_id, data, lang, action = await get_user_context(call, state)
 
     barber_telegram_id = data.get("barber_tg_id")
     barber_name = data.get("barber_name")
     type_id = data.get("service_type_id")
-
-    action = call.data
 
     if action == "service_btn:back":
         await call.message.edit_text(
@@ -876,7 +1054,7 @@ async def barber_services(call: CallbackQuery, state: FSMContext):
             parse_mode="HTML",
             reply_markup=kb_i.confirm_reject(lang)
         )
-        await state.set_state(st.director.delete_type)
+        await state.set_state(st.director.type_delete)
         await call.answer()
         return
 
@@ -887,7 +1065,7 @@ async def barber_services(call: CallbackQuery, state: FSMContext):
             cf.get_text(lang, role, "message", "service_add_msg"),
             reply_markup=kb_r.back_main(lang)
         )
-        await state.set_state(st.director.add_service)
+        await state.set_state(st.director.service_add)
         await call.answer()
         return
 
@@ -919,14 +1097,12 @@ async def barber_services(call: CallbackQuery, state: FSMContext):
     await call.answer(cf.get_text(lang, "errors", "unknown_command"), show_alert=True)
 
 
-@router.message(st.director.add_service)
+@router.message(st.director.service_add)
 async def add_service(message: Message, state: FSMContext):
-    user_id = message.from_user.id
-    data = await state.get_data()
-    lang = data.get("lang", "🇺🇿 uz")
+    user_id, data, lang, text = await get_user_context(message, state)
+
     type_id = data.get("service_type_id")
     type_name =  data.get("service_type_name")
-    text = message.text
 
     text_back = cf.get_text(lang, role, "button", "back")
     text_main = cf.get_text(lang, role, "button", "back_main")
@@ -937,20 +1113,20 @@ async def add_service(message: Message, state: FSMContext):
 
     if text == text_back:
         await cf.get_random_modes(message, user_id, kb_r.ReplyKeyboardRemove)
-        services_text = await get_services_text(lang, role, type_id, type_name)
+        services_text = await get_services_info(lang, role, type_id, type_name)
         await message.bot.send_message(
             user_id,
             services_text,
             parse_mode="HTML",
             reply_markup=await kb_i.barber_services(lang, type_id)
         )
-        await state.set_state(st.director.barber_services)
+        await state.set_state(st.director.type_services)
         return
 
     datas = {"name": text, "service_type": type_id}
     await db.create_barber_service(datas)
 
-    services_text = await get_services_text(lang, role, type_id, type_name)
+    services_text = await get_services_info(lang, role, type_id, type_name)
     await message.bot.send_message(
         chat_id=user_id,
         text=cf.get_text(lang, role, "message", "service_add_success_msg"),
@@ -962,24 +1138,20 @@ async def add_service(message: Message, state: FSMContext):
         parse_mode="HTML",
         reply_markup=await kb_i.barber_services(lang, type_id)
     )
-    await state.set_state(st.director.barber_services)
+    await state.set_state(st.director.type_services)
 
 
-@router.callback_query(st.director.delete_service)
+@router.callback_query(st.director.service_delete)
 async def delete_service(call: CallbackQuery, state: FSMContext):
-    user_id = call.from_user.id
-    data = await state.get_data()
-    lang = data.get("lang", "🇺🇿 uz")
+    user_id, data, lang, action = await get_user_context(call, state)
 
     type_id = data.get("service_type_id")
     service_id = data.get("service_id")
     type_name = data.get("service_type_name")
-    
-    action = call.data
 
     if action == "confirm":
         await db.delete_barber_service_by_id(service_id)
-        services_text = await get_services_text(lang, role, type_id, type_name)
+        services_text = await get_services_info(lang, role, type_id, type_name)
 
         await call.message.edit_text(
             cf.get_text(lang, role, "message", "service_delete_success_msg"),
@@ -991,7 +1163,7 @@ async def delete_service(call: CallbackQuery, state: FSMContext):
             parse_mode="HTML",
             reply_markup=await kb_i.barber_services(lang, type_id)
         )
-        await state.set_state(st.director.barber_services)
+        await state.set_state(st.director.type_services)
         await call.answer()
         return
 
@@ -1028,14 +1200,11 @@ async def delete_service(call: CallbackQuery, state: FSMContext):
 
 @router.callback_query(F.data.startswith("ser_detail_btn:"), st.director.service_detail)
 async def service_detail(call: CallbackQuery, state: FSMContext):
-    user_id = call.from_user.id
-    data = await state.get_data()
-    lang = data.get("lang", "🇺🇿 uz")
+    user_id, data, lang, action = await get_user_context(call, state)
 
     type_id = data.get("service_type_id")
     type_name = data.get("service_type_name")
     service_id = data.get("service_id")
-    action = call.data
 
     async def handle_name():
         await call.message.delete()
@@ -1044,7 +1213,7 @@ async def service_detail(call: CallbackQuery, state: FSMContext):
             text=cf.get_text(lang, role, "message", "service_edit_name_msg"),
             reply_markup=kb_r.back_main(lang)
         )
-        await state.set_state(st.director.edit_service_name)
+        await state.set_state(st.director.service_edit_name)
 
     async def handle_description():
         await call.message.delete()
@@ -1053,7 +1222,7 @@ async def service_detail(call: CallbackQuery, state: FSMContext):
             text=cf.get_text(lang, role, "message", "service_edit_description_msg"),
             reply_markup=kb_r.back_main(lang)
         )
-        await state.set_state(st.director.edit_service_description)
+        await state.set_state(st.director.service_edit_description)
 
     async def handle_duration():
         await call.message.delete()
@@ -1062,7 +1231,7 @@ async def service_detail(call: CallbackQuery, state: FSMContext):
             text=cf.get_text(lang, role, "message", "service_edit_duration_msg"),
             reply_markup=kb_r.back_main(lang)
         )
-        await state.set_state(st.director.edit_service_duration)
+        await state.set_state(st.director.service_edit_duration)
 
     async def handle_price():
         await call.message.delete()
@@ -1071,16 +1240,16 @@ async def service_detail(call: CallbackQuery, state: FSMContext):
             text=cf.get_text(lang, role, "message", "service_edit_price_msg"),
             reply_markup=kb_r.back_main(lang)
         )
-        await state.set_state(st.director.edit_service_price)
+        await state.set_state(st.director.service_edit_price)
 
     async def handle_back():
-        services_text = await get_services_text(lang, role, type_id, type_name)
+        services_text = await get_services_info(lang, role, type_id, type_name)
         await call.message.edit_text(
             services_text,
             parse_mode="HTML",
             reply_markup=await kb_i.barber_services(lang, type_id)
         )
-        await state.set_state(st.director.barber_services)
+        await state.set_state(st.director.type_services)
 
     async def handle_main():
         await call.message.delete()
@@ -1097,7 +1266,7 @@ async def service_detail(call: CallbackQuery, state: FSMContext):
             cf.get_text(lang, role, "message", "service_delete_msg"),
             reply_markup=kb_i.confirm_reject(lang)
         )
-        await state.set_state(st.director.delete_service)
+        await state.set_state(st.director.service_delete)
 
     handlers = {
         "ser_detail_btn:back": handle_back,
@@ -1118,9 +1287,10 @@ async def service_detail(call: CallbackQuery, state: FSMContext):
     await call.answer(cf.get_text(lang, "errors", "unknown_command"), show_alert=True)
 
 
-@router.message(st.director.edit_service_name)
+@router.message(st.director.service_edit_name)
 async def edit_service_name(message: Message, state: FSMContext):
     user_id, data, lang, text = await get_user_context(message, state)
+
     type_id = data.get("service_type_id")
     service_id = data.get("service_id")
 
@@ -1129,7 +1299,7 @@ async def edit_service_name(message: Message, state: FSMContext):
 
     if text == text_back:
         item = await db.get_barber_service_by_id(type_id, service_id)
-        service_info = await get_service_text(lang, role, item)
+        service_info = await get_service_info(lang, role, item)
         await cf.get_random_modes(message, user_id, kb_r.ReplyKeyboardRemove)
         await navigate_back_or_main(message, state, st.director.service_detail, service_info, kb_i.service_detail(lang))
         return
@@ -1141,7 +1311,7 @@ async def edit_service_name(message: Message, state: FSMContext):
     await db.update_barber_service_by_id(service_id, data={"name": text.strip()})
 
     item = await db.get_barber_service_by_id(type_id, service_id)
-    service_info = await get_service_text(lang, role, item)
+    service_info = await get_service_info(lang, role, item)
     await message.bot.send_message(
         chat_id=user_id,
         text=cf.get_text(lang, role, "message", "service_edit_name_success_msg"),
@@ -1156,18 +1326,19 @@ async def edit_service_name(message: Message, state: FSMContext):
     await state.set_state(st.director.service_detail)
 
 
-@router.message(st.director.edit_service_description)
+@router.message(st.director.service_edit_description)
 async def edit_service_description(message: Message, state: FSMContext):
     user_id, data, lang, text = await get_user_context(message, state)
     
     type_id = data.get("service_type_id")
     service_id = data.get("service_id")
+
     text_back = cf.get_text(lang, role, "button", "back")
     text_main = cf.get_text(lang, role, "button", "back_main")
 
     if text == text_back:
         item = await db.get_barber_service_by_id(type_id, service_id)
-        service_info = await get_service_text(lang, role, item)
+        service_info = await get_service_info(lang, role, item)
         await cf.get_random_modes(message, user_id, kb_r.ReplyKeyboardRemove)
         await navigate_back_or_main(message, state, st.director.service_detail, service_info, kb_i.service_detail(lang))
         return
@@ -1179,7 +1350,7 @@ async def edit_service_description(message: Message, state: FSMContext):
     await db.update_barber_service_by_id(service_id, data={"description": text.strip()})
 
     item = await db.get_barber_service_by_id(type_id, service_id)
-    service_info = await get_service_text(lang, role, item)
+    service_info = await get_service_info(lang, role, item)
     await message.bot.send_message(
         chat_id=user_id,
         text=cf.get_text(lang, role, "message", "service_edit_description_success_msg"),
@@ -1194,9 +1365,10 @@ async def edit_service_description(message: Message, state: FSMContext):
     await state.set_state(st.director.service_detail)
 
 
-@router.message(st.director.edit_service_duration)
+@router.message(st.director.service_edit_duration)
 async def edit_service_duration(message: Message, state: FSMContext):
     user_id, data, lang, text = await get_user_context(message, state)    
+
     type_id = data.get("service_type_id")
     service_id = data.get("service_id")
 
@@ -1205,7 +1377,7 @@ async def edit_service_duration(message: Message, state: FSMContext):
 
     if text == text_back:
         item = await db.get_barber_service_by_id(type_id, service_id)
-        service_info = await get_service_text(lang, role, item)
+        service_info = await get_service_info(lang, role, item)
         await cf.get_random_modes(message, user_id, kb_r.ReplyKeyboardRemove)
         await navigate_back_or_main(message, state, st.director.service_detail, service_info, kb_i.service_detail(lang))
         return
@@ -1245,7 +1417,7 @@ async def edit_service_duration(message: Message, state: FSMContext):
     await db.update_barber_service_by_id(service_id, data={"duration": duration_str})
 
     item = await db.get_barber_service_by_id(type_id, service_id)
-    service_info = await get_service_text(lang, role, item)
+    service_info = await get_service_info(lang, role, item)
     await message.bot.send_message(
         chat_id=user_id,
         text=cf.get_text(lang, role, "message", "service_edit_duration_success_msg"),
@@ -1260,9 +1432,10 @@ async def edit_service_duration(message: Message, state: FSMContext):
     await state.set_state(st.director.service_detail)
 
 
-@router.message(st.director.edit_service_price)
+@router.message(st.director.service_edit_price)
 async def edit_service_price(message: Message, state: FSMContext):
     user_id, data, lang, text = await get_user_context(message, state)
+
     type_id = data.get("service_type_id")
     service_id = data.get("service_id")
 
@@ -1271,7 +1444,7 @@ async def edit_service_price(message: Message, state: FSMContext):
 
     if text == text_back:
         item = await db.get_barber_service_by_id(type_id, service_id)
-        service_info = await get_service_text(lang, role, item)
+        service_info = await get_service_info(lang, role, item)
         await cf.get_random_modes(message, user_id, kb_r.ReplyKeyboardRemove)
         await navigate_back_or_main(message, state, st.director.service_detail, service_info, kb_i.service_detail(lang))
         return
@@ -1283,6 +1456,7 @@ async def edit_service_price(message: Message, state: FSMContext):
     price = _parse_price(text)
     if not price or price <= 0:
         await message.bot.send_message(
+            user_id,
             cf.get_text(lang, "errors", "invalid_price_msg"),
             parse_mode="HTML"
         )
@@ -1291,7 +1465,7 @@ async def edit_service_price(message: Message, state: FSMContext):
     await db.update_barber_service_by_id(service_id, data={"price": price})
     
     item = await db.get_barber_service_by_id(type_id, service_id)
-    service_info = await get_service_text(lang, role, item)
+    service_info = await get_service_info(lang, role, item)
     await message.bot.send_message(
         user_id,
         cf.get_text(lang, role, "message", "service_edit_price_success_msg"),
@@ -1328,7 +1502,7 @@ async def barbers(call: CallbackQuery, state: FSMContext):
             cf.get_text(lang, role, "message", "barber_add_msg"),
             reply_markup=kb_r.back_main(lang)
         )
-        await state.set_state(st.director.add_barber)
+        await state.set_state(st.director.barber_add)
         await call.answer()
         return
 
@@ -1368,7 +1542,7 @@ async def barbers(call: CallbackQuery, state: FSMContext):
     await show_error(call, state)
     
 
-@router.message(st.director.add_barber)
+@router.message(st.director.barber_add)
 async def add_barber(message: Message, state: FSMContext):
     user_id, data, lang, text = await get_user_context(message, state)
 
@@ -1412,6 +1586,7 @@ async def add_barber(message: Message, state: FSMContext):
 @router.callback_query(F.data.startswith("bar_detail_btn:"), st.director.barber_detail)
 async def barber_detail(call: CallbackQuery, state: FSMContext):
     user_id, data, lang, action = await get_user_context(call, state)
+
     barber_name = data.get("barber_name")
 
     async def go_back():
@@ -1426,7 +1601,7 @@ async def barber_detail(call: CallbackQuery, state: FSMContext):
             parse_mode="HTML",
             reply_markup=kb_i.confirm_reject(lang)
         )
-        await state.set_state(st.director.delete_barber)
+        await state.set_state(st.director.barber_delete)
 
     async def phone_edit():
         await call.message.delete()
@@ -1435,7 +1610,7 @@ async def barber_detail(call: CallbackQuery, state: FSMContext):
             cf.get_text(lang, role, "message", "barber_edit_phone_msg"),
             reply_markup=kb_r.back_main(lang)
         )
-        await state.set_state(st.director.edit_barber_phone)
+        await state.set_state(st.director.barber_edit_phone)
 
     async def description_edit():
         await call.message.delete()
@@ -1444,7 +1619,7 @@ async def barber_detail(call: CallbackQuery, state: FSMContext):
             cf.get_text(lang, role, "message", "barber_edit_description_msg"),
             reply_markup=kb_r.back_main(lang)
         )
-        await state.set_state(st.director.edit_barber_description)
+        await state.set_state(st.director.barber_edit_description)
 
     async def photo_edit():
         await call.message.delete()
@@ -1453,7 +1628,7 @@ async def barber_detail(call: CallbackQuery, state: FSMContext):
             cf.get_text(lang, role, "message", "barber_edit_photo_msg"),
             reply_markup=kb_r.back_main(lang)
         )
-        await state.set_state(st.director.edit_barber_photo)
+        await state.set_state(st.director.barber_edit_photo)
 
     async def time_edit():
         await call.message.delete()
@@ -1462,7 +1637,7 @@ async def barber_detail(call: CallbackQuery, state: FSMContext):
             cf.get_text(lang, role, "message", "barber_edit_time_msg"),
             reply_markup=kb_r.back_main(lang)
         )
-        await state.set_state(st.director.edit_barber_time)
+        await state.set_state(st.director.barber_edit_time)
 
     handlers = {
         "bar_detail_btn:back": go_back,
@@ -1483,9 +1658,10 @@ async def barber_detail(call: CallbackQuery, state: FSMContext):
     await show_error(call, state)
 
 
-@router.message(st.director.edit_barber_phone)
+@router.message(st.director.barber_edit_phone)
 async def edit_barber_phone(message: Message, state: FSMContext):
     user_id, data, lang, text = await get_user_context(message, state)
+
     barber_id = data.get("barber_id")
     barber_telegram_id = data.get("barber_tg_id")
 
@@ -1519,9 +1695,10 @@ async def edit_barber_phone(message: Message, state: FSMContext):
     await send_barber_card(message, state, lang, barber)
 
 
-@router.message(st.director.edit_barber_description)
+@router.message(st.director.barber_edit_description)
 async def edit_barber_description(message: Message, state: FSMContext):
     user_id, data, lang, text = await get_user_context(message, state)
+
     barber_id = data.get("barber_id")
     barber_telegram_id = data.get("barber_tg_id")
 
@@ -1550,9 +1727,10 @@ async def edit_barber_description(message: Message, state: FSMContext):
     await send_barber_card(message, state, lang, barber)
 
 
-@router.message(st.director.edit_barber_photo)
+@router.message(st.director.barber_edit_photo)
 async def edit_barber_photo(message: Message, state: FSMContext):
     user_id, data, lang, text = await get_user_context(message, state)
+
     barber_id = data.get("barber_id")
     barber_telegram_id = data.get("barber_tg_id")
 
@@ -1586,9 +1764,10 @@ async def edit_barber_photo(message: Message, state: FSMContext):
     await send_barber_card(message, state, lang, barber)
 
 
-@router.message(st.director.edit_barber_time)
+@router.message(st.director.barber_edit_time)
 async def edit_barber_time(message: Message, state: FSMContext):
     user_id, data, lang, text = await get_user_context(message, state)
+
     barber_id = data.get("barber_id")
     barber_telegram_id = data.get("barber_tg_id")
 
@@ -1632,10 +1811,12 @@ async def edit_barber_time(message: Message, state: FSMContext):
     await send_barber_card(message, state, lang, barber)
 
 
-@router.callback_query(st.director.delete_barber)
+@router.callback_query(st.director.barber_delete)
 async def delete_barber(call: CallbackQuery, state:FSMContext):
     user_id, data, lang, action = await get_user_context(call, state)
+
     barber_telegram_id = data.get("barber_tg_id")
+
     barber = await db.get_barber_by_telegram_id(barber_telegram_id)
 
     if action == "back":
@@ -1665,34 +1846,10 @@ async def delete_barber(call: CallbackQuery, state:FSMContext):
 
 ########################################################## WORKING HOURS ##########################################################
 
-@router.message(st.director.working_hours)
-async def working_hours(message: Message, state: FSMContext):
-    user_id = message.from_user.id
-    data = await state.get_data()
-    lang = data.get("lang", "🇺🇿 uz")
-    back_actions = {
-        cf.get_text(lang, role, "button", "back"): {
-            "text": cf.get_text(lang, role, "message", "settings_msg"),
-            "reply_markup": kb_r.settings(lang),
-            "state": st.director.settings
-        },
-        cf.get_text(lang, role, "button", "back_main"): {
-            "text": cf.get_text(lang, role, "message", "main_menu_msg"),
-            "reply_markup": kb_r.main_menu(lang),
-            "state": st.director.main_menu
-        }
-    }
-    action = back_actions.get(message.text)
-    
-    if action:
-        await message.bot.send_message(
-            chat_id=user_id,
-            text=action["text"],
-            parse_mode="HTML",
-            reply_markup=action["reply_markup"]
-        )
-        await state.set_state(action["state"])
-        return
+@router.callback_query(st.director.working_hours)
+async def working_hours(call: CallbackQuery, state: FSMContext):
+    user_id, data, lang, action = await get_user_context(call, state)
+    pass
 
 ########################################################## ADMINS ##########################################################
 
@@ -1716,7 +1873,7 @@ async def admins(call: CallbackQuery, state: FSMContext):
             parse_mode="HTML",
             reply_markup=kb_r.back_main(lang)
         )
-        await state.set_state(st.director.add_admin)
+        await state.set_state(st.director.admin_add)
         await call.answer()
         return
     
@@ -1757,9 +1914,10 @@ async def admins(call: CallbackQuery, state: FSMContext):
     await show_error(call, state)
 
     
-@router.message(st.director.add_admin)
+@router.message(st.director.admin_add)
 async def add_admin(message: Message, state: FSMContext):
     user_id, data, lang, text = await get_user_context(message, state)
+
     text_back = cf.get_text(lang, role, "button", "back")
     text_main = cf.get_text(lang, role, "button", "back_main")
 
@@ -1788,6 +1946,7 @@ async def add_admin(message: Message, state: FSMContext):
 @router.callback_query(F.data.startswith("adm_detail_btn:"), st.director.admin_detail)
 async def admin_detail(call: CallbackQuery, state: FSMContext):
     user_id, data, lang, action = await get_user_context(call, state)
+
     admin_name = data.get("admin_name")
     admin_telegram_id = data.get("admin_tg_id")
 
@@ -1809,7 +1968,7 @@ async def admin_detail(call: CallbackQuery, state: FSMContext):
             parse_mode="HTML",
             reply_markup=kb_i.confirm_reject(lang)
         )
-        await state.set_state(st.director.delete_admin)
+        await state.set_state(st.director.admin_delete)
 
     async def edit_phone():
         await call.message.delete()
@@ -1819,7 +1978,7 @@ async def admin_detail(call: CallbackQuery, state: FSMContext):
             parse_mode="HTML",
             reply_markup=kb_r.back_main(lang)
         )
-        await state.set_state(st.director.edit_admin_phone)
+        await state.set_state(st.director.admin_edit_phone)
 
     async def edit_button():
         buttons = cf.get_admin_buttons(admin_telegram_id) or []
@@ -1829,7 +1988,7 @@ async def admin_detail(call: CallbackQuery, state: FSMContext):
             parse_mode="HTML",
             reply_markup=kb_i.build_admin_buttons_editor(lang, buttons)
         )
-        await state.set_state(st.director.edit_admin_button)
+        await state.set_state(st.director.admin_edit_button)
 
     handlers = {
         back: go_back,
@@ -1848,9 +2007,10 @@ async def admin_detail(call: CallbackQuery, state: FSMContext):
     await show_error(call, state)
 
 
-@router.message(st.director.edit_admin_phone)
+@router.message(st.director.admin_edit_phone)
 async def edit_admin_phone(message: Message, state: FSMContext):
     user_id, data, lang, text = await get_user_context(message, state)
+
     admin_id = data.get("admin_id")
     admin_telegram_id = data.get("admin_tg_id")
     admin_name = data.get("admin_name")
@@ -1908,17 +2068,14 @@ async def edit_admin_phone(message: Message, state: FSMContext):
     await state.set_state(st.director.admin_detail)
 
 
-@router.callback_query(F.data.startswith("adm_btn:"), st.director.edit_admin_button)
+@router.callback_query(F.data.startswith("adm_btn:"), st.director.admin_edit_button)
 async def admin_buttons_callbacks(call: CallbackQuery, state: FSMContext):
-    user_id = call.from_user.id
-    data = await state.get_data()
-    lang = data.get("lang", "🇺🇿 uz")
+    user_id, data, lang, action = await get_user_context(call, state)
+
     admin_telegram_id = data.get("admin_tg_id")
     admin_name = data.get("admin_name")
     admin_phone = data.get("admin_phone")
-
     buttons = data.get("admin_buttons", [])
-    action = call.data
 
     if action == "adm_btn:back":
         button_ids = cf.get_admin_buttons(admin_telegram_id)
@@ -1971,17 +2128,15 @@ async def admin_buttons_callbacks(call: CallbackQuery, state: FSMContext):
         await call.answer()
 
 
-@router.callback_query(st.director.delete_admin)
+@router.callback_query(st.director.admin_delete)
 async def delete_admin(call: CallbackQuery, state: FSMContext):
-    user_id = call.from_user.id
-    data = await state.get_data()
-    lang = data.get("lang", "🇺🇿 uz")
+    user_id, data, lang, action = await get_user_context(call, state)
+    
     admin_telegram_id = data.get("admin_tg_id")
     admin_name = data.get("admin_name")
     admin_phone = data.get("admin_phone")
 
     buttons = data.get("admin_buttons", [])
-    action = call.data
 
     if action == "back":
         but_names = [butt_cf.button_title(lang, role, bid) for bid in buttons]
@@ -2023,6 +2178,7 @@ async def delete_admin(call: CallbackQuery, state: FSMContext):
 @router.callback_query(F.data.startswith("language_btn:"), st.director.language)
 async def language(call: CallbackQuery, state: FSMContext):
     user_id, data, lang, action = await get_user_context(call, state)
+    
     text_uz = "language_btn:uz"
     text_ru = "language_btn:ru"
     
@@ -2063,14 +2219,21 @@ async def language(call: CallbackQuery, state: FSMContext):
 
 @router.callback_query(F.data.startswith("client_btn:"), st.director.clients)
 async def clients(call: CallbackQuery, state: FSMContext):
-    print(call.data)
     user_id, data, lang, action = await get_user_context(call, state)
 
-    if action == "client_btn:back":
+    if action == "client_btn:main":
         await navigate_back_or_main(call, state, st.director.main_menu, "main_menu_msg", kb_r.main_menu(lang))
         return
     
     if action == "client_btn:search":
+        await call.message.delete()
+        await call.bot.send_message(
+            user_id,
+            cf.get_text(lang, role, "message", "client_search_msg"),
+            parse_mode="HTML",
+            reply_markup=kb_r.back_main(lang)
+        )
+        await state.set_state(st.director.client_search)
         return
     
     if action == "client_btn:list":
@@ -2081,15 +2244,17 @@ async def clients(call: CallbackQuery, state: FSMContext):
             return
 
         last_clients = all_clients[-5:]
-        await call.message.edit_text(
-            get_clients_text(lang, last_clients),
-            parse_mode="HTML",
-            reply_markup=kb_i.back_main(lang)
-        )
+        await call.message.delete()
         await call.bot.send_document(
             user_id,
             document=cf.generate_clients_csv(all_clients),
             caption=cf.get_text(lang, role, "message", "client_list_msg")
+        )
+        await call.bot.send_message(
+            user_id,
+            get_clients_info(lang, last_clients),
+            parse_mode="HTML",
+            reply_markup=kb_i.back_main(lang)
         )
         await state.set_state(st.director.client_list)
         return
@@ -2111,6 +2276,84 @@ async def client_list(call: CallbackQuery, state: FSMContext):
     
     await show_error(call, state)
 
+
+@router.message(st.director.client_search)
+async def client_search(message: Message, state: FSMContext):
+    user_id, data, lang, text = await get_user_context(message, state)
+
+    t_back = cf.get_text(lang, role, "button", "back")
+    t_main = cf.get_text(lang, role, "button", "back_main")
+
+    if text == t_back:
+        await cf.get_random_modes(message, user_id, kb_r.ReplyKeyboardRemove)
+        await navigate_back_or_main(message, state, st.director.clients, "clients_msg", kb_i.clients(lang))
+        return
+    
+    if text == t_main: 
+        await navigate_back_or_main(message, state, st.director.main_menu, "main_menu_msg", kb_r.main_menu(lang))
+        return
+
+    phone = text.replace(" ", "").replace("-", "")
+    if not re.fullmatch(r"(\+?998\d{9})", phone):
+        await show_error(message, state, "invalid_phone_number_msg")
+        return
+    
+    client = await db.get_client_by_phone(phone)
+
+    if not client:
+        await message.bot.send_message(user_id, cf.get_text(lang, role, "message", "client_not_found_msg"), parse_mode="HTML")
+        return
+    
+    user_ban = 5 in (client.get("roles") or [])
+
+    await state.update_data(client_tg_id=client.get("telegram_id"))
+    await cf.get_random_modes(message, user_id, kb_r.ReplyKeyboardRemove)
+    await message.bot.send_message(
+        user_id,
+        get_client_card(lang, client),
+        parse_mode="HTML",
+        reply_markup=kb_i.client_detail(lang, client.get("telegram_id"), user_ban)
+    )
+    await state.set_state(st.director.client_detail)
+
+
+@router.callback_query(F.data.startswith("cnt_detail_btn:"), st.director.client_detail)
+async def client_detail(call: CallbackQuery, state: FSMContext):
+    user_id, data, lang, action = await get_user_context(call, state)
+
+    if action == "cnt_detail_btn:back":
+        await navigate_back_or_main(call, state, st.director.clients, "clients_msg", kb_i.clients(lang))
+        return
+
+    if action == "cnt_detail_btn:main":
+        await navigate_back_or_main(call, state, st.director.main_menu, "main_menu_msg", kb_r.main_menu(lang))
+        return
+
+    client_telegram_id = data.get("client_tg_id")
+    client = await db.get_client_by_telegram_id(client_telegram_id)
+
+    if action in ("cnt_detail_btn:ban", "cnt_detail_btn:unban"):
+        action = action.split(":")[1]
+        if action == "ban":
+            await db.ban_client_by_phone(client.get("phone_number"))
+            msg_key = "client_ban_msg"
+        else:
+            await db.unban_client_by_phone(client.get("phone_number"))
+            msg_key = "client_unban_msg"
+
+        client = await db.get_client_by_telegram_id(client_telegram_id)
+        user_ban = 5 in (client.get("roles") or [])
+
+        await call.answer(cf.get_text(lang, role, "message", msg_key), show_alert=True)
+        await call.message.edit_text(
+            get_client_card(lang, client),
+            parse_mode="HTML",
+            reply_markup=kb_i.client_detail(lang, client_telegram_id, user_ban)
+        )
+        return
+
+    await show_error(call, state)
+
 ##################################################################################################################
 
 @router.message(st.director.analytics)
@@ -2124,15 +2367,6 @@ async def analytics(message: Message, state: FSMContext):
 
 @router.message(st.director.finance)
 async def finance(message: Message, state: FSMContext):
-    user_id = message.from_user.id
-    data = await state.get_data()
-    lang = data.get("lang", "🇺🇿 uz")
-    text = message.text
-
-##################################################################################################################
-
-@router.message(st.director.journal)
-async def journal(message: Message, state: FSMContext):
     user_id = message.from_user.id
     data = await state.get_data()
     lang = data.get("lang", "🇺🇿 uz")

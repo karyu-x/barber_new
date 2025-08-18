@@ -92,7 +92,7 @@ async def get_user_by_telegram(telegram_id):
     user = await api_request(method="GET", endpoint=f"/api/auth/users/if_exists/{telegram_id}/")
 
     if user is None:
-        return None
+        return {}
     
     lang_code = user.get("language").lower()
     language = "🇺🇿 uz" if lang_code == "uz" else "🇷🇺 ru"
@@ -109,7 +109,7 @@ async def get_directors_all():
 
 async def create_director_by_phone(director_phone):
     data = {"role_id": 3}
-    return await api_request("POST", f"/api/auth/users/add_role/{director_phone}/", json=data)
+    return await api_request("PATCH", f"/api/auth/users/add_role/{director_phone}/", json=data)
 
 async def get_director_by_telegram_id(telegram_id):
     user = await get_user_by_telegram(telegram_id)
@@ -173,11 +173,31 @@ async def get_clients_all():
     role = 2
     return await api_request(method="GET", endpoint=f"/api/auth/users/by-role/{role}/")
     
-
 async def get_client_by_telegram_id(telegram_id):
     user = await get_user_by_telegram(telegram_id)
     if 2 in user.get("roles"):
         return user
+    
+async def get_client_by_phone(client_phone):
+    clients = await get_clients_all()
+    for c in clients:
+        if c.get("phone_number") == client_phone:
+            return c
+
+async def ban_client_by_phone(client_phone):
+    data = {"role_id": 5}
+    return await api_request("PATCH", f"/api/auth/users/add_role/{client_phone}/", json=data)
+
+async def unban_client_by_phone(client_phone):
+    data = {"role_id": 5}
+    return await api_request("PATCH", f"/api/auth/users/remove_role/{client_phone}/", json=data)
+
+
+################################# ==== BARBER BOOKINGS ==== #################################
+
+async def get_barber_bookings(barber_telegram_id):
+    return await api_request("GET", f"/api/booking/get_booking/{barber_telegram_id}/") or []
+
 
 ################################# ==== BARBER TYPES ==== #################################
 

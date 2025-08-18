@@ -32,6 +32,38 @@ def post_button(buttons: list):
 
 ################################################################################
 
+async def bookings_barber(lang, barber_telegram_id, day):
+    kb = InlineKeyboardBuilder()
+    bookings = await db.get_barber_bookings(barber_telegram_id, day)
+    for book in bookings:
+        book_time = book["start_time"].split("T")[1].split("+")[0][:5]
+        kb.add(InlineKeyboardButton(text=book_time, callback_data=f"bron:"))
+    kb.adjust(3)
+    kb.row(
+        InlineKeyboardButton(text=cf.get_text(lang, role, "button", "back"), callback_data="bron:back"),
+        InlineKeyboardButton(text=cf.get_text(lang, role, "button", "back_main"), callback_data="bron:main"),
+    )
+    return kb.as_markup()
+
+
+def booking_detail(lang, client_id, barber_id):
+    kb = InlineKeyboardBuilder()
+    kb.add(
+        InlineKeyboardButton(text=cf.get_text(lang, role, "button", "booking_reminder"), callback_data=f"booking_detail:reminder"),
+        InlineKeyboardButton(text=cf.get_text(lang, role, "button", "booking_client"), url=f"{client_id}"),
+        InlineKeyboardButton(text=cf.get_text(lang, role, "button", "booking_barber"), url=f"{barber_id}"),
+        InlineKeyboardButton(text=cf.get_text(lang, role, "button", "booking_cancel"), callback_data="booking_detail:cancel"),
+        InlineKeyboardButton(text=cf.get_text(lang, role, "button", "booking_forward"), callback_data="booking_detail:forward"),
+    )
+    kb.adjust(1, 2)
+    kb.row(
+        InlineKeyboardButton(text=cf.get_text(lang, role, "button", "back"), callback_data="booking_detail:back"),
+        InlineKeyboardButton(text=cf.get_text(lang, role, "button", "back_main"), callback_data="booking_detail:main"),
+    )
+    return kb.as_markup()
+
+################################################################################
+
 def settings(lang: str):
     kb = InlineKeyboardBuilder()
     kb.add(
@@ -40,11 +72,9 @@ def settings(lang: str):
         InlineKeyboardButton(text=cf.get_text(lang, role, "button", "admins"), callback_data="setting_btn:admins"),
         InlineKeyboardButton(text=cf.get_text(lang, role, "button", "working_hours"), callback_data="setting_btn:working_hours"),
         InlineKeyboardButton(text=cf.get_text(lang, role, "button", "language"), callback_data="setting_btn:language"),
+        InlineKeyboardButton(text=cf.get_text(lang, role, "button", "back"), callback_data="setting_btn:back")
     )
     kb.adjust(1, 2)
-    kb.row(
-        InlineKeyboardButton(text=cf.get_text(lang, role, "button", "back_main"), callback_data="setting_btn:main"),
-        InlineKeyboardButton(text=cf.get_text(lang, role, "button", "back"), callback_data="setting_btn:back"))
     return kb.as_markup()
 
 async def services_prices(lang):
@@ -186,7 +216,21 @@ def clients(lang):
     kb.add(
         InlineKeyboardButton(text=cf.get_text(lang, role, "button", "client_list"), callback_data="client_btn:list"),
         InlineKeyboardButton(text=cf.get_text(lang, role, "button", "client_search"), callback_data="client_btn:search"),
-        InlineKeyboardButton(text=cf.get_text(lang, role, "button", "back"), callback_data="client_btn:back")
+        InlineKeyboardButton(text=cf.get_text(lang, role, "button", "back"), callback_data="client_btn:main")
     )
     kb.adjust(2)
+    return kb.as_markup()
+
+def client_detail(lang, tg_id, user_ban: bool = False):
+    kb = InlineKeyboardBuilder()
+    kb.add(
+        InlineKeyboardButton(text=cf.get_text(lang, role, "button", "client_contact"), url=f"tg://user?id={tg_id}"),
+        InlineKeyboardButton(
+            text=cf.get_text(lang, role, "button", "client_unban" if user_ban else "client_ban"),
+            callback_data=f"cnt_detail_btn:{'unban' if user_ban else 'ban'}"
+        ),
+        InlineKeyboardButton(text=cf.get_text(lang, role, "button", "back"), callback_data="cnt_detail_btn:back"),
+        InlineKeyboardButton(text=cf.get_text(lang, role, "button", "back_main"), callback_data="cnt_detail_btn:main"),
+    )
+    kb.adjust(1)
     return kb.as_markup()

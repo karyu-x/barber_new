@@ -30,20 +30,10 @@ async def get_main_buttons(lang):
             "keyboard": kb_r.finance(lang),
             "state": st.director.finance
         },
-        "journal": {
-            "message": "journal_msg",
-            "keyboard": kb_r.journal(lang),
-            "state": st.director.journal
-        },
         "feedback": {
             "message": "feedback_msg",
             "keyboard": kb_r.feedback(lang),
             "state": st.director.feedback
-        },
-        "language": {
-            "message": "language_msg",
-            "keyboard": kb_r.language(lang),
-            "state": st.director.language
         }
         # "user_menu": {
         #     "message": "user_menu_msg",
@@ -73,34 +63,6 @@ NOTIFICATIONS_BUTTONS = {
         "message": "check_post_msg",
         "keyboard": kb_r.check_post,
         "state": st.director.check_post
-    },
-    "back": {
-        "message": "main_menu_msg",
-        "keyboard": kb_r.main_menu,
-        "state": st.director.main_menu
-    }
-}
-
-BOOKINGS_BUTTONS = {
-    "today_books": {
-        "message": "today_books_msg",
-        "keyboard": kb_r.today_books,
-        "state": st.director.today_books
-    },
-    "other_day_books": {
-        "message": "other_day_books_msg",
-        "keyboard": kb_r.other_day_books,
-        "state": st.director.other_day_books
-    },
-    "cancel_books": {
-        "message": "cancel_books_msg",
-        "keyboard": kb_r.cancel_books,
-        "state": st.director.cancel_books
-    },
-    "reschedule_books": {
-        "message": "reschedule_books_msg",
-        "keyboard": kb_r.reschedule_books,
-        "state": st.director.reschedule_books
     },
     "back": {
         "message": "main_menu_msg",

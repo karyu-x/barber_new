@@ -1,18 +1,32 @@
 import os
 import logging
+from logging.handlers import TimedRotatingFileHandler
 from aiogram.types import Update
 from aiohttp import web
 from decouple import config
 
 from handlers.register_handlers import bot, dp
 
+LOG_DIR = "logs"
+os.makedirs(LOG_DIR, exist_ok=True)
+
+log_formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+
+file_handler = TimedRotatingFileHandler(
+    os.path.join(LOG_DIR, "bot.log"),
+    when="midnight", 
+    interval=1,
+    backupCount=7,   
+    encoding="utf-8"
+)
+file_handler.setFormatter(log_formatter)
+
+console_handler = logging.StreamHandler()
+console_handler.setFormatter(log_formatter)
+
 logging.basicConfig(
-    level=logging.INFO,  # уровень логирования: DEBUG, INFO, WARNING, ERROR
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-    handlers=[
-        logging.StreamHandler(),  # вывод в консоль
-        logging.FileHandler("bot.log", mode="a", encoding="utf-8")  # запись в файл
-    ]
+    level=logging.INFO,  
+    handlers=[file_handler, console_handler] # console_handler
 )
 
 logger = logging.getLogger(__name__)

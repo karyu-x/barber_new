@@ -5,13 +5,14 @@ import logging
 import csv
 import io
 
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 from aiogram.types import FSInputFile, BufferedInputFile
 
 logger = logging.getLogger(__name__)
 
 LOGO_PATH = Path("images/logo.png")
+
 
 def get_logo_file() -> FSInputFile | None:
     if LOGO_PATH.exists():
@@ -29,6 +30,7 @@ def load_translations():
 
 translations = load_translations()
 
+
 def get_text(lang: str, *path: str) -> str:
     result = translations.get(lang, {})
     for key in path:
@@ -37,8 +39,31 @@ def get_text(lang: str, *path: str) -> str:
         return result
     return f"[{lang}." + ".".join(path) + "]"
 
-def get_time() -> str:
-    return datetime.now().strftime("%Y-%m-%d %H:%M")
+
+UZ_DAYS = ["Dushanba", "Seshanba", "Chorshanba", "Payshanba", "Juma", "Shanba", "Yakshanba"]
+RU_DAYS = ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Воскресенье"]
+
+def get_today(lang):
+    today = datetime.today()
+    if lang == "🇺🇿 uz":
+        return f"{today.today:02d}.{today.month:02d} {UZ_DAYS[today.weekday()]}"
+    elif lang == "🇷🇺 ru":
+        return f"{today.today:02d}.{today.month:02d} {RU_DAYS[today.weekday()]}"
+
+def get_days_from_today(lang: str = "uz"):
+    days = []
+    today = datetime.today()
+    for i in range(30): 
+        day = today + timedelta(days=i)
+        weekday = day.weekday()  
+        if lang == "🇺🇿 uz":
+            formatted = f"{day.day:02d}.{day.month:02d} {UZ_DAYS[weekday]}"
+        elif lang == "🇷🇺 ru":
+            formatted = f"{day.day:02d}.{day.month:02d} {RU_DAYS[weekday]}"
+        days.append(formatted)
+
+    return days
+
 
 BUTTONS_PATH = Path("configs/buttons.json")
 
@@ -111,14 +136,16 @@ async def get_random_modes(message, user_id, ReplyKeyboardRemove):
 def generate_clients_csv(clients: list[dict]) -> BufferedInputFile:
     output = io.StringIO()
     writer = csv.writer(output)
-    writer.writerow(["Ismi/Имя", "Telefon/Телефон", "Til/Язык", "Bronlar soni/Количество бронов"])
+    writer.writerow(["Ismi/Имя", "Telefon/Телефон", "Til/Язык", "Bronlar soni/Количество бронов", "Status/Статус"])
 
     for c in clients:
+        status = "⛔️" if 5 in c.get("roles") else "✅"
         writer.writerow([
             c.get("first_name") or "❌",
             c.get("phone_number") or "❌",
-            "O‘zbek" if c.get("language") == "uz" else "Рус",
-            # c.get("bookings_count", 0)
+            "🇺🇿" if c.get("language") == "uz" else "🇷🇺",
+            c.get("total_booking", 0),
+            status
         ])
 
     output.seek(0)

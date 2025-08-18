@@ -49,14 +49,17 @@
                 "input_button_msg": "🔗 Tugma uchun matn va havolani kiriting.\nMasalan: <code>Vebsayt - https://example.com</code>",
                 "button_list_title": "Jami tugmalar:",
                 "check_post_msg": "✅ Post ko‘rinishini tekshiring. Hammasi to‘g‘rimi?",
-                "confirm_post_msg": "📨 Ushbu xabarni yuborishni istaysizmi?\n\n✅ Yuborish uchun 'Tasdiqlash' tugmasini bosing.\n❌ Bekor qilish uchun 'Bekor qilish' tugmasini tanlang.",
-                "post_sent_result": "📤 Xabar yuborildi: {success} ta foydalanuvchiga\n❌ Xatolik: {failed} ta",
+                "notification_not_found_msg": "‼️ Siz hali xabarnoma kiritmagansiz",
+                "confirm_post_msg": "📨 Ushbu xabarni yuborishni istaysizmi?\n\n✅ Yuborish uchun - Tasdiqlash - tugmasini bosing.",
+                "post_sent_result": "✅ Xabarnoma tugatildi!\n\n📤 Xabar yuborildi: <b>{success}</b> ta foydalanuvchiga\n\n❌ Xatolik: <b>{failed}</b> ta",
 
                 "bookings_msg": "📅 <b>Buyurtmalar</b>\nAktiv va kelgusi bronlar ro‘yxatini ko‘rishingiz mumkin.",            
-                "today_books_msg": "📅 Bugungi bronlarni ko‘rish uchun, iltimos, barberni tanlang.",
-                "other_day_books_msg": "📆 Bronlarni ko‘rish uchun sanani tanlang.",
-                "cancel_books_msg": "❌ Bronni bekor qilish uchun, avval barberni tanlang.",
-                "reschedule_books_msg": "🔁 Bronni boshqa sanaga yoki boshqa barberga o‘tkazish uchun avval barberni tanlang.",
+                "bookings_today_msg": "📅 Bugungi bronlarni ko‘rish uchun, iltimos, barberni tanlang.",
+                "bookings_otherday_msg": "📆 Bronlarni ko‘rish uchun sanani tanlang.",
+                "bookings_otherday_next_msg": "Bronlarni ko'rish uchun, iltimos barberni tanlang",
+                "bookings_barber_msg": "",
+                "bookings_cancel_msg": "❌ Bronni bekor qilish uchun, ",
+                "bookings_forward_msg": "🔁 Bronni boshqa sanaga yoki boshqa barberga o‘tkazish uchun ",
 
                 "settings_msg": "⚙️ <b>Sozlamalar</b>\nBot ishini o‘zingizga mos ravishda sozlang.",
 
@@ -123,15 +126,18 @@
                 "language_selected_msg": "✅ Til tanlandi!",
 
                 "clients_msg": "📕 <b>Mijozlar</b>\nMijozlar haqidagi ma’lumotlar va ularning faolligi.",
-                "client_list_msg": "📋 Mijozlar ro‘yxati",
+                "client_last_list_msg": "📋 So'nggi 5 ta mijozlar ro‘yxati",
+                "client_list_msg": "👥 Barcha mijozlar ro'yxati",
                 "clients_not_msg": "📭 Hozircha mijozlar yo'q",
-                "client_item": "👤 <b>{idx}. {first_name}</b>\n📱 {phone_number}\n🌐 {language}\n📅 Bronlar soni: {bookings_count}\n\n",
+                "client_search_msg": "🔎 <b>Mijozlarni izlash</b>\n\nIltimos, mijozning telefon raqamini kiriting 📱",
+                "client_not_found_msg": "❌ <b>Mijoz topilmadi!</b>\n\nQayta urinib ko‘ring yoki boshqa ma’lumot kiriting 🔁",
+                "client_item_msg": "👤 Ismi: <b>{first_name}</b>\n📱 {phone_number}\n🌐 Tanlagan tili: {language}\n📅 Bronlar soni: {total_bookings}\n🛑 Status: {status}",
+                "client_ban_msg": "⛔️ Mijoz muvaffaqiyatli bloklandi!\n\n🛑 U endi botdan foydalana olmaydi.",
+                "client_unban_msg": "✅ Mijoz blokdan chiqarildi!\n\n🎉 Endi u yana botdan foydalanishi mumkin.",
 
                 "analytics_msg": "📊 <b>Statistika</b>\nKunlik va oylik ishlash natijalari, daromadlar va faollik tahlili.",
 
                 "finance_msg": "💰 <b>Moliya</b>\nKirim-chiqim, xizmatlar narxlari va hisob-kitoblar.",
-                
-                "journal_msg": "📝 <b>Jurnal</b>\nSo‘nggi harakatlar va tizimdagi o‘zgarishlar tarixi.",
 
                 "feedback_msg": "💬 <b>Fikr-mulohazalar</b>\nMijozlar fikrlari va baholarini ko‘rib chiqing.",
                 "rating_barbers_msg": "🏆 <b>Barberlar reytingi:</b>",
@@ -156,11 +162,11 @@
                 "confirm_post": "✅ Postni yuborish",
 
                 "bookings": "🧾 Buyurtmalar",
-                "today_books": "📅 Bugungi bronlar",
-                "all_today_bookings": "📋 Barcha bugungi bronlar",
-                "other_day_books": "📆 Boshqa kunlar",
-                "cancel_books": "❌ Bronni bekor qilish",
-                "reschedule_books": "⏭️ Bronni o‘tkazish",
+                "bookings_today": "📅 Bugungi bronlar",
+                "bookings_barber_today": "📋 Barcha bugungi bronlar",
+                "bookings_otherday": "📆 Boshqa kunlar",
+                "bookings_cancel": "❌ Bronni bekor qilish",
+                "bookings_forward": "⏭️ Bronni o‘tkazish",
 
                 "settings": "⚙️ Sozlamalar",
 
@@ -196,6 +202,9 @@
                 "clients": "👥 Mijozlar",
                 "client_list": "📋 Klientlar ro‘yxati",
                 "client_search": "🔍 Klientni qidirish",
+                "client_contact": "📞 Mijoz bilan bog‘lanish",
+                "client_ban": "⛔️ Mijozni bloklash",
+                "client_unban": "✅ Blokdan chiqarish",
 
                 "analytics": "📊 Tahlil",
                 "finance": "🧮 Moliya",

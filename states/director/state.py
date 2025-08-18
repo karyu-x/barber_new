@@ -15,55 +15,57 @@ class director(StatesGroup):
     #####################
     bookings = State()
 
-    today_books = State()
-    barber_books = State()
+    bookings_today = State()
+    bookings_barber = State()
+    booking_detail = State()
 
-    other_day_books = State()
+    bookings_otherday = State()
 
-    cancel_books = State()
+    bookings_cancel = State()
 
-    reschedule_books = State()
+    bookings_forward = State()
 
     #####################
     settings = State()
 
-    services_prices = State()
+    services_menu = State()
     barber_types = State()
-    add_type = State()
-    delete_type = State()
-    barber_services = State()
+    type_add = State()
+    type_delete = State()
+    type_services = State()
     service_detail = State()
-    add_service = State()
-    delete_service = State()
-    edit_service_name = State()
-    edit_service_description = State()
-    edit_service_duration = State()
-    edit_service_price = State()
+    service_add = State()
+    service_delete = State()
+    service_edit_name = State()
+    service_edit_description = State()
+    service_edit_duration = State()
+    service_edit_price = State()
     
     barbers = State()
+    barber_add = State()
+    barber_delete = State()
     barber_detail= State()
-    edit_barber_phone = State()
-    edit_barber_description = State()
-    edit_barber_photo = State()
-    edit_barber_time = State()
-    add_barber = State()
-    add_phone = State()
-    add_description = State()
-    add_photo = State()
-    delete_barber = State()
+    barber_edit_phone = State()
+    barber_edit_description = State()
+    barber_edit_photo = State()
+    barber_edit_time = State()
 
     admins = State()
+    admin_add = State()
+    admin_delete = State()
     admin_detail = State()
-    add_admin = State()
-    edit_admin_phone = State()
-    edit_admin_button = State()
-    delete_admin = State()
+    admin_edit_phone = State()
+    admin_edit_button = State()
 
     working_hours = State()
+
+    language = State()
 
     #####################
     clients = State()
     client_list = State()
+    client_search = State()
+    client_detail = State()
 
     #####################
     analytics = State()
@@ -72,10 +74,6 @@ class director(StatesGroup):
     finance = State()
 
     #####################
-    journal = State()
-
-    #####################
     feedback = State()
 
     #####################
-    language = State()
