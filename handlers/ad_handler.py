@@ -22,10 +22,10 @@ role = "director"
 
 # === Utils ===
 DURATION_RE = re.compile(r"^(\d{1,2}:\d{2}|\d{1,3})$")
-PRICE_RE = re.compile(r"\d+")
 
 ## parse price
 def _parse_price(s: str) -> int | None:
+    PRICE_RE = re.compile(r"\d+")
     digits = "".join(PRICE_RE.findall(s))
     if not digits:
         return None

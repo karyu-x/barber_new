@@ -22,11 +22,13 @@
 
                 "bookings_msg": "📅 Sizning barcha bronlaringiz",
                 "bookings_today_msg": "📅 Sizning bugungi bronlaringiz",
+                "bookings_none_msg": "❌ Bugungi bronlar topilmadi.",
                 "bookings_otherday_msg": "📆 Bronlarni ko‘rish uchun sanani tanlang",
                 "bookings_otherday_next_msg": "📌 Tanlagan kuningizdagi bronlar:",
                 "booking_details_msg": "📌 Buyurtma №{id}\n\n👤 Mijoz: {client}\n🛎️ Xizmat: {service}\n💵 Narx: {price}\n🕒 Vaqt: {start_time} - {end_time}\n📋 Holat: {status}",
 
                 "breaks_msg": "⏸️ Tanaffuslarim",
+                "break_not_found_msg": "❌ Tanaffuslar topilmadi.",
                 "break_add_reason_msg": "📝 Tanaffus sababi:",
                 "break_add_time_msg": "🕒 Tanaffus vaqtini kiriting:",
                 "break_add_confirm_msg": "❓ Tanaffus qo'shishni tasdiqlaysizmi?",
@@ -38,13 +40,30 @@
                 "break_delete_confirm_msg": "❓ Tanaffusni o'chirishni tasdiqlaysizmi?",
                 "break_delete_success_msg": "✅ Tanaffus muvaffaqiyatli o'chirildi!",
 
+                "type_not_found_msg": "❌ Xizmat turi topilmadi!",
+                "type_add_msg": "➕ Yangi xizmat turi nomini kiriting. Masalan: - Bolalar strijkasi",
+                "type_added_msg": "✅ Yangi xizmat turi muvaffaqiyatli yaratildi!",
+                "type_delete_msg": "❌ Xizmat turini o'chirish uchun ID ni kiriting:",
+                "type_delete_confirm_msg": "❓ Ushbu xizmat turini o'chirishni tasdiqlaysizmi?",
+                "type_delete_success_msg": "✅ {type_name} nomli xizmat turi muvaffaqiyatli o‘chirildi!",
                 "services_msg": "💼 Xizmatlarim",
+                "service_not_found_msg": "❌ Xizmat topilmadi",
+                "service_add_msg": "✏️ Yangi xizmat qo‘shish uchun nomini kiriting.",
+                "service_added_msg": "✅ Yangi xizmat muvaffaqiyatli yaratildi!",
+                "service_delete_msg": "❌ Xizmatni o'chirish uchun ID ni kiriting:",
+                "service_delete_confirm_msg": "❓ Ushbu xizmatni o'chirishni tasdiqlaysizmi?",
+                "service_delete_success_msg": "✅ {service_name} nomli xizmat muvaffaqiyatli o‘chirildi!",
+                "name_edit_msg": "✏️ Ismni o'zgartirish:",
+                "description_edit_msg": "✏️ Tavsifni o'zgartirish:",
+                "duration_edit_msg": "🕒 Davomiylikni o'zgartirish:",
+                "price_edit_msg": "💵 Narxni o'zgartirish:",
 
                 "cabinet_msg": "📦 Kabinetim",
                 "phone_edit_msg": "📞 Telefon raqamimni o'zgartirish:",
                 "about_edit_msg": "ℹ️ Men haqimdani o'zgartirish:",
                 "photo_edit_msg": "📸 Rasmni o'zgartirish:",
                 "time_edit_msg": "🕒 Ish vaqtini o'zgartirish:",
+                "language_edit_msg": "🌐 Tilni o'zgartirish:",
 
                 "user_menu_msg": "🔰 Menyu"
             },
@@ -64,12 +83,21 @@
                 "break_delete": "❌ Tanaffusni o'chirish",
 
                 "types": "💼 Xizmatlarim",
+                "type_add": "➕ Yangi xizmat turi qo'shish",
+                "type_delete": "🗑 Xizmat turini o‘chirish",
+                "service_add": "➕ Yangi xizmat qo‘shish",
+                "service_delete": "🗑 Xizmatni o‘chirish",
+                "name_edit": "✏️ Ismni o'zgartirish",
+                "description_edit": "✏️ Tavsifni o'zgartirish",
+                "duration_edit": "🕒 Davomiylikni o'zgartirish",
+                "price_edit": "💵 Narxni o'zgartirish",
 
                 "cabinet": "📦 Kabinetim",
                 "phone_edit": "📞 Telefon raqamim",
                 "about_edit": "ℹ️ Men haqimda",
                 "photo_edit": "📸 Mening rasmim",
                 "time_edit": "🕒 Mening ish vaqtim",
+                "language_edit": "🌐 Mening tilim",
 
                 "user_menu": "🔰 Menyu"
             }

@@ -203,6 +203,9 @@ async def booking_forward_by_id(booking_id, barber_id):
 
 ################################# ==== BARBER TYPES ==== #################################
 
+async def get_barber_types_and_services(barber_id):
+    return await api_request("GET", f"/api/service-types/by-telegram/{barber_id}") or []
+
 async def get_barber_types(barber_id):
     return await api_request("GET", f"/api/service-types/only-type-by-telegram/{barber_id}/") or []
 
@@ -245,8 +248,8 @@ async def create_barber_break(datas):
 async def get_barber_breaks(barber_id):
     return await api_request("GET", f"/api/break/get_breaks_by_barber_id/{barber_id}/") or []
 
-async def get_barber_break_by_id(break_id):
-    return await api_request("GET", f"/api/break/{break_id}/")
+async def get_barber_break_by_id(break_id, barber_id):
+    return await api_request("GET", f"/api/break/{break_id}/barber_detail/{barber_id}/")
 
 async def update_barber_break_by_id(break_id, data):
     return await api_request("PATCH", f"/api/break/{break_id}/", json=data)

@@ -34,8 +34,8 @@ def br_main_menu(lang):
     kb.row(
         KeyboardButton(text=cf.get_text(lang, role, "button", "bookings")),
         KeyboardButton(text=cf.get_text(lang, role, "button", "breaks")),
-        KeyboardButton(text=cf.get_text(lang, role, "button", "types")),
         KeyboardButton(text=cf.get_text(lang, role, "button", "cabinet")),
+        KeyboardButton(text=cf.get_text(lang, role, "button", "types")),
         KeyboardButton(text=cf.get_text(lang, role, "button", "user_menu")),
         width=2
     )
@@ -167,11 +167,35 @@ async def br_types(lang, barber_id):
     kb = ReplyKeyboardBuilder()
     role = "barber"
     barber_types = await db.get_barber_types(barber_id)
-    kb.row(KeyboardButton(text=cf.get_text(lang, role, "button", "create_type")))
     for b_type in barber_types:
-        kb.add(KeyboardButton(text=b_type["name"]))
-    kb.adjust(1, 2)
-    kb.row(KeyboardButton(text=cf.get_text(lang, role, "button", "back")))
+        kb.add(KeyboardButton(text=f'🆔 {b_type["id"]} - 💈 {b_type["name"]}'))
+    kb.adjust(2)
+    kb.row(KeyboardButton(text=cf.get_text(lang, role, "button", "type_add")), KeyboardButton(text=cf.get_text(lang, role, "button", "type_delete")),
+           KeyboardButton(text=cf.get_text(lang, role, "button", "back")), width=2)
+    return kb.as_markup(resize_keyboard=True, input_field_placeholder=cf.translations["input_field_msg"])
+
+
+async def br_services(lang, type_id):
+    kb = ReplyKeyboardBuilder()
+    role = "barber"
+    barber_services = await db.get_barber_services(type_id)
+    for b_service in barber_services:
+        kb.add(KeyboardButton(text=f'🆔 {b_service["id"]} - ✂️ {b_service["name"]}'))
+    kb.adjust(3)
+    kb.row(KeyboardButton(text=cf.get_text(lang, role, "button", "service_add")), KeyboardButton(text=cf.get_text(lang, role, "button", "service_delete")),
+           KeyboardButton(text=cf.get_text(lang, role, "button", "back_main")), KeyboardButton(text=cf.get_text(lang, role, "button", "back")),
+            width=2)
+    return kb.as_markup(resize_keyboard=True, input_field_placeholder=cf.translations["input_field_msg"])
+
+
+def br_service_detail(lang):
+    kb = ReplyKeyboardBuilder()
+    role = "barber"
+    kb.row(
+        KeyboardButton(text=cf.get_text(lang, role, "button", "name_edit")), KeyboardButton(text=cf.get_text(lang, role, "button", "description_edit")),
+        KeyboardButton(text=cf.get_text(lang, role, "button", "duration_edit")), KeyboardButton(text=cf.get_text(lang, role, "button", "price_edit")),
+        KeyboardButton(text=cf.get_text(lang, role, "button", "back_main")), KeyboardButton(text=cf.get_text(lang, role, "button", "back")),
+        width=2)
     return kb.as_markup(resize_keyboard=True, input_field_placeholder=cf.translations["input_field_msg"])
 
 ##################################################################################################################
@@ -179,12 +203,22 @@ async def br_types(lang, barber_id):
 def br_cabinet(lang):
     kb = ReplyKeyboardBuilder()
     role = "barber"
-    kb.add(
+    kb.row(
         KeyboardButton(text=cf.get_text(lang, role, "button", "phone_edit")),
         KeyboardButton(text=cf.get_text(lang, role, "button", "about_edit")),
         KeyboardButton(text=cf.get_text(lang, role, "button", "photo_edit")),
         KeyboardButton(text=cf.get_text(lang, role, "button", "time_edit")),
-        KeyboardButton(text=cf.get_text(lang, role, "button", "back"))
+        KeyboardButton(text=cf.get_text(lang, role, "button", "back")), 
+        KeyboardButton(text=cf.get_text(lang, role, "button", "language_edit")), width=2
     )
-    kb.adjust(2)
+    return kb.as_markup(resize_keyboard=True, input_field_placeholder=cf.translations["input_field_msg"])
+
+def br_cabinet_language(lang):
+    kb = ReplyKeyboardBuilder()
+    role = "barber"
+    kb.row(
+        KeyboardButton(text="🇺🇿 uz"), KeyboardButton(text="🇷🇺 ru"),
+        KeyboardButton(text=cf.get_text(lang, role, "button", "back_main")), KeyboardButton(text=cf.get_text(lang, role, "button", "back")),
+        width=2
+    )
     return kb.as_markup(resize_keyboard=True, input_field_placeholder=cf.translations["input_field_msg"])

@@ -16,15 +16,27 @@ class barber(StatesGroup):
     break_delete = State()
     break_delete_confirm = State()
 
-    types = State()
-    type_add = State()
-    type_delete = State()
-
     cabinet = State()
     cabinet_phone = State()
     cabinet_about = State()
     cabinet_photo = State()
     cabinet_time = State()
+    cabinet_language = State()
+
+    types = State()
+    type_add = State()
+    type_delete = State()
+    type_delete_confirm = State()
+    services = State()
+    service_add = State()
+    service_delete = State()
+    service_delete_confirm = State()
+    service_detail = State()
+    service_name = State()
+    service_description = State()
+    service_duration = State()
+    service_price = State()
+
 
 class admin(StatesGroup):
     main_menu = State()
