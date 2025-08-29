@@ -9,6 +9,8 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from aiogram.types import FSInputFile, BufferedInputFile
 
+from configs import functions as cf
+
 logger = logging.getLogger(__name__)
 
 LOGO_PATH = Path("images/logo.png")
@@ -46,20 +48,20 @@ RU_DAYS = ["Понедельник", "Вторник", "Среда", "Четве
 def get_today(lang):
     today = datetime.today()
     if lang == "🇺🇿 uz":
-        return f"{today.today:02d}.{today.month:02d} {UZ_DAYS[today.weekday()]}"
+        return {"full_date": today.strftime("%Y-%m-%d"), "date": f"{today.day:02d}.{today.month:02d} {UZ_DAYS[today.weekday()]}"}
     elif lang == "🇷🇺 ru":
-        return f"{today.today:02d}.{today.month:02d} {RU_DAYS[today.weekday()]}"
+        return {"full_date": today.strftime("%Y-%m-%d"), "date": f"{today.day:02d}.{today.month:02d} {RU_DAYS[today.weekday()]}"} 
 
-def get_days_from_today(lang: str = "uz"):
+def get_days_from_today(lang):
     days = []
     today = datetime.today()
-    for i in range(30): 
+    for i in range(1, 31): 
         day = today + timedelta(days=i)
         weekday = day.weekday()  
         if lang == "🇺🇿 uz":
-            formatted = f"{day.day:02d}.{day.month:02d} {UZ_DAYS[weekday]}"
+            formatted = {"full_date": day.strftime("%Y-%m-%d"), "date": f"{day.day:02d}.{day.month:02d} {UZ_DAYS[weekday]}"}
         elif lang == "🇷🇺 ru":
-            formatted = f"{day.day:02d}.{day.month:02d} {RU_DAYS[weekday]}"
+            formatted = {"full_date": day.strftime("%Y-%m-%d"), "date": f"{day.day:02d}.{day.month:02d} {RU_DAYS[weekday]}"}
         days.append(formatted)
 
     return days
@@ -132,6 +134,19 @@ async def get_random_modes(message, user_id, ReplyKeyboardRemove):
     msg = await message.bot.send_message(user_id, random.choice(SECRET_MESSAGES), reply_markup=ReplyKeyboardRemove())
     await asyncio.sleep(0.025)
     await msg.delete()
+
+AVAILABLE_BUTTONS = [
+    "notifications",
+    "bookings",
+    "settings",
+    "clients",
+    "analytics",
+    "user_menu"
+]
+
+def button_title(lang: str, role: str, button_id: str) -> str:
+    return cf.get_text(lang, role, "button", button_id)
+
 
 def generate_clients_csv(clients: list[dict]) -> BufferedInputFile:
     output = io.StringIO()

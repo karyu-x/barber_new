@@ -3,7 +3,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-BASE_URL =  "http://20.124.93.156:8080"
+BASE_URL = "https://15497aeb0fe6.ngrok-free.app"
 
 session: aiohttp.ClientSession | None = None
 
@@ -88,16 +88,17 @@ async def get_users_all():
     return data_base
 
 
-async def get_user_by_telegram(telegram_id):
-    user = await api_request(method="GET", endpoint=f"/api/auth/users/if_exists/{telegram_id}/")
-
-    if user is None:
+async def get_user_by_id(telegram_id=None, id=None):
+    if id is not None:
+        user = await api_request(method="GET", endpoint=f"/api/auth/users/get_user_data/{id}/")
+    elif telegram_id is not None:
+        user = await api_request(method="GET", endpoint=f"/api/auth/users/if_exists/{telegram_id}/")
+    else:
         return {}
-    
-    lang_code = user.get("language").lower()
+
+    lang_code = user.get("language", "").lower()
     language = "🇺🇿 uz" if lang_code == "uz" else "🇷🇺 ru"
     user["language"] = language
-
     return user
 
 ################################# ==== ROLES ==== #################################
@@ -110,11 +111,6 @@ async def get_directors_all():
 async def create_director_by_phone(director_phone):
     data = {"role_id": 3}
     return await api_request("PATCH", f"/api/auth/users/add_role/{director_phone}/", json=data)
-
-async def get_director_by_telegram_id(telegram_id):
-    user = await get_user_by_telegram(telegram_id)
-    if 3 in user.get("roles"):
-        return user
 
 async def update_director_by_id(director_id, data):
     return await api_request("PATCH", f"/api/auth/users/{director_id}/", json=data)
@@ -133,11 +129,6 @@ async def create_admin_by_phone(admin_phone):
     data = {"role_id": 4}
     return await api_request("PATCH", f"/api/auth/users/add_role/{admin_phone}/", json=data)
 
-async def get_admin_by_telegram_id(telegram_id):
-    user = await get_user_by_telegram(telegram_id)
-    if 4 in user.get("roles"):
-        return user
-
 async def update_admin_by_id(admin_id, data):
     return await api_request("PATCH", f"/api/auth/users/{admin_id}/", json=data)
 
@@ -155,11 +146,6 @@ async def create_barber_by_phone(barber_phone):
     data = {"role_id": 1}
     return await api_request("PATCH", f"/api/auth/users/add_role/{barber_phone}/", json=data)
 
-async def get_barber_by_telegram_id(telegram_id):
-    user = await get_user_by_telegram(telegram_id)
-    if 1 in user.get("roles"):
-        return user
-
 async def update_barber_by_id(barber_id, data):
     return await api_request("PATCH", f"/api/auth/users/{barber_id}/", json=data)
 
@@ -172,12 +158,7 @@ async def delete_barber_by_phone(barber_phone):
 async def get_clients_all():
     role = 2
     return await api_request(method="GET", endpoint=f"/api/auth/users/by-role/{role}/")
-    
-async def get_client_by_telegram_id(telegram_id):
-    user = await get_user_by_telegram(telegram_id)
-    if 2 in user.get("roles"):
-        return user
-    
+
 async def get_client_by_phone(client_phone):
     clients = await get_clients_all()
     for c in clients:
@@ -195,24 +176,41 @@ async def unban_client_by_phone(client_phone):
 
 ################################# ==== BARBER BOOKINGS ==== #################################
 
-async def get_barber_bookings(barber_telegram_id):
-    return await api_request("GET", f"/api/booking/get_booking/{barber_telegram_id}/") or []
+async def get_barber_bookings(barber_id, date):
+    return await api_request("GET", f"/api/booking/get_bookings/{barber_id}/{date}/") or []
+
+
+async def get_booking_by_id(booking_id):
+    return await api_request("GET", f"/api/booking/get_bookings_by_id/{booking_id}/")
+
+
+async def get_active_booking_by_client_phone(phone_number):
+    return await api_request("GET", f"/api/booking/get_active_booking/{phone_number}/")
+
+
+async def booking_cancel_by_id(booking_id, tg_id, reason):
+    data = {
+        "telegram_id": tg_id,
+        "cancel_reason": reason
+    }
+    return await api_request("POST", f"/api/booking/{booking_id}/cancel/", json=data)
+
+
+async def booking_forward_by_id(booking_id, barber_id):
+    data = { "barber": barber_id }
+    return await api_request("PATCH", f"/api/booking/{booking_id}/", json=data)
 
 
 ################################# ==== BARBER TYPES ==== #################################
 
 async def get_barber_types(barber_id):
-    return await api_request(
-        method="GET",
-        endpoint=f"/api/service-types/only-type-by-telegram/{barber_id}/"
-    ) or []
+    return await api_request("GET", f"/api/service-types/only-type-by-telegram/{barber_id}/") or []
 
 async def create_barber_type(data):
     return await api_request("POST", "/api/service-types/", json=data)
 
-async def get_barber_type_by_id(barber_id, type_id):
-    types = await get_barber_types(barber_id)
-    return next((item for item in types if item["id"] == type_id), None)
+async def get_barber_type_by_id(type_id):
+    return await api_request("GET", f"/api/service-types/{type_id}/")
 
 async def update_barber_type_by_id(type_id, data):
     return await api_request("PATCH", f"/api/service-types/{type_id}/", json=data)
@@ -230,9 +228,8 @@ async def get_barber_services(type_id):
 async def create_barber_service(data):
     return await api_request("POST", "/api/services/", json=data)
 
-async def get_barber_service_by_id(type_id, service_id):
-    services = await get_barber_services(type_id)
-    return next((item for item in services if item["id"] == service_id), None)
+async def get_barber_service_by_id(service_id):
+    return await api_request("GET", f"/api/services/{service_id}/") or None
 
 async def update_barber_service_by_id(service_id, data):
     return await api_request("PATCH", f"/api/services/{service_id}/", json=data)
@@ -242,79 +239,17 @@ async def delete_barber_service_by_id(service_id):
 
 ################################################################
 
-def rating_barbers():
-    return {"Ali": 4.5, "Sherzod": 3.9, "Sanjar": 5.0, "Abdulaziz": 4.2}
+async def create_barber_break(datas):
+    return await api_request("POST", "/api/break/", json=datas)
 
-async def all_feedbacks():
-    return [
-        {
-            "type": "Barber",
-            "barber_name": "Ali",
-            "service": 5.0,
-            "communication": 3.5,
-            "clean": "-",
-            "price": "-",
-            "text": "Yaxshi soch olarkan",
-            "date": "2025-08-01",
-            "client": {
-                "name": "Javlon",
-                "phone": "+998901234567"
-            }
-        },
-        {
-            "type": "Salon",
-            "barber_name": "-",
-            "service": 4.8,
-            "communication": 4.2,
-            "clean": 4.9,
-            "price": 4.5,
-            "text": "Toza va zamonaviy salon. Narxlari ham o‘rtacha.",
-            "date": "2025-08-01",
-            "client": {
-                "name": "Aziza",
-                "phone": "+998998877665"
-            }
-        },
-        {
-            "type": "Barber",
-            "barber_name": "Sanjar",
-            "service": 4.5,
-            "communication": 4.0,
-            "clean": "-",
-            "price": "-",
-            "text": "Juda muloyim va o‘z ishining ustasi.",
-            "date": "2025-07-30",
-            "client": {
-                "name": "Bekzod",
-                "phone": "+998935554433"
-            }
-        },
-        {
-            "type": "Barber",
-            "barber_name": "Sherzod",
-            "service": 3.8,
-            "communication": 4.0,
-            "clean": "-",
-            "price": "-",
-            "text": "Yaxshi, lekin vaqtida chaqirmadi.",
-            "date": "2025-07-28",
-            "client": {
-                "name": "Dilshod",
-                "phone": "+998911112233"
-            }
-        },
-        {
-            "type": "Salon",
-            "barber_name": "-",
-            "service": 4.2,
-            "communication": 4.5,
-            "clean": 5.0,
-            "price": 4.0,
-            "text": "Hammasi zo’r! Salonda hushmuomalalik yuqori.",
-            "date": "2025-07-26",
-            "client": {
-                "name": "Madina",
-                "phone": "+998902223344"
-            }
-        }
-    ]
+async def get_barber_breaks(barber_id):
+    return await api_request("GET", f"/api/break/get_breaks_by_barber_id/{barber_id}/") or []
+
+async def get_barber_break_by_id(break_id):
+    return await api_request("GET", f"/api/break/{break_id}/")
+
+async def update_barber_break_by_id(break_id, data):
+    return await api_request("PATCH", f"/api/break/{break_id}/", json=data)
+
+async def delete_barber_break_by_id(break_id):
+    return await api_request("DELETE", f"/api/break/{break_id}/")

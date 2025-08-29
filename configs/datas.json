@@ -2,77 +2,126 @@
     "input_field_msg": "💈 Perfect Barber",
 
     "🇺🇿 uz": {
+        "start_msg": "👋 Assalomu alaykum!\n\nBotdan foydalanishni boshlash uchun quyidagi menyudan kerakli bo‘limni tanlang",
         "errors": {
-            "unknown_command": "❗ Kechirasiz, bu buyruq tushunarsiz. Quyidagi menyudan birini tanlang.",
-            "photo_required_msg": "📸 Iltimos, rasmni bevosita surat sifatida yuboring. Fayl shaklida yubormang.",
-            "invalid_button_format": "❗ Tugma noto‘g‘ri formatda. Iltimos, <code>Matn - havola</code> ko‘rinishida kiriting.",
+            "unknown_command": "❗ Kechirasiz, bu buyruq tushunarsiz. Quyidagi menyudan birini tanlang",
+            "photo_required_msg": "📸 Iltimos, rasmni bevosita surat sifatida yuboring. Fayl shaklida yubormang",
+            "invalid_button_format": "❗ Tugma noto‘g‘ri formatda. Iltimos, Matn - havola ko‘rinishida kiriting",
             "invalid_phone_number_msg": "❌ Noto‘g‘ri formatdagi telefon raqam. Iltimos, quyidagi formatda kiriting:\n998901234567 yoki +998901234567",
-            "invalid_duration_msg": "❌ Noto‘g‘ri davomiylik! Davomiylikni daqiqalarda (masalan, 30) yoki HH:MM (masalan, 01:30).",
-            "invalid_time_range_msg": "❌ Iltimos, ish vaqtini to‘g‘ri formatda kiriting (masalan: 09:00 - 18:00)",
-            "invalid_price_msg": "❌ Noto‘g‘ri narx! Iltimos, narxni faqat raqam bilan kiriting. Masalan: <b>50000</b>"
-        },
-
-        "user": {
-            "message": {
-            },
-
-            "button": {
-            }
+            "invalid_duration_msg": "❌ Noto‘g‘ri davomiylik! Davomiylikni daqiqalarda (masalan, 30) yoki HH:MM (masalan, 01:30)",
+            "invalid_date_format_msg": "📅 Sana noto‘g‘ri formatda kiritildi!\n\nIltimos, sanani quyidagicha yozing: 18-08 15:00-16:30",
+            "invalid_time_range_msg": "⏱️ Vaqt noto‘g‘ri formatda kiritildi!\n\nTo‘g‘ri misol: 15:00-16:30",
+            "invalid_price_msg": "❌ Noto‘g‘ri narx! Iltimos, narxni faqat raqam bilan kiriting. Masalan: 50000",
+            "no_access_button": "❌ Sizda ushbu tugmani ishlatish huquqi yo‘q",
+            "end_time_must_be_after_start_time_msg": "❌ Tugash vaqti boshlanish vaqtidan keyin bo'lishi kerak."
         },
 
         "barber": {
             "message": {
+                "main_menu_msg": "🏠 Asosiy menyu — kerakli bo‘limni tanlang:",
+
+                "bookings_msg": "📅 Sizning barcha bronlaringiz",
+                "bookings_today_msg": "📅 Sizning bugungi bronlaringiz",
+                "bookings_otherday_msg": "📆 Bronlarni ko‘rish uchun sanani tanlang",
+                "bookings_otherday_next_msg": "📌 Tanlagan kuningizdagi bronlar:",
+                "booking_details_msg": "📌 Buyurtma №{id}\n\n👤 Mijoz: {client}\n🛎️ Xizmat: {service}\n💵 Narx: {price}\n🕒 Vaqt: {start_time} - {end_time}\n📋 Holat: {status}",
+
+                "breaks_msg": "⏸️ Tanaffuslarim",
+                "break_add_reason_msg": "📝 Tanaffus sababi:",
+                "break_add_time_msg": "🕒 Tanaffus vaqtini kiriting:",
+                "break_add_confirm_msg": "❓ Tanaffus qo'shishni tasdiqlaysizmi?",
+                "break_add_success_msg": "✅ Tanaffus muvaffaqiyatli qo'shildi!",
+                "break_edit_msg": "✏️ Tanaffusni tahrirlash uchun ID ni kiriting:",
+                "break_edit_time_msg": "🕒 Tanaffusning tugash vaqtini kiriting:",
+                "break_edit_success_msg": "✅ Tanaffus muvaffaqiyatli tahrirlandi!",
+                "break_delete_msg": "❌ Tanaffusni o'chirish uchun ID ni kiriting:",
+                "break_delete_confirm_msg": "❓ Tanaffusni o'chirishni tasdiqlaysizmi?",
+                "break_delete_success_msg": "✅ Tanaffus muvaffaqiyatli o'chirildi!",
+
+                "services_msg": "💼 Xizmatlarim",
+
+                "cabinet_msg": "📦 Kabinetim",
+                "phone_edit_msg": "📞 Telefon raqamimni o'zgartirish:",
+                "about_edit_msg": "ℹ️ Men haqimdani o'zgartirish:",
+                "photo_edit_msg": "📸 Rasmni o'zgartirish:",
+                "time_edit_msg": "🕒 Ish vaqtini o'zgartirish:",
+
+                "user_menu_msg": "🔰 Menyu"
             },
-
             "button": {
-            }
-        },
+                "back": "🔙 Orqaga",
+                "back_main": "🏠 Asosiy menyu",
+                "confirm": "✅ Tasdiqlash",
 
-        "admin": {
-            "message": {
-            },
+                "bookings": "📅 Bronlarim",
+                "bookings_today": "📅 Bugungi bronlarim",
+                "bookings_otherday": "📆 Boshqa kun bronlarim",
 
-            "button": {
+                "breaks": "⏸️ Tanaffuslar",
+                "breaks_all": "⏸️ Barcha tanaffuslar",
+                "break_add": "📝 Tanaffus qo'shish",
+                "break_edit": "✏️ Tanaffusni tahrirlash",
+                "break_delete": "❌ Tanaffusni o'chirish",
+
+                "types": "💼 Xizmatlarim",
+
+                "cabinet": "📦 Kabinetim",
+                "phone_edit": "📞 Telefon raqamim",
+                "about_edit": "ℹ️ Men haqimda",
+                "photo_edit": "📸 Mening rasmim",
+                "time_edit": "🕒 Mening ish vaqtim",
+
+                "user_menu": "🔰 Menyu"
             }
         },
 
         "director": {
             "message": {
-                "start_msg": "👋 <b>Assalomu alaykum!</b>\n\nBotdan foydalanishni boshlash uchun quyidagi menyudan kerakli bo‘limni tanlang.",
-                "main_menu_msg": "🏠 <b>Asosiy menyu</b> — kerakli bo‘limni tanlang:",
+                "main_menu_msg": "🏠 Asosiy menyu — kerakli bo‘limni tanlang:",
 
-                "notifications_msg": "📢 <b>Bildirishnomalar va xabarnomalar</b>\n\nMijozlarga yangi xizmatlar, aksiyalar yoki eslatmalar yuborish uchun bu bo‘limdan foydalaning. Xabar matnini yozing, surat va tugmalar qo‘shing — biz uni barcha kerakli foydalanuvchilarga yetkazamiz.",
+                "notifications_msg": "📢 Bildirishnomalar va xabarnomalar\n\nMijozlarga yangi xizmatlar, aksiyalar yoki eslatmalar yuborish uchun bu bo‘limdan foydalaning. Xabar matnini yozing, surat va tugmalar qo‘shing — biz uni barcha kerakli foydalanuvchilarga yetkazamiz.",
                 "input_text_msg": "✍️ Post matnini kiriting yoki yuboring:",
-                "text_accepted_msg": "✅ Siz yuborgan xabar qabul qilindi:\n\n<b>{}</b>",
+                "text_accepted_msg": "✅ Siz yuborgan xabar qabul qilindi:\n\n{}",
                 "input_photo_msg": "🖼 Suratni yuboring (agar mavjud bo‘lsa):",
                 "photo_accepted_msg": "✅ Surat qabul qilindi.",
-                "input_button_msg": "🔗 Tugma uchun matn va havolani kiriting.\nMasalan: <code>Vebsayt - https://example.com</code>",
+                "input_button_msg": "🔗 Tugma uchun matn va havolani kiriting.\nMasalan: Vebsayt - https://example.com",
                 "button_list_title": "Jami tugmalar:",
                 "check_post_msg": "✅ Post ko‘rinishini tekshiring. Hammasi to‘g‘rimi?",
                 "notification_not_found_msg": "‼️ Siz hali xabarnoma kiritmagansiz",
                 "confirm_post_msg": "📨 Ushbu xabarni yuborishni istaysizmi?\n\n✅ Yuborish uchun - Tasdiqlash - tugmasini bosing.",
-                "post_sent_result": "✅ Xabarnoma tugatildi!\n\n📤 Xabar yuborildi: <b>{success}</b> ta foydalanuvchiga\n\n❌ Xatolik: <b>{failed}</b> ta",
+                "post_sent_result": "✅ Xabarnoma tugatildi!\n\n📤 Xabar yuborildi: {success} ta foydalanuvchiga\n\n❌ Xatolik: {failed} ta",
 
-                "bookings_msg": "📅 <b>Buyurtmalar</b>\nAktiv va kelgusi bronlar ro‘yxatini ko‘rishingiz mumkin.",            
+                "bookings_msg": "📅 Buyurtmalar\nAktiv va kelgusi bronlar ro‘yxatini ko‘rishingiz mumkin.",            
                 "bookings_today_msg": "📅 Bugungi bronlarni ko‘rish uchun, iltimos, barberni tanlang.",
                 "bookings_otherday_msg": "📆 Bronlarni ko‘rish uchun sanani tanlang.",
                 "bookings_otherday_next_msg": "Bronlarni ko'rish uchun, iltimos barberni tanlang",
-                "bookings_barber_msg": "",
-                "bookings_cancel_msg": "❌ Bronni bekor qilish uchun, ",
-                "bookings_forward_msg": "🔁 Bronni boshqa sanaga yoki boshqa barberga o‘tkazish uchun ",
+                "bookings_barber_msg": "{barber_name} ismli barberda bor bronlar:",
 
-                "settings_msg": "⚙️ <b>Sozlamalar</b>\nBot ishini o‘zingizga mos ravishda sozlang.",
+                "booking_info_msg": "📌 Buyurtma №{id}\n\n👤 Mijoz: {client}\n✂️ Barber: {barber}\n🛎️ Xizmat: {service}\n💵 Narx: {price}\n🕒 Vaqt: {start_time} - {end_time}\n📋 Holat: {status}",
+                "booking_not_found_msg": "❌ Buyurtma topilmadi.",
+                "booking_reminder_sent_msg": "⏰ Mijozga eslatma yuborildi.",
+                "booking_reminder_msg": "⏰ Hurmatli mijoz, sizning navbatingiz yaqinlashmoqda!\n\n📅 Vaqt: {0}\n\nIltimos, belgilangan vaqtda yetib keling.",
+                "booking_cancel_msg": "❌ Bronni bekor qilish uchun, sababni kiriting",
+                "booking_cancel_confirm_msg": "❓ Siz rostdan ham bu buyurtmani bekor qilmoqchimisiz?\n\n📝 Sabab: {reason}\n\n✅ Tasdiqlaysizmi?",
+                "booking_cancelled_success_msg": "❌ Tanlagan buyurtmangiz bekor qilindi.\n\n✅ Bekor qilish muvaffaqiyatli amalga oshirildi.\n\n📝 Sabab: {reason}",
+                "bookings_cancel_msg": "❌ Bronni bekor qilish uchun, mijozni telefon raqamini kiriting:\n\nMasalan: +998901234567",
+                "booking_forward_msg": "🔁 Bronni boshqa barberga o‘tkazish uchun barberni tanlang.",
+                "booking_forward_confirm_msg": "❓ Siz rostdan ham bu buyurtmani - {barber} - barberga o‘tkazmoqchimisiz?\n\n✅ Tasdiqlaysizmi?",
+                "booking_forwarded_success_msg": "✅ Buyurtma boshqa barberga muvaffaqiyatli yo‘naltirildi!",
+                "bookings_forward_msg": "🔁 Bronni boshqa sanaga yoki boshqa barberga o‘tkazish uchun, mijozni telefon raqamini kiriting:\n\nMasalan: +998901234567",
 
-                "services_prices_msg": "💈 <b>Xizmatlar va narxlar</b>\n\nQuyidagi ro‘yxatdan kerakli barberni tanlang. Tanlaganingizdan so‘ng, uning xizmat turlari va narxlarini ko‘rishingiz yoki alohida sozlashingiz mumkin.",
-                "barber_types_msg": "💇‍♂️ <b>{barber}</b> uchun mavjud xizmat turlarini quyida ko‘rishingiz mumkin. Har bir xizmat turi alohida sozlanadi.",
+                "settings_msg": "⚙️ Sozlamalar\nBot ishini o‘zingizga mos ravishda sozlang.",
+
+                "services_prices_msg": "💈 Xizmatlar va narxlar\n\nQuyidagi ro‘yxatdan kerakli barberni tanlang. Tanlaganingizdan so‘ng, uning xizmat turlari va narxlarini ko‘rishingiz yoki alohida sozlashingiz mumkin.",
+                "barber_types_msg": "💇‍♂️ {barber} uchun mavjud xizmat turlarini quyida ko‘rishingiz mumkin. Har bir xizmat turi alohida sozlanadi.",
                 "barber_types_no_msg": "⚠️ Hozircha hech qanday xizmat turlari mavjud emas.\n\n➕ Yangi xizmat turini qo‘shishingiz mumkin.",
 
-                "type_services_msg": "✂️ <b>{type_name}</b> uchun mavjud xizmatlar ro‘yxati quyida. Keraklisini tanlang yoki yangi xizmat qo‘shing.",
+                "type_services_msg": "✂️ {type_name} uchun mavjud xizmatlar ro‘yxati quyida. Keraklisini tanlang yoki yangi xizmat qo‘shing.",
                 "type_not_found_msg": "❌ Servis turi topilmadi",
-                "type_add_msg": "➕ Yangi xizmat turi nomini kiriting. Masalan: \"Bolalar strijkasi\"",
-                "type_add_succes_msg": "✅ \"{service_name}\" nomli xizmat turi muvaffaqiyatli qo‘shildi.",
-                "type_delete_msg": "🗑 <b>Ushbu xizmat turini o‘chirishni xohlaysizmi?</b>\n\n❗ Bu amal qaytarilmaydi.\n\nTasdiqlaysizmi?",
-                "type_delete_success_msg": "✅ \"{type_name}\" nomli xizmat turi muvaffaqiyatli o‘chirildi.",
+                "type_add_msg": "➕ Yangi xizmat turi nomini kiriting. Masalan: Bolalar strijkasi",
+                "type_add_succes_msg": "✅ {service_name} nomli xizmat turi muvaffiyatli qo‘shildi.",
+                "type_delete_msg": "🗑 Ushbu xizmat turini o‘chirishni xohlaysizmi?\n\n❗ Bu amal qaytarilmaydi.\n\nTasdiqlaysizmi?",
+                "type_delete_success_msg": "✅ {type_name} nomli xizmat turi muvaffiyatli o‘chirildi.",
 
                 "service_detail_msg": "📜 Servis haqida: {description}\n⏱ Davomiyligi: {duration}\n💵 Narxi: {price} so‘m",
                 "service_not_found_msg": "❌ Xizmat topilmadi",
@@ -80,69 +129,62 @@
                 "service_add_msg": "✏️ Yangi xizmat qo‘shish uchun kerakli ma'lumotlarni kiriting.",
                 "service_add_success_msg": "✅ Yangi xizmat muvaffaqiyatli qo‘shildi.",
                 "service_delete_msg": "❗️ Xizmatni o‘chirishni tasdiqlaysizmi?",
-                "service_delete_success_msg": "✅ Xizmat turi muvaffaqiyatli o‘chirildi.",
+                "service_delete_success_msg": "✅ Xizmat turi muvaffiyatli o‘chirildi.",
                 "service_edit_msg": "✏️ Tahrirlash uchun kerakli bo‘limni tanlang.",
                 "service_edit_name_msg": "✏️ Yangi xizmat nomini kiriting:",
-                "service_edit_name_success_msg": "✅ Xizmat nomi muvaffaqiyatli o‘zgartirildi.",
+                "service_edit_name_success_msg": "✅ Xizmat nomi muvaffiyatli o‘zgartirildi.",
                 "service_edit_description_msg": "📝 Yangi tavsifni kiriting:",
-                "service_edit_description_success_msg": "✅ Xizmat tavsifi muvaffaqiyatli o‘zgartirildi.",
+                "service_edit_description_success_msg": "✅ Xizmat tavsifi muvaffiyatli o‘zgartirildi.",
                 "service_edit_duration_msg": "⏱ Davomiylikni kiriting: daqiqalarda (masalan, 30) yoki HH:MM (masalan, 01:30).",
-                "service_edit_duration_success_msg": "✅ Xizmat davomiyligi muvaffaqiyatli o‘zgartirildi.",
+                "service_edit_duration_success_msg": "✅ Xizmat davomiyligi muvaffiyatli o‘zgartirildi.",
                 "service_edit_price_msg": "💵 Yangi narxni kiriting (so‘mda):",
-                "service_edit_price_success_msg": "✅ Xizmat narxi muvaffaqiyatli o‘zgartirildi.",
+                "service_edit_price_success_msg": "✅ Xizmat narxi muvaffiyatli o‘zgartirildi.",
 
-                "working_hours_msg": "vaqtlar",
-
-                "barbers_msg": "💈 <b>Barberlar ro‘yxati</b>\nUstalar haqida ma’lumot va ularning ish holatini kuzatish uchun.",
+                "barbers_msg": "💈 Barberlar ro‘yxati\nUstalar haqida ma’lumot va ularning ish holatini kuzatish uchun.",
                 "barber_not_found_msg": "😕 Bunday ismli barber topilmadi. Iltimos, roʻyxatdan birortasini tanlang yoki ortga qayting.",
                 "barber_add_msg": "✂️ Yangi barber qo‘shish uchun telefon raqamini kiriting:",
                 "barber_add_success_msg": "✅ Yangi barber qo‘shildi!\n📱 Telefon raqami: {phone}",
                 "barber_add_phone_msg": "📞 Barber telefon raqamini kiriting:",
-                "barber_info_msg": "👤 <b>Ismi:</b> {name}\n📞 <b>Telefon:</b> {phone_number}\n📄 <b>Tavsif:</b> {description}\n⭐️ <b>Reyting:</b> {rating}\n🕘 <b>Ish vaqti:</b> {from_hour} - {to_hour}\n🖼 <b>Rasm:</b> {photo}",
+                "barber_info_msg": "👤 Ismi: {name}\n📞 Telefon: {phone_number}\n📄 Tavsif: {description}\n⭐️ Reyting: {rating}\n🕘 Ish vaqti: {from_hour} - {to_hour}\n🖼 Rasm: {photo}",
                 "barber_edit_phone_msg": "📞 Barber telefon raqamini qayta kiriting:",
-                "barber_edit_phone_success_msg": "📞 Telefon raqami muvaffaqiyatli yangilandi.",
+                "barber_edit_phone_success_msg": "📞 Telefon raqami muvaffiyatli yangilandi.",
                 "barber_edit_description_msg": "📝 Barber tavsifini qayta yozing:",
-                "barber_edit_description_success_msg": "📝 Tavsif muvaffaqiyatli yangilandi.",
+                "barber_edit_description_success_msg": "📝 Tavsif muvaffiyatli yangilandi.",
                 "barber_edit_photo_msg": "🖼 Barber rasmi yuboring:",
-                "barber_edit_photo_success_msg": "📸 Rasm muvaffaqiyatli yuklandi.",
+                "barber_edit_photo_success_msg": "📸 Rasm muvaffiyatli yuklandi.",
                 "barber_edit_time_msg": "🕒 Ish vaqtini kiriting (masalan: 09:00-18:00):",
-                "barber_edit_time_success_msg": "🕒 Ish vaqti muvaffaqiyatli o‘zgartirildi.",
-                "barber_delete_msg": "❗️Siz <b>{barber_name}</b> nomli barberni oʻchirmoqchisiz. Ishonchingiz komilmi?",
-                "barber_delete_success_msg": "🗑️ Barber muvaffaqiyatli o'chirib tashlandi.",
+                "barber_edit_time_success_msg": "🕒 Ish vaqti muvaffiyatli o‘zgartirildi.",
+                "barber_delete_msg": "❗️Siz {barber_name} nomli barberni oʻchirmoqchisiz. Ishonchingiz komilmi?",
+                "barber_delete_success_msg": "🗑️ Barber muvaffiyatli o'chirib tashlandi.",
 
-                "admins_msg": "👨‍💼 <b>Administratorlar</b>\nBot boshqaruvida qatnashadigan administratorlar roʻyxati.",
-                "admin_add_msg": "➕ <b>Yangi administrator qoʻshish</b>\nIltimos, qoʻshmoqchi boʻlgan administratorning 📱 telefon raqamini quyidagi formatda yuboring:\n\n<code>+998 XX XXX XX XX</code>",
-                "admin_add_success_msg": "✅ <b>Administrator muvaffaqiyatli qoʻshildi!</b>\nU endi bot boshqaruvida qatnashishi mumkin.",
-                "admin_info_msg": "ℹ️ <b>Administrator maʼlumotlari</b>\n👤 Ism: <b>{name}</b>\n📱 Telefon: <b>{phone}</b>\n\n🛠 <b>Mavjud tugmalar:</b>\n{buttons}",
-                "admin_edit_phone_msg": "📱 <b>Telefon raqamini oʻzgartirish</b>\nAdministratorning yangi telefon raqamini kiriting:\n\n<code>+998 XX XXX XX XX</code>",
-                "admin_edit_phone_success_msg": "📞 Telefon raqami muvaffaqiyatli yangilandi.",
-                "admin_edit_button_msg": "🎛 <b>Tugmalarni tahrirlash</b>\nAdministrator uchun mavjud bo‘lgan tugmalarni tanlang yoki o‘chirib tashlang.",
+                "admins_msg": "👨‍💼 Administratorlar\nBot boshqaruvida qatnashadigan administratorlar roʻyxati.",
+                "admin_add_msg": "➕ Yangi administrator qoʻshish\nIltimos, qoʻshmoqchi boʻlgan administratorning 📱 telefon raqamini quyidagi formatda yuboring:\n\n+998 XX XXX XX XX",
+                "admin_add_success_msg": "✅ Administrator muvaffiyatli qoʻshildi!\nU endi bot boshqaruvida qatnashishi mumkin.",
+                "admin_info_msg": "ℹ️ Administrator maʼlumotlari\n👤 Ism: {name}\n📱 Telefon: {phone}\n\n🛠 Mavjud tugmalar:\n{buttons}",
+                "admin_edit_phone_msg": "📱 Telefon raqamini oʻzgartirish\nAdministratorning yangi telefon raqamini kiriting:\n\n+998 XX XXX XX XX",
+                "admin_edit_phone_success_msg": "📞 Telefon raqami muvaffiyatli yangilandi.",
+                "admin_edit_button_msg": "🎛 Tugmalarni tahrirlash\nAdministrator uchun mavjud bo‘lgan tugmalarni tanlang yoki o‘chirib tashlang.",
                 "admin_edit_buttons_choice_msg": "⬇️ Tanlang:",
-                "admin_edit_button_success_msg": "✅ Tugmalar muvaffaqiyatli yangilandi!",
-                "admin_delete_msg": "⚠️ <b>Administratorni oʻchirishni xohlaysizmi?</b>\n\n👤 {name}\n\n❗ Bu amal ortga qaytarilmaydi!",
-                "admin_deleted_msg": "🗑 <b>Administrator oʻchirildi!</b>\nU endi bot boshqaruvida qatnashmaydi.",
+                "admin_edit_button_success_msg": "✅ Tugmalar muvaffiyatli yangilandi!",
+                "admin_delete_msg": "⚠️ Administratorni oʻchirishni xohlaysizmi?\n\n👤 {name}\n\n❗ Bu amal ortga qaytarilmaydi!",
+                "admin_deleted_msg": "🗑 Administrator oʻchirildi!\nU endi bot boshqaruvida qatnashmaydi.",
 
-                "language_msg": "🌐 <b>Tilni tanlash</b>\nSizga qulay bo‘lgan interfeys tilini belgilang.",
+                "language_msg": "🌐 Tilni tanlash\nSizga qulay bo‘lgan interfeys tilini belgilang.",
                 "language_selected_msg": "✅ Til tanlandi!",
 
-                "clients_msg": "📕 <b>Mijozlar</b>\nMijozlar haqidagi ma’lumotlar va ularning faolligi.",
+                "clients_msg": "📕 Mijozlar\nMijozlar haqidagi ma’lumotlar va ularning faolligi.",
                 "client_last_list_msg": "📋 So'nggi 5 ta mijozlar ro‘yxati",
                 "client_list_msg": "👥 Barcha mijozlar ro'yxati",
                 "clients_not_msg": "📭 Hozircha mijozlar yo'q",
-                "client_search_msg": "🔎 <b>Mijozlarni izlash</b>\n\nIltimos, mijozning telefon raqamini kiriting 📱",
-                "client_not_found_msg": "❌ <b>Mijoz topilmadi!</b>\n\nQayta urinib ko‘ring yoki boshqa ma’lumot kiriting 🔁",
-                "client_item_msg": "👤 Ismi: <b>{first_name}</b>\n📱 {phone_number}\n🌐 Tanlagan tili: {language}\n📅 Bronlar soni: {total_bookings}\n🛑 Status: {status}",
-                "client_ban_msg": "⛔️ Mijoz muvaffaqiyatli bloklandi!\n\n🛑 U endi botdan foydalana olmaydi.",
+                "client_search_msg": "🔎 Mijozlarni izlash\n\nIltimos, mijozning telefon raqamini kiriting 📱",
+                "client_not_found_msg": "❌ Mijoz topilmadi!\n\nQayta urinib ko‘ring yoki boshqa ma’lumot kiriting 🔁",
+                "client_item_msg": "👤 Ismi: {first_name}\n📱 {phone_number}\n🌐 Tanlagan tili: {language}\n📅 Bronlar soni: {total_bookings}\n🛑 Status: {status}",
+                "client_ban_msg": "⛔️ Mijoz muvaffiyatli bloklandi!\n\n🛑 U endi botdan foydalana olmaydi.",
                 "client_unban_msg": "✅ Mijoz blokdan chiqarildi!\n\n🎉 Endi u yana botdan foydalanishi mumkin.",
 
-                "analytics_msg": "📊 <b>Statistika</b>\nKunlik va oylik ishlash natijalari, daromadlar va faollik tahlili.",
+                "analytics_msg": "📊 Statistika\nKunlik va oylik ishlash natijalari, daromadlar va faollik tahlili.",
 
-                "finance_msg": "💰 <b>Moliya</b>\nKirim-chiqim, xizmatlar narxlari va hisob-kitoblar.",
-
-                "feedback_msg": "💬 <b>Fikr-mulohazalar</b>\nMijozlar fikrlari va baholarini ko‘rib chiqing.",
-                "rating_barbers_msg": "🏆 <b>Barberlar reytingi:</b>",
-
-                "user_menu_msg": "📋 <b>Asosiy menyu</b>\nKerakli bo‘limni tanlang:"
+                "user_menu_msg": "📋 Asosiy menyu\nKerakli bo‘limni tanlang:"
             },
 
             "button": {
@@ -167,6 +209,7 @@
                 "bookings_otherday": "📆 Boshqa kunlar",
                 "bookings_cancel": "❌ Bronni bekor qilish",
                 "bookings_forward": "⏭️ Bronni o‘tkazish",
+                "bookings_reminder": "⏰ Bronni eslatish",
 
                 "settings": "⚙️ Sozlamalar",
 
@@ -195,8 +238,6 @@
                 "admin_edit_button": "🖲 Knopkalari",
                 "admin_delete": "🗑️ Adminni o'chirish",
 
-                "working_hours": "🕒 Ish soati",
-
                 "language": "🌐 Til",
                 
                 "clients": "👥 Mijozlar",
@@ -206,16 +247,7 @@
                 "client_ban": "⛔️ Mijozni bloklash",
                 "client_unban": "✅ Blokdan chiqarish",
 
-                "analytics": "📊 Tahlil",
-                "finance": "🧮 Moliya",
-                "journal": "📜 Tarix",
-
-                "feedback": "📝 Fikrlar",
-                "feedback_rating": "💈 Barberlar reytingi",
-                "feedback_reviews": "💬 Mijozlar otzivlari",
-                "feedback_complaints": "🚫 Shikoyatlar",
-                "feedback_pinned": "📌 Muhim otziv/shikoyatlar",
-
+                "analytics": "📊 Analitika",
 
                 "user_menu": "🔰 Menyu"
             }
@@ -223,63 +255,192 @@
     },
 
     "🇷🇺 ru": {
+        "start_msg": "👋 Добро пожаловать!\n\nЧтобы начать пользоваться ботом, выберите нужный раздел из меню ниже.",
         "errors": {
-            "unknown_command": "❗ Kechirasiz, bu buyruq tushunarsiz. Quyidagi menyudan birini tanlang."
-        },
-
-        "user": {
-            "message": {
-            },
-
-            "button": {
-            }
-        },
-
-        "barber": {
-            "message": {
-            },
-
-            "button": {
-            }
-        },
-
-        "admin": {
-            "message": {
-            },
-
-            "button": {
-            }
+            "unknown_command": "❗ Неизвестная команда. Пожалуйста, выберите одну из кнопок ниже.",
+            "photo_required_msg": "📸 Пожалуйста, отправьте фото как изображение, не как файл.",
+            "invalid_button_format": "❗ Неверный формат кнопки. Введите в виде: Текст - ссылка.",
+            "invalid_phone_number_msg": "❌ Неверный формат номера телефона. Введите так:\n998901234567 или +998901234567",
+            "invalid_duration_msg": "❌ Неверная длительность! Введите в минутах (например, 30) или HH:MM (например, 01:30).",
+            "invalid_time_range_msg": "❌ Пожалуйста, введите рабочее время в правильном формате (например: 09:00 - 18:00)",
+            "invalid_price_msg": "❌ Неверная цена! Введите только число. Например: 50000",
+            "no_access_button": "❌ У вас нет прав для использования этой кнопки."
         },
 
         "director": {
             "message": {
-                "start_msg": "",
-                "notifications_msg": "",
-                "bookings_msg": "",
-                "settings_msg": "",
-                "barbers_msg": "",
-                "admins_msg": "",
-                "clients_msg": "",
-                "analytics_msg": "",
-                "finance_msg": "",
-                "journal_msg": "",
-                "feedback_msg": "",
-                "language_msg": "",
-                "user_menu_msg": ""
+                "main_menu_msg": "🏠 Главное меню — выберите нужный раздел:",
+
+                "notifications_msg": "📢 Уведомления и сообщения\n\nИспользуйте этот раздел для отправки новых услуг, акций или напоминаний клиентам. Напишите текст, добавьте фото и кнопки — мы доставим сообщение всем нужным пользователям.",
+                "input_text_msg": "✍️ Введите или отправьте текст поста:",
+                "text_accepted_msg": "✅ Ваше сообщение принято:\n\n{}",
+                "input_photo_msg": "🖼 Отправьте фото (если есть):",
+                "photo_accepted_msg": "✅ Фото принято.",
+                "input_button_msg": "🔗 Введите текст и ссылку для кнопки.\nНапример: Сайт - https://example.com",
+                "button_list_title": "Всего кнопок:",
+                "check_post_msg": "✅ Проверьте вид поста. Всё верно?",
+                "notification_not_found_msg": "‼️ Вы ещё не ввели уведомление",
+                "confirm_post_msg": "📨 Отправить это сообщение?\n\n✅ Для отправки нажмите кнопку 'Подтвердить'.",
+                "post_sent_result": "✅ Рассылка завершена!\n\n📤 Сообщение отправлено: {success} пользователям\n\n❌ Ошибка: {failed}",
+
+                "bookings_msg": "📅 Бронирования\nПросмотрите список активных и будущих записей.",
+                "bookings_today_msg": "📅 Чтобы посмотреть сегодняшние бронирования, выберите барбера.",
+                "bookings_otherday_msg": "📆 Для просмотра бронирований выберите дату.",
+                "bookings_otherday_next_msg": "Чтобы посмотреть бронирования, выберите барбера.",
+                "bookings_barber_msg": "Записи у барбера {barber_name}:",
+
+                "booking_info_msg": "📌 Бронирование №{id}\n\n👤 Клиент: {client}\n✂️ Барбер: {barber}\n🛎️ Услуга: {service}\n💵 Цена: {price}\n🕒 Время: {start_time} - {end_time}\n📋 Статус: {status}",
+                "booking_not_found_msg": "❌ Бронирование не найдено.",
+                "booking_reminder_sent_msg": "⏰ Напоминание клиенту отправлено.",
+                "booking_reminder_msg": "⏰ Уважаемый клиент, ваша очередь приближается!\n\n📅 Время: {0}\n\nПожалуйста, приходите вовремя.",
+                "booking_cancel_msg": "❌ Для отмены бронирования введите причину",
+                "booking_cancel_confirm_msg": "❓ Вы действительно хотите отменить это бронирование?\n\n📝 Причина: {reason}\n\n✅ Подтвердить?",
+                "booking_cancelled_success_msg": "❌ Выбранное бронирование отменено.\n\n✅ Отмена успешно выполнена.\n\n📝 Причина: {reason}",
+                "bookings_cancel_msg": "❌ Для отмены бронирования введите номер телефона клиента:\n\nНапример: +998901234567",
+                "booking_forward_msg": "🔁 Для переноса бронирования выберите другого барбера.",
+                "booking_forward_confirm_msg": "❓ Вы действительно хотите перенести это бронирование к барберу - {barber}?\n\n✅ Подтвердить?",
+                "booking_forwarded_success_msg": "✅ Бронирование успешно перенесено к другому барберу!",
+                "bookings_forward_msg": "🔁 Для переноса на другую дату или к другому барберу введите номер телефона клиента:\n\nНапример: +998901234567",
+
+                "settings_msg": "⚙️ Настройки\nНастройте работу бота под себя.",
+
+                "services_prices_msg": "💈 Услуги и цены\n\nВыберите нужного барбера из списка. После выбора вы сможете просмотреть или настроить его услуги и цены.",
+                "barber_types_msg": "💇‍♂️ Доступные типы услуг для {barber} ниже. Каждый тип настраивается отдельно.",
+                "barber_types_no_msg": "⚠️ Пока нет доступных типов услуг.\n\n➕ Вы можете добавить новый тип услуги.",
+
+                "type_services_msg": "✂️ Список услуг для {type_name} ниже. Выберите нужную или добавьте новую.",
+                "type_not_found_msg": "❌ Тип услуги не найден",
+                "type_add_msg": "➕ Введите название нового типа услуги. Например: Детская стрижка",
+                "type_add_succes_msg": "✅ Тип услуги {service_name} успешно добавлен.",
+                "type_delete_msg": "🗑 Вы хотите удалить этот тип услуги?\n\n❗ Это действие необратимо.\n\nПодтвердить?",
+                "type_delete_success_msg": "✅ Тип услуги {type_name} успешно удалён.",
+
+                "service_detail_msg": "📜 О сервисе: {description}\n⏱ Длительность: {duration}\n💵 Цена: {price} сум",
+                "service_not_found_msg": "❌ Услуга не найдена",
+                "services_no_msg": "⚠️ Для этого типа услуг пока ничего не добавлено.\n\n➕ Вы можете добавить новую услугу.",
+                "service_add_msg": "✏️ Для добавления услуги введите необходимые данные.",
+                "service_add_success_msg": "✅ Новая услуга успешно добавлена.",
+                "service_delete_msg": "❗️ Подтвердите удаление услуги.",
+                "service_delete_success_msg": "✅ Тип услуги успешно удалён.",
+                "service_edit_msg": "✏️ Выберите нужный раздел для редактирования.",
+                "service_edit_name_msg": "✏️ Введите новое название услуги:",
+                "service_edit_name_success_msg": "✅ Название услуги успешно изменено.",
+                "service_edit_description_msg": "📝 Введите новое описание:",
+                "service_edit_description_success_msg": "✅ Описание услуги успешно изменено.",
+                "service_edit_duration_msg": "⏱ Введите длительность: в минутах (например, 30) или HH:MM (например, 01:30).",
+                "service_edit_duration_success_msg": "✅ Длительность услуги успешно изменена.",
+                "service_edit_price_msg": "💵 Введите новую цену (в сумах):",
+                "service_edit_price_success_msg": "✅ Цена услуги успешно изменена.",
+
+                "barbers_msg": "💈 Список барберов\nИнформация о мастерах и их статусе.",
+                "barber_not_found_msg": "😕 Барбер с таким именем не найден. Выберите из списка или вернитесь назад.",
+                "barber_add_msg": "✂️ Для добавления нового барбера введите номер телефона:",
+                "barber_add_success_msg": "✅ Новый барбер добавлен!\n📱 Телефон: {phone}",
+                "barber_add_phone_msg": "📞 Введите номер телефона барбера:",
+                "barber_info_msg": "👤 Имя: {name}\n📞 Телефон: {phone_number}\n📄 Описание: {description}\n⭐️ Рейтинг: {rating}\n🕘 Рабочее время: {from_hour} - {to_hour}\n🖼 Фото: {photo}",
+                "barber_edit_phone_msg": "📞 Введите новый номер телефона барбера:",
+                "barber_edit_phone_success_msg": "📞 Телефон успешно обновлён.",
+                "barber_edit_description_msg": "📝 Введите новое описание барбера:",
+                "barber_edit_description_success_msg": "📝 Описание успешно обновлено.",
+                "barber_edit_photo_msg": "🖼 Отправьте фото барбера:",
+                "barber_edit_photo_success_msg": "📸 Фото успешно загружено.",
+                "barber_edit_time_msg": "🕒 Введите рабочее время (например: 09:00-18:00):",
+                "barber_edit_time_success_msg": "🕒 Рабочее время успешно обновлено.",
+                "barber_delete_msg": "❗️Вы хотите удалить барбера {barber_name}. Вы уверены?",
+                "barber_delete_success_msg": "🗑️ Барбер успешно удалён.",
+
+                "admins_msg": "👨‍💼 Администраторы\nСписок администраторов, управляющих ботом.",
+                "admin_add_msg": "➕ Добавить нового администратора\nПожалуйста, отправьте номер телефона администратора в формате:\n\n+998 XX XXX XX XX",
+                "admin_add_success_msg": "✅ Администратор успешно добавлен!\nТеперь он может управлять ботом.",
+                "admin_info_msg": "ℹ️ Информация об администраторе\n👤 Имя: {name}\n📱 Телефон: {phone}\n\n🛠 Доступные кнопки:\n{buttons}",
+                "admin_edit_phone_msg": "📱 Изменить номер телефона\nВведите новый номер администратора:\n\n+998 XX XXX XX XX",
+                "admin_edit_phone_success_msg": "📞 Телефон успешно обновлён.",
+                "admin_edit_button_msg": "🎛 Редактировать кнопки\nВыберите или удалите доступные кнопки для администратора.",
+                "admin_edit_buttons_choice_msg": "⬇️ Выберите:",
+                "admin_edit_button_success_msg": "✅ Кнопки успешно обновлены!",
+                "admin_delete_msg": "⚠️ Вы хотите удалить администратора?\n\n👤 {name}\n\n❗ Это действие необратимо!",
+                "admin_deleted_msg": "🗑 Администратор удалён!\nТеперь он не может управлять ботом.",
+
+                "language_msg": "🌐 Выбор языка\nВыберите удобный язык интерфейса.",
+                "language_selected_msg": "✅ Язык выбран!",
+
+                "clients_msg": "📕 Клиенты\nИнформация о клиентах и их активности.",
+                "client_last_list_msg": "📋 Последние 5 клиентов",
+                "client_list_msg": "👥 Список всех клиентов",
+                "clients_not_msg": "📭 Пока нет клиентов",
+                "client_search_msg": "🔎 Поиск клиентов\n\nВведите номер телефона клиента 📱",
+                "client_not_found_msg": "❌ Клиент не найден!\n\nПопробуйте снова или введите другие данные 🔁",
+                "client_item_msg": "👤 Имя: {first_name}\n📱 {phone_number}\n🌐 Язык: {language}\n📅 Кол-во бронирований: {total_bookings}\n🛑 Статус: {status}",
+                "client_ban_msg": "⛔️ Клиент успешно заблокирован!\n\n🛑 Теперь он не может пользоваться ботом.",
+                "client_unban_msg": "✅ Клиент разблокирован!\n\n🎉 Теперь он снова может пользоваться ботом.",
+
+                "analytics_msg": "📊 Статистика\nЕжедневные и ежемесячные результаты, доходы и анализ активности.",
+
+                "user_menu_msg": "📋 Главное меню\nВыберите нужный раздел:"
             },
 
             "button": {
+                "yes": "✅ Да",
+                "no": "❌ Нет",
+                "confirm": "✅ Подтвердить",
+                "reject": "🚫 Отмена",
+                "back": "🔙 Назад",
+                "back_main": "🏠 Главное меню",
+
                 "notifications": "📮 Уведомления",
+                "input_text": "📝 Ввести текст",
+                "input_photo": "🖼 Отправить фото",
+                "input_button": "🔘 Ввести кнопки",
+                "check_post": "📋 Финальная проверка",
+                "preview_post": "👁 Просмотр поста",
+                "confirm_post": "✅ Отправить пост",
+
                 "bookings": "🧾 Бронирования",
+                "bookings_today": "📅 Сегодняшние бронирования",
+                "bookings_barber_today": "📋 Все сегодняшние бронирования",
+                "bookings_otherday": "📆 Другие дни",
+                "bookings_cancel": "❌ Отменить бронирование",
+                "bookings_forward": "⏭️ Перенести бронирование",
+                "bookings_reminder": "⏰ Напомнить о бронировании",
+
                 "settings": "⚙️ Настройки",
+
+                "services_prices": "🧾 Услуги и цены",
+                "type_add": "➕ Добавить тип услуги",
+                "type_delete": "🗑 Удалить тип услуги",
+
+                "service_add": "➕ Добавить услугу",
+                "service_delete": "🗑 Удалить услугу",
+                "service_edit_name": "✏️ Название",
+                "service_edit_description": "📝 Описание",
+                "service_edit_duration": "⏱ Длительность",
+                "service_edit_price": "💵 Цена",
+
                 "barbers": "🧔 Барберы",
+                "barber_add": "➕ Добавить барбера",
+                "barber_edit_phone": "📞 Телефон",
+                "barber_edit_description": "🧾 О барбере",
+                "barber_edit_photo": "📸 Фото",
+                "barber_edit_time": "🕰 Рабочее время",
+                "barber_delete": "🗑️ Удалить барбера",
+
                 "admins": "👨‍💼 Админы",
-                "clients": "👥 Клиенты",
-                "analytics": "📊 Аналитика",
-                "finance": "🧮 Финансы",
-                "journal": "📜 Журнал",
-                "feedback": "📝 Отзывы",
+                "admin_add": "➕ Добавить админа",
+                "admin_edit_phone": "📞 Телефон",
+                "admin_edit_button": "🖲 Кнопки",
+                "admin_delete": "🗑️ Удалить админа",
+
                 "language": "🌐 Язык",
+
+                "clients": "👥 Клиенты",
+                "client_list": "📋 Список клиентов",
+                "client_search": "🔍 Поиск клиента",
+                "client_contact": "📞 Связаться с клиентом",
+                "client_ban": "⛔️ Заблокировать клиента",
+                "client_unban": "✅ Разблокировать",
+
+                "analytics": "📊 Аналитика",
+
                 "user_menu": "🔰 Меню"
             }
         }

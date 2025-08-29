@@ -1,29 +1,9 @@
 {
-  "123456789": {
+  "5012184829": {
     "buttons": [
-      "language"
-    ]
-  },
-  "1004": {
-    "buttons": [
+      "notifications",
       "bookings",
       "clients",
-      "notifications",
-      "settings"
-    ]
-  },
-  "1006": {
-    "buttons": [
-      "clients",
-      "journal",
-      "notifications"
-    ]
-  },
-  "123456789012346": {
-    "buttons": [
-      "analytics",
-      "finance",
-      "settings",
       "user_menu"
     ]
   }

@@ -7,26 +7,26 @@ from decouple import config
 
 from handlers.register_handlers import bot, dp
 
-LOG_DIR = "logs"
-os.makedirs(LOG_DIR, exist_ok=True)
+# LOG_DIR = "logs"
+# os.makedirs(LOG_DIR, exist_ok=True)
 
 log_formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 
-file_handler = TimedRotatingFileHandler(
-    os.path.join(LOG_DIR, "bot.log"),
-    when="midnight", 
-    interval=1,
-    backupCount=7,   
-    encoding="utf-8"
-)
-file_handler.setFormatter(log_formatter)
+# file_handler = TimedRotatingFileHandler(
+#     os.path.join(LOG_DIR, "bot.log"),
+#     when="midnight", 
+#     interval=1,
+#     backupCount=7,   
+#     encoding="utf-8"
+# )
+# file_handler.setFormatter(log_formatter)
 
 console_handler = logging.StreamHandler()
 console_handler.setFormatter(log_formatter)
 
 logging.basicConfig(
     level=logging.INFO,  
-    handlers=[file_handler, console_handler] # console_handler
+    handlers=[console_handler] #file_handler
 )
 
 logger = logging.getLogger(__name__)

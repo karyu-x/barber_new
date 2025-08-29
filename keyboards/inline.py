@@ -1,8 +1,8 @@
 from aiogram.types import InlineKeyboardButton
 from aiogram.utils.keyboard import InlineKeyboardBuilder
-from configs import buttons_config as but_cf
+
 from configs import functions as cf
-from databases.director import database as db
+from databases import database as db
 
 role = "director"
 
@@ -32,34 +32,41 @@ def post_button(buttons: list):
 
 ################################################################################
 
-async def bookings_barber(lang, barber_telegram_id, day):
+async def bookings_barber(lang, barber_id, date):
     kb = InlineKeyboardBuilder()
-    bookings = await db.get_barber_bookings(barber_telegram_id, day)
+    bookings = await db.get_barber_bookings(barber_id, date)
     for book in bookings:
-        book_time = book["start_time"].split("T")[1].split("+")[0][:5]
-        kb.add(InlineKeyboardButton(text=book_time, callback_data=f"bron:"))
+        status = "🟢" if book["status"] == "CONFIRMED" else "🔴" if book["status"] == "CANCELLED" else "🏁"
+        book_time = f"{status} {book['start_time'].split('T')[1].split('+')[0][:5]} "
+        kb.add(InlineKeyboardButton(text=book_time, callback_data=f"bron:{book['id']}"))
     kb.adjust(3)
     kb.row(
-        InlineKeyboardButton(text=cf.get_text(lang, role, "button", "back"), callback_data="bron:back"),
         InlineKeyboardButton(text=cf.get_text(lang, role, "button", "back_main"), callback_data="bron:main"),
+        InlineKeyboardButton(text=cf.get_text(lang, role, "button", "back"), callback_data="bron:back"),
     )
     return kb.as_markup()
 
 
-def booking_detail(lang, client_id, barber_id):
+async def booking_detail(lang, booking_id):
     kb = InlineKeyboardBuilder()
-    kb.add(
-        InlineKeyboardButton(text=cf.get_text(lang, role, "button", "booking_reminder"), callback_data=f"booking_detail:reminder"),
-        InlineKeyboardButton(text=cf.get_text(lang, role, "button", "booking_client"), url=f"{client_id}"),
-        InlineKeyboardButton(text=cf.get_text(lang, role, "button", "booking_barber"), url=f"{barber_id}"),
-        InlineKeyboardButton(text=cf.get_text(lang, role, "button", "booking_cancel"), callback_data="booking_detail:cancel"),
-        InlineKeyboardButton(text=cf.get_text(lang, role, "button", "booking_forward"), callback_data="booking_detail:forward"),
-    )
-    kb.adjust(1, 2)
-    kb.row(
-        InlineKeyboardButton(text=cf.get_text(lang, role, "button", "back"), callback_data="booking_detail:back"),
-        InlineKeyboardButton(text=cf.get_text(lang, role, "button", "back_main"), callback_data="booking_detail:main"),
-    )
+    booking = await db.get_booking_by_id(booking_id)
+    status = booking.get("status").upper()
+    if status == "CONFIRMED":
+        kb.add(
+            InlineKeyboardButton(text=cf.get_text(lang, role, "button", "bookings_reminder"), callback_data="booking_detail:reminder"),
+            InlineKeyboardButton(text=cf.get_text(lang, role, "button", "bookings_cancel"), callback_data="booking_detail:cancel"),
+            InlineKeyboardButton(text=cf.get_text(lang, role, "button", "bookings_forward"), callback_data="booking_detail:forward"),
+        )
+        kb.adjust(1, 2)
+        kb.row(
+            InlineKeyboardButton(text=cf.get_text(lang, role, "button", "back_main"), callback_data="booking_detail:main"),
+            InlineKeyboardButton(text=cf.get_text(lang, role, "button", "back"), callback_data="booking_detail:back"),
+        )
+    else:  
+        kb.row(
+            InlineKeyboardButton(text=cf.get_text(lang, role, "button", "back_main"), callback_data="booking_detail:main"),
+            InlineKeyboardButton(text=cf.get_text(lang, role, "button", "back"), callback_data="booking_detail:back"),
+        )
     return kb.as_markup()
 
 ################################################################################
@@ -70,11 +77,10 @@ def settings(lang: str):
         InlineKeyboardButton(text=cf.get_text(lang, role, "button", "services_prices"), callback_data="setting_btn:services_prices"),
         InlineKeyboardButton(text=cf.get_text(lang, role, "button", "barbers"), callback_data="setting_btn:barbers"),
         InlineKeyboardButton(text=cf.get_text(lang, role, "button", "admins"), callback_data="setting_btn:admins"),
-        InlineKeyboardButton(text=cf.get_text(lang, role, "button", "working_hours"), callback_data="setting_btn:working_hours"),
         InlineKeyboardButton(text=cf.get_text(lang, role, "button", "language"), callback_data="setting_btn:language"),
         InlineKeyboardButton(text=cf.get_text(lang, role, "button", "back"), callback_data="setting_btn:back")
     )
-    kb.adjust(1, 2)
+    kb.adjust(1, 2, 1)
     return kb.as_markup()
 
 async def services_prices(lang):
@@ -180,8 +186,8 @@ def admin_detail(lang):
 
 def build_admin_buttons_editor(lang: str, selected: set[str]):
     kb = InlineKeyboardBuilder()
-    for bid in but_cf.AVAILABLE_BUTTONS:
-        title = but_cf.button_title(lang, role, bid)
+    for bid in cf.AVAILABLE_BUTTONS:
+        title = cf.button_title(lang, role, bid)
         mark = "✅" if bid in selected else "⬜️"
         kb.add(InlineKeyboardButton(
             text=f"{mark} {title}",
@@ -201,12 +207,6 @@ def language(lang):
         InlineKeyboardButton(text=cf.get_text(lang, role, "button", "back"), callback_data="language_btn:back")
     )
     kb.adjust(2)
-    return kb.as_markup()
-
-def working_hours(lang):
-    kb = InlineKeyboardBuilder()
-    kb.row(InlineKeyboardButton(text=cf.get_text(lang, role, "button", "back_main"), callback_data="hours:main"),
-            InlineKeyboardButton(text=cf.get_text(lang, role, "button", "back"), callback_data="hours:back"))
     return kb.as_markup()
 
 ################################################################
@@ -233,4 +233,10 @@ def client_detail(lang, tg_id, user_ban: bool = False):
         InlineKeyboardButton(text=cf.get_text(lang, role, "button", "back_main"), callback_data="cnt_detail_btn:main"),
     )
     kb.adjust(1)
+    return kb.as_markup()
+
+################################################################
+
+def analytics():
+    kb = InlineKeyboardBuilder()
     return kb.as_markup()

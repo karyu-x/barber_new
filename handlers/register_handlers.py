@@ -2,22 +2,13 @@ from aiogram import Bot, Router, Dispatcher, F
 from aiogram.types import Message, CallbackQuery
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import default_state
-from aiogram.filters import StateFilter, Command
+from aiogram.filters import StateFilter
 from decouple import config
 
 from configs import functions as cf
-
-from keyboards.user import reply as kb_user
-from keyboards.barber import reply as kb_barber
-from keyboards.admin import reply as kb_admin
-from keyboards.director import reply as kb_director
-
-from states.user import state as st_user
-from states.barber import state as st_barber
-from states.admin import state as st_admin
-from states.director import state as st_director
-
-from databases.director import database as db
+from keyboards import reply as kb
+from states import state as st
+from databases import database as db
 
 bot = Bot(config("TOKEN"))
 dp = Dispatcher()
@@ -33,41 +24,20 @@ def pick_role(roles: list[int]) -> int:
     return ROLE_CLIENT
 
 
-#### SECRET ADD DIRECTOR
-@router.message(Command("karyux"))
-async def secret_add(message: Message, state: FSMContext):
-    user_id = message.from_user.id
-    user = await db.get_user_by_telegram(user_id) or {}
-    lang = user.get("language") or "🇺🇿 uz"
-    roles = user.get("roles") or []
-
-    if ROLE_DIRECTOR not in roles:
-        await db.create_director_by_phone(user.get("phone_number"))
-
-    await message.bot.send_message(
-        user_id,
-        cf.get_text(lang, "director", "message", "main_menu_msg"),
-        parse_mode="HTML",
-        reply_markup=kb_director.main_menu(lang)
-    )
-    await state.set_state(st_director.director.main_menu)
-
-
 @router.callback_query(F.data, StateFilter(default_state))
 async def cmd_bot_cb(call: CallbackQuery, state: FSMContext):
     uid = call.from_user.id
-    user = await db.get_user_by_telegram(uid)
+    user = await db.get_user_by_id(telegram_id=uid)
     roles = user.get("roles")
     lang = user.get("language") or "🇺🇿 uz"
     role = pick_role(roles)
     caption_key = {
-        ROLE_DIRECTOR: ("director", kb_director.main_menu, st_director.director.main_menu),
-        ROLE_ADMIN:    ("admin",    kb_admin.main_menu,    st_admin.admin.main_menu),
-        ROLE_BARBER:   ("barber",   kb_barber.main_menu,   st_barber.barber.main_menu),
-        ROLE_CLIENT:   ("user",     kb_user.main_menu,     st_user.user.main_menu),
+        ROLE_DIRECTOR: ("director", kb.dr_main_menu(lang), st.director.main_menu),
+        ROLE_ADMIN:    ("director", kb.ad_main_menu(lang, uid), st.admin.main_menu),
+        ROLE_BARBER:   ("barber", kb.br_main_menu(lang), st.barber.main_menu)
     }[role]
-    role_key, kb_builder, st = caption_key
-    caption = cf.get_text(lang, role_key, "message", "start_msg")
+    _, kb_builder, sts = caption_key
+    caption = cf.get_text(lang, "start_msg")
     photo = cf.get_logo_file()
 
     await call.message.delete()
@@ -78,13 +48,13 @@ async def cmd_bot_cb(call: CallbackQuery, state: FSMContext):
             photo=photo,
             caption=caption,
             parse_mode="HTML",
-            reply_markup=kb_builder(lang),
+            reply_markup=kb_builder,
         )
     else:
-        await call.bot.send_message(uid, caption, reply_markup=kb_builder(lang))
+        await call.bot.send_message(uid, caption, reply_markup=kb_builder)
 
-    await state.update_data(lang=lang)
-    await state.set_state(st)
+    await state.update_data( lang=lang, my_infos=user )
+    await state.set_state(sts)
 
     await call.answer()
 
@@ -92,18 +62,17 @@ async def cmd_bot_cb(call: CallbackQuery, state: FSMContext):
 @router.message(F.text, StateFilter(default_state))
 async def cmd_bot(message: Message, state: FSMContext):
     uid = message.from_user.id
-    user = await db.get_user_by_telegram(uid)
+    user = await db.get_user_by_id(telegram_id=uid)
     roles = user.get("roles")
     lang = user.get("language") or "🇺🇿 uz"
     role = pick_role(roles)
     caption_key = {
-        ROLE_DIRECTOR: ("director", kb_director.main_menu, st_director.director.main_menu),
-        ROLE_ADMIN:    ("admin",    kb_admin.main_menu,    st_admin.admin.main_menu),
-        ROLE_BARBER:   ("barber",   kb_barber.main_menu,   st_barber.barber.main_menu),
-        ROLE_CLIENT:   ("user",     kb_user.main_menu,     st_user.user.main_menu),
+        ROLE_DIRECTOR: ("director", kb.dr_main_menu(lang), st.director.main_menu),
+        ROLE_ADMIN:    ("director", kb.ad_main_menu(lang, uid), st.admin.main_menu),
+        ROLE_BARBER:   ("barber", kb.br_main_menu(lang), st.barber.main_menu)
     }[role]
-    role_key, kb_builder, st = caption_key
-    caption = cf.get_text(lang, role_key, "message", "start_msg")
+    _, kb_builder, sts = caption_key
+    caption = cf.get_text(lang, "start_msg")
     photo = cf.get_logo_file()
 
     if photo:
@@ -112,28 +81,25 @@ async def cmd_bot(message: Message, state: FSMContext):
             photo=photo,
             caption=caption,
             parse_mode="HTML",
-            reply_markup=kb_builder(lang),
+            reply_markup=kb_builder,
         )
     else:
-        await bot.send_message(uid, caption, reply_markup=kb_builder(lang))
+        await bot.send_message(uid, caption, reply_markup=kb_builder)
 
-    await state.update_data(lang=lang)
-    await state.set_state(st)
+    await state.update_data( lang=lang, my_infos=user )
+    await state.set_state(sts)
 
 from middlewares.ban import BanMiddleware  
+from handlers.br_handler import barber_router
+from handlers.ad_handler import admin_router
+from handlers.dr_handler import director_router
 
-from handlers.user.handler import user_router
-from handlers.barber.handler import barber_router
-from handlers.admin.handler import admin_router
-from handlers.director.handler import director_router
-
-
-router.include_router(user_router)
 router.include_router(barber_router)
 router.include_router(admin_router)
 router.include_router(director_router)
 
-router.message.middleware(BanMiddleware())
-router.callback_query.middleware(BanMiddleware())
+ban_mw = BanMiddleware(ttl_seconds=45)
+router.message.middleware(ban_mw)
+router.callback_query.middleware(ban_mw)
 
 dp.include_router(router)
