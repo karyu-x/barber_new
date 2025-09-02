@@ -71,16 +71,24 @@ async def booking_detail(lang, booking_id):
 
 ################################################################################
 
-def settings(lang: str):
+def settings(lang: str, manager: str):
     kb = InlineKeyboardBuilder()
-    kb.add(
-        InlineKeyboardButton(text=cf.get_text(lang, role, "button", "services_prices"), callback_data="setting_btn:services_prices"),
-        InlineKeyboardButton(text=cf.get_text(lang, role, "button", "barbers"), callback_data="setting_btn:barbers"),
-        InlineKeyboardButton(text=cf.get_text(lang, role, "button", "admins"), callback_data="setting_btn:admins"),
+    kb.row(
+        InlineKeyboardButton(text=cf.get_text(lang, role, "button", "services_prices"), callback_data="setting_btn:services_prices"))
+    kb.row(
+        InlineKeyboardButton(text=cf.get_text(lang, role, "button", "barbers"), callback_data="setting_btn:barbers"))
+
+    if manager != "admin":
+        kb.row(
+            InlineKeyboardButton(text=cf.get_text(lang, role, "button", "admins"), callback_data="setting_btn:admins"),
+        )
+    kb.adjust(1, 2)
+
+    kb.row(
+        InlineKeyboardButton(text=cf.get_text(lang, role, "button", "infos"), callback_data="setting_btn:infos"),
         InlineKeyboardButton(text=cf.get_text(lang, role, "button", "language"), callback_data="setting_btn:language"),
-        InlineKeyboardButton(text=cf.get_text(lang, role, "button", "back"), callback_data="setting_btn:back")
-    )
-    kb.adjust(1, 2, 1)
+        InlineKeyboardButton(text=cf.get_text(lang, role, "button", "back"), callback_data="setting_btn:back"), width=2)
+
     return kb.as_markup()
 
 async def services_prices(lang):
@@ -198,6 +206,18 @@ def build_admin_buttons_editor(lang: str, selected: set[str]):
             InlineKeyboardButton(text=cf.get_text(lang, role, "button", "back"), callback_data="adm_btn:back"))
     return kb.as_markup()
 
+def infos(lang):
+    kb = InlineKeyboardBuilder()
+    kb.add(
+        InlineKeyboardButton(text=cf.get_text(lang, role, "button", "info_contact"), callback_data="info_btn:contact"),
+        InlineKeyboardButton(text=cf.get_text(lang, role, "button", "info_location"), callback_data="info_btn:location"),
+        InlineKeyboardButton(text=cf.get_text(lang, role, "button", "info_price_list"), callback_data="info_btn:price_list"),
+        InlineKeyboardButton(text=cf.get_text(lang, role, "button", "back"), callback_data="info_btn:back"),
+        InlineKeyboardButton(text=cf.get_text(lang, role, "button", "back_main"), callback_data="info_btn:main"),
+    )
+    kb.adjust(1)
+    return kb.as_markup()
+
 def language(lang):
     kb = InlineKeyboardBuilder()
     kb.add( 
@@ -236,7 +256,3 @@ def client_detail(lang, tg_id, user_ban: bool = False):
     return kb.as_markup()
 
 ################################################################
-
-def analytics():
-    kb = InlineKeyboardBuilder()
-    return kb.as_markup()

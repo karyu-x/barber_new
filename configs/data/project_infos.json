@@ -1,0 +1,14 @@
+{
+  "project_contact": {
+    "barber_shop": "SHoxa_shop",
+    "contact": "+998(90)-513-49-94"
+  },
+  "project_location": {
+    "latitude": 41.343086,
+    "longitude": 69.337217,
+    "address": "Uzinfocom. Ustudy"
+  },
+  "project_price_list": {
+    "message": "Test uchun message kiritilyapti\n\nAbzastlar ham tekshirilyapti"
+  }
+}

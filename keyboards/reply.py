@@ -1,3 +1,5 @@
+from datetime import datetime, timedelta
+
 from aiogram.types import KeyboardButton, ReplyKeyboardRemove
 from aiogram.utils.keyboard import ReplyKeyboardBuilder
 
@@ -26,7 +28,50 @@ def confirm_reject(lang):
     keyboard.row(KeyboardButton(text=cf.get_text(lang, role, "button", "back_main")), KeyboardButton(text=cf.get_text(lang, role, "button", "back")))
     return keyboard.as_markup(resize_keyboard=True, input_field_placeholder=cf.translations["input_field_msg"])
 
+def location_back(lang):
+    kb = ReplyKeyboardBuilder()
+    kb.row(KeyboardButton(text=cf.get_text(lang, role, "button", "location"), request_location=True))
+    kb.row(KeyboardButton(text=cf.get_text(lang, role, "button", "back_main")), KeyboardButton(text=cf.get_text(lang, role, "button", "back")))
+    return kb.as_markup(resize_keyboard=True, input_field_placeholder=cf.translations["input_field_msg"])
+
 ##################################################################################################################
+
+def us_main_menu(lang: str, roles: list[int] | None = None):
+    roles = roles or []
+    role_keys = {cf.ROLE_ID_TO_KEY[r] for r in roles if r in cf.ROLE_ID_TO_KEY}
+
+    kb = ReplyKeyboardBuilder()
+
+    if not role_keys or "client" in role_keys:
+        rk = "client"
+        kb.row(
+            KeyboardButton(text=cf.get_text(lang, rk, "buttons", "booking")),
+            KeyboardButton(text=cf.get_text(lang, rk, "buttons", "booking_history")),
+        )
+        kb.row(
+            KeyboardButton(text=cf.get_text(lang, rk, "buttons", "contact_menu")),
+            KeyboardButton(text=cf.get_text(lang, rk, "buttons", "location")),
+        )
+        kb.row(
+            KeyboardButton(text=cf.get_text(lang, rk, "buttons", "price_list")),
+            KeyboardButton(text=cf.get_text(lang, rk, "buttons", "change_lang")),
+        )
+
+    ordered = ["barber", "admin", "director"]
+    role_switch_buttons = []
+    for rk in ordered:
+        if rk == "admin" and "director" in role_keys:
+            continue
+        if rk in role_keys:
+            role_switch_buttons.append(KeyboardButton(text=cf.get_role_menu_label(rk)))
+
+    if role_switch_buttons:
+        kb.row(*role_switch_buttons)
+
+    kb.adjust(2)
+    placeholder = getattr(cf, "translations", {}).get("input_field_msg", "")
+    return kb.as_markup(resize_keyboard=True, input_field_placeholder=placeholder)
+
 
 def br_main_menu(lang):
     kb = ReplyKeyboardBuilder()
@@ -44,10 +89,13 @@ def br_main_menu(lang):
 def ad_main_menu(lang, telegram_id):
     kb = ReplyKeyboardBuilder()
     buttons = cf.get_admin_buttons(telegram_id)
-    for btn in buttons:
-        kb.row(KeyboardButton(text=cf.get_text(lang, role, "button", btn)))
-    kb.adjust(2)
-    return kb.as_markup(resize_keyboard=True, input_field_placeholder=cf.translations["input_field_msg"])
+    if buttons:
+        for btn in buttons:
+            kb.row(KeyboardButton(text=cf.get_text(lang, role, "button", btn)))
+        kb.adjust(2)
+        return kb.as_markup(resize_keyboard=True, input_field_placeholder=cf.translations["input_field_msg"])
+    else:
+        return "no buttons"
 
 
 def dr_main_menu(lang):
@@ -63,7 +111,7 @@ def dr_main_menu(lang):
     )
     return keyboard.as_markup(resize_keyboard=True, input_field_placeholder=cf.translations["input_field_msg"])
 
-##################################################################################################################
+##################################################### NOTIFICATION  #############################################################
 
 def notifications(lang):
     keyboard = ReplyKeyboardBuilder()
@@ -84,7 +132,7 @@ def check_post(lang):
     keyboard.adjust(2)
     return keyboard.as_markup(resize_keyboard=True, input_field_placeholder=cf.translations["input_field_msg"])
 
-##################################################################################################################
+###################################################### BOOKINGS ############################################################
 
 def br_bookings(lang):
     kb = ReplyKeyboardBuilder()
@@ -146,7 +194,7 @@ async def bookings_otherday(lang):
     keyboard.row(KeyboardButton(text=cf.get_text(lang, role, "button", "back_main")), KeyboardButton(text=cf.get_text(lang, role, "button", "back")))
     return keyboard.as_markup(resize_keyboard=True, input_field_placeholder=cf.translations["input_field_msg"])
 
-##################################################################################################################
+######################################################## BREAKS ##########################################################
 
 def br_breaks(lang):
     kb = ReplyKeyboardBuilder()
@@ -161,7 +209,7 @@ def br_breaks(lang):
     kb.adjust(1, 2, 1)
     return kb.as_markup(resize_keyboard=True, input_field_placeholder=cf.translations["input_field_msg"])
 
-##################################################################################################################
+####################################################  SERVICES & TYPES ##############################################################
 
 async def br_types(lang, barber_id):
     kb = ReplyKeyboardBuilder()
@@ -198,7 +246,7 @@ def br_service_detail(lang):
         width=2)
     return kb.as_markup(resize_keyboard=True, input_field_placeholder=cf.translations["input_field_msg"])
 
-##################################################################################################################
+######################################################## CABINET ##########################################################
 
 def br_cabinet(lang):
     kb = ReplyKeyboardBuilder()
@@ -222,3 +270,167 @@ def br_cabinet_language(lang):
         width=2
     )
     return kb.as_markup(resize_keyboard=True, input_field_placeholder=cf.translations["input_field_msg"])
+
+
+######################################################## ANALYTIC ##########################################################
+
+def analytics(lang):
+    kb = ReplyKeyboardBuilder()
+    kb.row(
+        KeyboardButton(text=cf.get_text(lang, role, "button", "weekly_clients")),
+        KeyboardButton(text=cf.get_text(lang, role, "button", "barber_activities")),
+        KeyboardButton(text=cf.get_text(lang, role, "button", "barber_ratings")),
+        KeyboardButton(text=cf.get_text(lang, role, "button", "top_services")),
+        KeyboardButton(text=cf.get_text(lang, role, "button", "back")),
+        width=2
+    )
+    return kb.as_markup(resize_keyboard=True, input_field_placeholder=cf.translations["input_field_msg"])
+
+###################################################  USER  #############################################################
+
+def start_key():
+    keyboard = ReplyKeyboardBuilder()
+    keyboard.add(KeyboardButton(text="🇺🇿 uz"), KeyboardButton(text="🇷🇺 ru"))
+    keyboard.adjust(3)
+    return keyboard.as_markup(resize_keyboard=True)
+
+
+def ask_phone(lang):
+    keyboard = ReplyKeyboardBuilder()
+    keyboard.add(KeyboardButton(text=cf.get_text(lang, "client", "buttons", "contact"), request_contact=True))
+    keyboard.adjust(1)
+    return keyboard.as_markup(resize_keyboard=True)
+
+
+def conf(lang):
+    keyboard = ReplyKeyboardBuilder()
+    keyboard.add(KeyboardButton(text=cf.get_text(lang, "client", "buttons", "confirm")), KeyboardButton(text=cf.get_text(lang, "client", "buttons", "rejected")))
+    keyboard.adjust(2)
+    return keyboard.as_markup(resize_keyboard=True)
+
+
+def back(lang):
+    keyboard = ReplyKeyboardBuilder()
+    keyboard.add(KeyboardButton(text=cf.get_text(lang, "client", "buttons", "back")))
+    keyboard.adjust(1)
+    return keyboard.as_markup(resize_keyboard=True)
+
+
+def language(lang):
+    keyboard = ReplyKeyboardBuilder()
+    keyboard.add(KeyboardButton(text="🇺🇿 uz"), KeyboardButton(text="🇷🇺 ru"),
+                 KeyboardButton(text=cf.get_text(lang, "client", "buttons", "back")))
+    keyboard.adjust(2, 1)
+    return keyboard.as_markup(resize_keyboard=True)
+
+
+barber_with_telegramid = {}
+async def barber_name(lang):
+    keyboard = ReplyKeyboardBuilder()
+    names = await db.all_barbers_info(1)
+    for i in names:
+        barber_with_telegramid[i["first_name"]] = i["telegram_id"]
+        keyboard.add(KeyboardButton(text=f'{i["first_name"]}'))
+    keyboard.add(KeyboardButton(text=cf.get_text(lang, "client", "buttons", "back")))
+    keyboard.adjust(2, 1)
+    return keyboard.as_markup(resize_keyboard=True)
+
+
+async def booking_history(lang, tg_id):
+    keyboard = ReplyKeyboardBuilder()
+    booking_hist = await db.user_booking_history(tg_id)
+    for i in booking_hist:
+        day = i['start_time'].split("T")[0]
+        time = i["start_time"].split("T")[1][:5]
+        keyboard.add(KeyboardButton(text=f"{day} {time}"))
+    keyboard.add(KeyboardButton(text=cf.get_text(lang, "client", "buttons", "back")))
+    keyboard.adjust(2)
+    return keyboard.as_markup(resize_keyboard=True)
+
+
+selected_service = {}
+async def services(lang, tg_id):
+    keyboard = ReplyKeyboardBuilder()
+    service_type_barber = await db.barber_service_type(tg_id)
+    for i in service_type_barber:
+        for k, v in i.items():
+            if k == 'name':
+                keyboard.add(KeyboardButton(text=f"{v}"))
+                selected_service[i["name"]] = i["id"]
+                selected_service["barber_id"] = i["barber"]
+    keyboard.add(KeyboardButton(text=cf.get_text(lang, "client", "buttons", "back")))
+    keyboard.adjust(2, 1)
+    return keyboard.as_markup(resize_keyboard=True)
+
+
+check_selected_types = []
+async def type_of_selected_service(lang, barber_id):
+    keyboard = ReplyKeyboardBuilder()
+    servicetypes = await db.choosed_service(barber_id)
+    for i in servicetypes:
+        for k, v in i.items():
+            if k == "name":
+                keyboard.add(KeyboardButton(text=f'{v.strip()}'))
+                check_selected_types.append(v)
+                selected_service["service_id"] = i["id"]
+    keyboard.add(KeyboardButton(text=cf.get_text(lang, "client", "buttons", "back")))
+    keyboard.adjust(2, 1)
+    return keyboard.as_markup(resize_keyboard=True)
+
+
+async def date(lang):
+    keyboard = ReplyKeyboardBuilder()
+    keyboard.add(KeyboardButton(text=cf.get_text(lang, "client", "buttons", "today")),
+                 KeyboardButton(text=cf.get_text(lang, "client", "buttons", "another_day")))
+    keyboard.add(KeyboardButton(text=cf.get_text(lang, "client", "buttons", "back")))
+    keyboard.adjust(2, 1)
+    return keyboard.as_markup(resize_keyboard=True)
+
+
+time_slot = []
+async def show_time_slots(lang, dates, barber_id, service_id):
+    keyboard = ReplyKeyboardBuilder()
+    time_slots = await db.get_time_api(dates, barber_id, service_id)
+    time_slots_list = time_slots["available_slots"]
+    time_now = datetime.now().strftime("%H:%M")
+    day = datetime.now().strftime("%Y-%m-%d")
+
+    for i in time_slots_list:
+        if str(dates) == day:
+            if time_now < i:
+                keyboard.add(KeyboardButton(text=f"{i}"))
+                time_slot.append(str(i))
+        else:
+            keyboard.add(KeyboardButton(text=f"{i}"))
+            time_slot.append(str(i))
+
+    keyboard.add(KeyboardButton(text=cf.get_text(lang, "client", "buttons", "back")))
+    keyboard.adjust(3)
+    return keyboard.as_markup(resize_keyboard=True)
+
+
+def get_30_day_range_from_today():
+    today = datetime.now()
+    start_date = today + timedelta(days=1)
+    date_list = [(start_date + timedelta(days=i)).strftime("%d-%m-%Y") for i in range(30)]
+    return date_list
+
+
+another_day_btn = []
+async def another_day(lang):
+    keyboard = ReplyKeyboardBuilder()
+    dates = get_30_day_range_from_today()
+    for i in dates:
+        another_day_btn.append(i)
+        keyboard.add(KeyboardButton(text=f"{i}"))
+    keyboard.add(KeyboardButton(text=cf.get_text(lang, "client", "buttons", "back")))
+    keyboard.adjust(2)
+    return keyboard.as_markup(resize_keyboard=True)
+
+
+def show_hair_cut_price(lang):
+    keyboard = ReplyKeyboardBuilder()
+    keyboard.add(KeyboardButton(text=cf.get_text(lang, "client", "buttons", "booking")),
+                 KeyboardButton(text=cf.get_text(lang, "client", "buttons", "back")))
+    keyboard.adjust(1)
+    return keyboard.as_markup(resize_keyboard=True)

@@ -1,70 +1,112 @@
 import os
 import logging
-from logging.handlers import TimedRotatingFileHandler
+from json import JSONDecodeError
+
 from aiogram.types import Update
 from aiohttp import web
 from decouple import config
+from pydantic import ValidationError
 
 from handlers.register_handlers import bot, dp
+from databases.database import close_session 
+from configs.app_scheduler import get_scheduler, run_survey_dispatch
 
-# LOG_DIR = "logs"
-# os.makedirs(LOG_DIR, exist_ok=True)
 
+# -------------------- logging --------------------
 log_formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
-
-# file_handler = TimedRotatingFileHandler(
-#     os.path.join(LOG_DIR, "bot.log"),
-#     when="midnight", 
-#     interval=1,
-#     backupCount=7,   
-#     encoding="utf-8"
-# )
-# file_handler.setFormatter(log_formatter)
 
 console_handler = logging.StreamHandler()
 console_handler.setFormatter(log_formatter)
 
-logging.basicConfig(
-    level=logging.INFO,  
-    handlers=[console_handler] #file_handler
-)
-
+logging.basicConfig(level=logging.INFO, handlers=[console_handler])
 logger = logging.getLogger(__name__)
 
-WEBHOOK_PATH = "/webhook"
+# -------------------- config --------------------
+
+WEBHOOK_SECRET = config("WEBHOOK_SECRET", default="")
+WEBHOOK_PATH = f"/webhook/{WEBHOOK_SECRET}" if WEBHOOK_SECRET else "/webhook"
 WEBHOOK_HOST = config("WEBHOOK_URL", default="")
 WEBHOOK_URL = f"{WEBHOOK_HOST}{WEBHOOK_PATH}" if WEBHOOK_HOST else ""
 PORT = int(os.getenv("PORT", "8000"))
 
+# -------------------- lifecycle hooks --------------------
 async def on_startup(app: web.Application):
-    await bot.set_webhook(WEBHOOK_URL, allowed_updates=["message", "callback_query"])
-    logger.info("✅ Webhook установлен: %s", WEBHOOK_URL)
+    if WEBHOOK_URL:
+        sch = get_scheduler()
+        try:
+            sch.remove_job("survey-pull")
+
+        except Exception:
+            pass
+
+        sch.add_job(
+            run_survey_dispatch,
+            "cron",
+            minute="*/30",
+            args=[bot],
+            id="survey-pull"
+        )
+        if not sch.running:
+            sch.start()
+
+        sch.print_jobs()
+        await bot.set_webhook(
+            WEBHOOK_URL,
+            allowed_updates=["message", "callback_query"]
+        )
+        logger.info("✅ Webhook установлен: %s", WEBHOOK_URL)
+    else:
+        logger.warning("⚠️ WEBHOOK_URL не задан — вебхук не будет установлен")
 
 async def on_shutdown(app: web.Application):
-    if WEBHOOK_URL:
-        await bot.delete_webhook()
-        logger.info("❌ Webhook удалён")
+    try:
+        if WEBHOOK_URL:
+            await bot.delete_webhook(drop_pending_updates=False)
+            logger.info("❌ Webhook удалён")
+    except Exception as e:
+        logger.exception("Ошибка при удалении вебхука: %s", e)
+    finally:
+        try:
+            await bot.session.close()
+        except Exception:
+            pass
 
-async def health(_request):
+async def on_cleanup(app: web.Application):
+    try:
+        sch = get_scheduler()
+        if sch.running:
+            sch.shutdown(wait=False)
+        await close_session()
+    except Exception as e:
+        logger.exception("Ошибка при закрытии клиентской сессии: %s", e)
+
+# -------------------- handlers --------------------
+async def health(_request: web.Request):
     return web.json_response({"status": "ok"})
 
-async def handle(request):
+async def handle(request: web.Request):
     try:
         data = await request.json()
         update = Update.model_validate(data)
         await dp.feed_update(bot, update)
+    except (JSONDecodeError, ValidationError) as e:
+        logger.warning("Некорректный апдейт/JSON: %s", e)
     except Exception as e:
-        logger.exception("Ошибка обработки запроса: %s", e)
-        return web.Response(status=500)
-    return web.Response()
+        logger.exception("Ошибка обработки апдейта: %s", e)
+        await bot.send_message(chat_id="@logginggs", text=f"Ошибка в webhook:\n\n<b>{e}</b>", parse_mode="HTML")
+    return web.Response(status=200)
 
-def start_webhook():
+# -------------------- app factory --------------------
+def create_app() -> web.Application:
     app = web.Application()
     app.router.add_get("/health", health)
     app.router.add_post(WEBHOOK_PATH, handle)
+
     app.on_startup.append(on_startup)
     app.on_shutdown.append(on_shutdown)
-    web.run_app(app, port=PORT)
+    app.on_cleanup.append(on_cleanup)
+    return app
 
+# -------------------- entrypoint --------------------
 if __name__ == "__main__":
-    start_webhook()
+    web.run_app(create_app(), port=PORT)

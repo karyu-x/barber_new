@@ -1,9 +1,4 @@
-import json
-import random
-import asyncio
-import logging
-import csv
-import io
+import json, random, asyncio, logging, csv, io
 
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -13,8 +8,23 @@ from configs import functions as cf
 
 logger = logging.getLogger(__name__)
 
-LOGO_PATH = Path("images/logo.png")
+ROLE_ID_TO_KEY = {
+    1: "barber",
+    2: "client",
+    3: "director",
+    4: "admin",
+}
 
+ROLE_MENU_FALLBACK = {
+    "barber": "💈 Меню барбера",
+    "admin": "👔 Меню менеджера",
+    "director": "🛠 Меню директора"
+}
+
+def get_role_menu_label(role_key: str) -> str:
+    return ROLE_MENU_FALLBACK.get(role_key, role_key.title())
+
+LOGO_PATH = Path("images/logo.png")
 
 def get_logo_file() -> FSInputFile | None:
     if LOGO_PATH.exists():
@@ -24,7 +34,7 @@ def get_logo_file() -> FSInputFile | None:
 
 def load_translations():
     try:
-        with open("configs/datas.json", "r", encoding="utf-8") as file:
+        with open("configs/data/datas.json", "r", encoding="utf-8") as file:
             return json.load(file)
     except (FileNotFoundError, json.JSONDecodeError) as e:
         print(f"[ERROR] Ошибка загрузки перевода: {e}")
@@ -67,7 +77,7 @@ def get_days_from_today(lang):
     return days
 
 
-BUTTONS_PATH = Path("configs/buttons.json")
+BUTTONS_PATH = Path("configs/data/buttons.json")
 
 def get_admin_buttons(telegram_id: int):
     try:
@@ -167,3 +177,31 @@ def generate_clients_csv(clients: list[dict]) -> BufferedInputFile:
     csv_file = io.BytesIO(output.getvalue().encode("utf-8"))
     csv_file.name = "clients.csv"
     return BufferedInputFile(csv_file.getvalue(), filename="clients.csv")
+
+
+def get_info_project() -> dict:
+    try:
+        with open("configs/data/project_infos.json", "r", encoding="utf-8") as file:
+            return json.load(file)
+    except (FileNotFoundError, json.JSONDecodeError) as e:
+        logger.error(f"Error loading project information: {e}")
+        return {}
+
+def update_infos(payload: dict) -> None:
+    try:
+        with open("configs/data/project_infos.json", "r+", encoding="utf-8") as file:
+            data = json.load(file)
+
+            for key, value in payload.items():
+                if isinstance(value, dict) and isinstance(data.get(key), dict):
+                    data[key].update(value)
+                else:
+                    data[key] = value
+
+            file.seek(0)
+            json.dump(data, file, ensure_ascii=False, indent=2)
+            file.truncate()
+
+    except (FileNotFoundError, json.JSONDecodeError) as e:
+        logger.error(f"Error updating project information: {e}")
+

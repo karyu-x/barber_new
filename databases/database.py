@@ -1,53 +1,65 @@
-import aiohttp
-import logging
+import aiohttp, asyncio, logging
+from decouple import config
 
 logger = logging.getLogger(__name__)
 
-BASE_URL = "https://15497aeb0fe6.ngrok-free.app"
+BASE_URL = config("BASE_URL")
 
 session: aiohttp.ClientSession | None = None
 
-async def get_session():
+async def get_session() -> aiohttp.ClientSession:
     global session
     if session is None or session.closed:
         session = aiohttp.ClientSession()
     return session
 
+async def close_session():
+    global session
+    if session and not session.closed:
+        await session.close()
+        session = None
 
-async def api_request(method: str, endpoint: str, json=None, params=None, timeout=10):
+
+async def api_request(method: str, endpoint: str, json=None, params=None, timeout: float = 10):
     url = f"{BASE_URL}{endpoint}"
     sess = await get_session()
+    req_timeout = aiohttp.ClientTimeout(total=timeout)
 
     try:
-        async with sess.request(method, url, json=json, params=params, timeout=timeout) as resp:
-            if resp.status == 204:
-                logger.info(f"[API] {method} {url} | Status: {resp.status} | No content returned")
+        async with sess.request(method, url, json=json, params=params, timeout=req_timeout) as resp:
+            status = resp.status
+
+            if status == 204:
+                logger.info(f"[API] {method} {url} | {status} No Content")
                 return None
 
-            if resp.status == 200:
+            content_type = resp.headers.get("Content-Type", "")
+            body = None
+            if "application/json" in content_type.lower():
                 try:
-                    data = await resp.json()
+                    body = await resp.json()
                 except aiohttp.ContentTypeError:
-                    data = await resp.text()
+                    body = await resp.text()
+            else:
+                body = await resp.text()
 
-                if not data:
-                    logger.warning(f"[API] {method} {url} | Status: {resp.status} | No content returned")
-                    return None
-
-                logger.info(f"[API] {method} {resp.url} | Status: {resp.status}")
+            if 200 <= status < 300:
+                logger.info(f"[API] {method} {resp.url} | {status}")
                 if json:
                     logger.info(f"Payload: {json}")
                 if params:
                     logger.info(f"Params: {params}")
-                logger.info(f"Response: {data}")
+                logger.info(f"Response: {body}")
+                return body
 
-                return data
-
-            logger.error(f"[API] {method} {url} | Error: {resp.status}")
+            logger.error(f"[API] {method} {url} | HTTP error: {status} | Body: {body}")
             return None
 
-    except aiohttp.ClientTimeout:
-        logger.error(f"[API] {method} {url} | Timeout occurred after {timeout} seconds")
+    except asyncio.TimeoutError:
+        logger.error(f"[API] {method} {url} | Timeout after {timeout}s")
+        return None
+    except aiohttp.ClientResponseError as e:
+        logger.error(f"[API] {method} {url} | ClientResponseError: {e.status} {e.message}")
         return None
     except aiohttp.ClientError as e:
         logger.error(f"[API] {method} {url} | ClientError: {e}")
@@ -88,18 +100,29 @@ async def get_users_all():
     return data_base
 
 
-async def get_user_by_id(telegram_id=None, id=None):
+async def get_user_by_id(telegram_id=None, id=None, phone=None):
+    user = None
     if id is not None:
         user = await api_request(method="GET", endpoint=f"/api/auth/users/get_user_data/{id}/")
     elif telegram_id is not None:
         user = await api_request(method="GET", endpoint=f"/api/auth/users/if_exists/{telegram_id}/")
-    else:
+    elif phone is not None:
+        users = await get_users_all()
+        for u in users:
+            if u.get("phone_number") == phone:
+                user = u
+                break
+
+    if not user:
         return {}
 
     lang_code = user.get("language", "").lower()
     language = "🇺🇿 uz" if lang_code == "uz" else "🇷🇺 ru"
     user["language"] = language
     return user
+
+async def update_user_by_id(user_id, data):
+    return await api_request("PATCH", f"/api/auth/users/{user_id}/", json=data)
 
 ################################# ==== ROLES ==== #################################
 
@@ -141,6 +164,9 @@ async def delete_admin_by_phone(admin_phone):
 async def get_barbers_all():
     role = 1
     return await api_request(method="GET", endpoint=f"/api/auth/users/by-role/{role}/")
+
+async def get_barber_rating_by_id(barber_id):
+    return await api_request("GET", f"/api/auth/users/get_rating_by_barber_id/{barber_id}/")
 
 async def create_barber_by_phone(barber_phone):
     data = {"role_id": 1}
@@ -256,3 +282,195 @@ async def update_barber_break_by_id(break_id, data):
 
 async def delete_barber_break_by_id(break_id):
     return await api_request("DELETE", f"/api/break/{break_id}/")
+
+
+#########################################################################################################
+
+
+async def create_user(telegram_id, phone, first_name, language):
+    url = f"{BASE_URL}/api/auth/register/"
+    language = language.split(' ')[1]
+    payload = {
+        "telegram_id": telegram_id,
+        "phone_number": phone,
+        "first_name": first_name,
+        "language": language
+    }
+
+    try:
+        async with aiohttp.ClientSession() as session:
+            async with session.post(url, data=payload) as response:
+
+                if response.status in [200, 201]:
+                    print("User created successfully.")
+                    return await response.json()
+
+                elif response.status == 400:
+                    error_data = await response.json()
+                    if 'telegram_id' in error_data and "already exist" in error_data['telegram_id'][0]:
+                        return None
+                    else:
+                        return False
+
+                return f"An error occurred: {response.status}"
+
+    except aiohttp.ClientError as e:
+        print(f"A network error occurred: {e}")
+        return "Network error."
+
+
+
+async def is_user_exists(telegram_id):
+    url = f"{BASE_URL}/api/auth/users/if_exists/{telegram_id}/"
+
+    try:
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url) as response:
+
+                if response.status == 200:
+                    return await response.json()
+
+                elif response.status == 404:
+                    print("User does not exist.")
+                    return False
+
+                else:
+                    print(f"Unexpected error: {response.status}")
+                    return f"An error occurred: {response.status}"
+
+    except aiohttp.ClientError as e:
+        print(f"A network error occurred: {e}")
+        return "Network error."
+
+
+
+async def user_booking_history(tg_id):
+    url = f"{BASE_URL}/api/booking/booking-history/{tg_id}/"
+    try:
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url) as response:
+                if response.status == 200:
+                    data = await response.json()
+                    return data
+
+                elif response.status == 404:
+                    return await response.json()
+
+                else:
+                    return f"An error occurred: {response.status}"
+
+    except aiohttp.ClientError as e:
+        print(f"A network error occurred: ")
+        return f"Network error:{e}"
+
+
+
+async def all_barbers_info(by_role):
+    url = f"{BASE_URL}/api/auth/users/by-role/{by_role}/"
+    try:
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url) as response:
+                if response.status == 200:
+                    data = await response.json()
+                    return data
+
+                elif response.status == 404:
+                    return await response.json()
+
+                else:
+                    return f"An error occurred: {response.status}"
+
+    except aiohttp.ClientError as e:
+        print(f"A network error occurred: ")
+        return f"Network error:{e}"
+
+
+
+async def barber_service_type(tg_id):
+    url = f"{BASE_URL}/api/service-types/only-type-by-telegram/{tg_id}/"
+    try:
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url) as response:
+                if response.status == 200:
+                    data = await response.json()
+                    return data
+
+                elif response.status == 404:
+                    return await response.json()
+
+                else:
+                    return f"An error occurred: {response.status}"
+
+    except aiohttp.ClientError as e:
+        print(f"A network error occurred: ")
+        return f"Network error:{e}"
+
+
+async def choosed_service(barber_id):
+    url = f"{BASE_URL}/api/services/{barber_id}/get_services/"
+    try:
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url) as response:
+                if response.status == 200:
+                    data = await response.json()
+                    return data
+
+                elif response.status == 404:
+                    return await response.json()
+
+                else:
+                    return f"An error occurred: {response.status}"
+
+    except aiohttp.ClientError as e:
+        print(f"A network error occurred: ")
+        return f"Network error:{e}"
+
+
+async def get_time_api(date, barber_id, service_id):
+    url = f"{BASE_URL}/api/booking/available-slots/{date}/{barber_id}/{service_id}/"
+    try:
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url) as response:
+                if response.status == 200:
+                    data = await response.json()
+                    return data
+
+                elif response.status == 404:
+                    return await response.json()
+
+                else:
+                    return f"An error occurred: {response.status}"
+
+    except aiohttp.ClientError as e:
+        print(f"A network error occurred: ")
+        return f"Network error:{e}"
+    
+
+########################################### BOOKINGS ###########################################
+
+async def create_booking(datas):
+    return await api_request("POST", "/api/booking/", json=datas)
+
+async def submit_booking_rating(barber_id, user_id, score):
+    payload = { "barber": barber_id, "client": user_id, "rating": score }
+    return await api_request("POST", f"/api/auth/users/post_rating/", json=payload)
+
+async def submit_booking_comment(booking_id, comment):
+    return await api_request("PATCH", f"/api/booking/{booking_id}/", json={"notes": comment})
+
+########################################### ANALYTICS ###########################################
+
+async def get_weekly_analytics():
+    return await api_request("GET", "/api/weekly/")
+
+
+async def get_barber_activities():
+    return await api_request("GET", "/api/weekly/barber_activity/")
+
+
+async def get_barber_ratings():
+    return await api_request("GET", "/api/auth/users/get_rating/")
+
+
+async def get_top_services():
+    return await api_request("GET", "/api/weekly/top_services/")

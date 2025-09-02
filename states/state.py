@@ -1,5 +1,25 @@
 from aiogram.fsm.state import State, StatesGroup
 
+class user(StatesGroup):
+    language = State()
+    phone = State()
+    fio = State()
+    conf = State()
+    main_menu = State()
+    show_contact_or_location = State()
+    change_language = State()
+    barber_name = State()
+    booking_history = State()
+    service_type = State()
+    check_service_type = State()
+    type_of_selected_service = State()
+    date = State()
+    time = State()
+    check_selected_time = State()
+    check_selected_date = State()
+    confirm_booking = State()
+
+
 class barber(StatesGroup):
     main_menu = State()
 
@@ -41,18 +61,14 @@ class barber(StatesGroup):
 class admin(StatesGroup):
     main_menu = State()
 
-    #####################
     notifications = State()
-
     input_text = State()
     input_photo = State()
     input_button = State()
     check_post = State()
     confirm_post = State()
 
-    #####################
     bookings = State()
-
     bookings_today = State()
     bookings_barber = State()
     booking_detail = State()
@@ -60,16 +76,11 @@ class admin(StatesGroup):
     booking_cancel_confirm = State()
     booking_forward = State()
     booking_forward_confirm = State()
-
     bookings_otherday = State()
-
     bookings_cancel = State()
-
     bookings_forward = State()
 
-    #####################
     settings = State()
-
     services_menu = State()
     barber_types = State()
     type_add = State()
@@ -82,7 +93,6 @@ class admin(StatesGroup):
     service_edit_description = State()
     service_edit_duration = State()
     service_edit_price = State()
-    
     barbers = State()
     barber_add = State()
     barber_delete = State()
@@ -91,45 +101,37 @@ class admin(StatesGroup):
     barber_edit_description = State()
     barber_edit_photo = State()
     barber_edit_time = State()
-
     admins = State()
     admin_add = State()
     admin_delete = State()
     admin_detail = State()
     admin_edit_phone = State()
     admin_edit_button = State()
-
-    working_hours = State()
-
     language = State()
+    infos = State()
+    info_contact = State()
+    info_location = State()
+    info_price_list = State()
 
-    #####################
     clients = State()
     client_list = State()
     client_search = State()
     client_detail = State()
 
-    #####################
     analytics = State()
-
-    #####################
 
 
 class director(StatesGroup):
     main_menu = State()
     
-    #####################
     notifications = State()
-
     input_text = State()
     input_photo = State()
     input_button = State()
     check_post = State()
     confirm_post = State()
 
-    #####################
     bookings = State()
-
     bookings_today = State()
     bookings_barber = State()
     booking_detail = State()
@@ -137,16 +139,11 @@ class director(StatesGroup):
     booking_cancel_confirm = State()
     booking_forward = State()
     booking_forward_confirm = State()
-
     bookings_otherday = State()
-
     bookings_cancel = State()
-
     bookings_forward = State()
 
-    #####################
     settings = State()
-
     services_menu = State()
     barber_types = State()
     type_add = State()
@@ -159,7 +156,6 @@ class director(StatesGroup):
     service_edit_description = State()
     service_edit_duration = State()
     service_edit_price = State()
-    
     barbers = State()
     barber_add = State()
     barber_delete = State()
@@ -168,25 +164,21 @@ class director(StatesGroup):
     barber_edit_description = State()
     barber_edit_photo = State()
     barber_edit_time = State()
-
     admins = State()
     admin_add = State()
     admin_delete = State()
     admin_detail = State()
     admin_edit_phone = State()
     admin_edit_button = State()
-
-    working_hours = State()
-
+    infos = State()
+    info_contact = State()
+    info_location = State()
+    info_price_list = State()
     language = State()
 
-    #####################
     clients = State()
     client_list = State()
     client_search = State()
     client_detail = State()
 
-    #####################
     analytics = State()
-
-    #####################

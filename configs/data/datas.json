@@ -1,9 +1,21 @@
 {
     "input_field_msg": "💈 Perfect Barber",
+    "start": "Hello! 👋 Welcome to Perfect Barber's Bot.\nBook your barber appointment or share your feedback with us!\n\nAssalomu alaykum! 👋 Perfect Barber botiga xush kelibsiz.\nSartaroshga yoziling yoki fikr-mulohazalaringizni biz bilan baham ko‘ring!\n\nЗдравствуйте! 👋 Добро пожаловать в бот Perfect Barber.\nЗапишитесь к парикмахеру или поделитесь своими отзывами!",
 
     "🇺🇿 uz": {
         "start_msg": "👋 Assalomu alaykum!\n\nBotdan foydalanishni boshlash uchun quyidagi menyudan kerakli bo‘limni tanlang",
+        "survey": {
+            "visit_card_title": "✂️ Sizning tashrifingiz",
+            "ask_rating": "⭐ Iltimos, baho bering:",
+            "comment": "💬 Iltimos, fikringizni yozing:",
+            "comment_button": "✍️ Fikr qoldirish",
+            "thank_you_rate": "🎉 Rahmat! Sizning bahoingiz: {score} ⭐",
+            "thank_you_comment": "🎉 Rahmat! Sizning fikringiz qabul qilindi.",
+            "error": "❌ Xatolik yuz berdi. Iltimos, qaytadan urinib ko‘ring."
+        },
         "errors": {
+            "error_lang": "❗ Iltimos, tilni tanlang",
+            "error_conf": "❗ Iltimos, ma'lumotlaringizni tasdiqlang",
             "unknown_command": "❗ Kechirasiz, bu buyruq tushunarsiz. Quyidagi menyudan birini tanlang",
             "photo_required_msg": "📸 Iltimos, rasmni bevosita surat sifatida yuboring. Fayl shaklida yubormang",
             "invalid_button_format": "❗ Tugma noto‘g‘ri formatda. Iltimos, Matn - havola ko‘rinishida kiriting",
@@ -14,6 +26,65 @@
             "invalid_price_msg": "❌ Noto‘g‘ri narx! Iltimos, narxni faqat raqam bilan kiriting. Masalan: 50000",
             "no_access_button": "❌ Sizda ushbu tugmani ishlatish huquqi yo‘q",
             "end_time_must_be_after_start_time_msg": "❌ Tugash vaqti boshlanish vaqtidan keyin bo'lishi kerak."
+        },
+
+        "client": {
+            "message_text": {
+                "phone": "Iltimos telefon raqamingizni kiritinf\nMisol uchun — +998991234567",
+                "name": "Iltimos ismingizni kiriting:\nMisol uchun: Ismoil",
+                "error_phone": "Iltimos telefon raqamni to'g'ri kiriting\nMisol uchun - +998991234567",
+                "error_name": "Iltimos isimni to'g'ri kiriting\nMisol uchun - Ismoil",
+                "confirmed_userinfo": "Ma'lumotlaringizni tasdiqlaysizmi?\n",
+                "conf_phone": "📞 Telefon raqamingiz: ",
+                "conf_name": "\uD83D\uDCC3 Ismingiz: ",
+                "issue": "Iltimos shikoyatingizni yozing:",
+                "issue_received": "Xabaringiz muvaffaqiyatli yuborildi",
+                "error_issue": "Xabarni yuborishda xatolik",
+                "problem": "❗ Muammo yoki Taklif: ",
+                "issue_or_offer": "Shikoyat yoki takliflaringiz bo'lsa tugmalardan birini tanlang",
+                "offer": "Iltimos taklifingizni yozing:",
+                "menu": "Asosiy menu",
+                "show_contact": "Bog'lanish uchun telefon raqam.\n☎\uFE0F  —  +998991234567",
+                "show_location": "Salonimizga tashrif buyurishingiz uchun lokatsiya \uD83D\uDE0A",
+                "change_language": "O'zgartirmoqchi bo'lgan tilingizni tanlang \uD83D\uDE0A",
+                "booking_history": "📋 Buyurtmalar tarixi",
+                "no_booking_history": "Sizda hali buyurtmalar yo'q \uD83E\uDD37\u200D♂\uFE0F",
+                "barber_name": "Qaysi sartarosh qabuliga yozilmoqchisiz?\nIltimos sartaroshlardan birin tanlang \uD83D\uDE0A",
+                "select_date": "Qaysi kunga sartarosh qabuliga yozlimoqchisiz ?",
+                "another_day": "Iltimos sanani tanlang",
+                "select_time": "Qaysi vaqtga sartarosh qabuliga yozilmoqchisiz \uD83D\uDC40",
+                "conf_barber_name": "\uD83D\uDCC3 Sartaroshning ismi: ",
+                "conf_day": "\uD83D\uDCC6 Sana: ",
+                "conf_time": "\uD83D\uDD54 Vaqt: ",
+                "service_types": "\uD83D\uDCCB Xizmat turi:",
+                "sana": "Iltimos sanani tanlang",
+                "payment": "Iltimos to'lov turini tanlang \uD83D\uDE0A",
+                "service_type": "Iltimos xizmat turini tanlang",
+                "optionforservices": "Qaysi hizmat turidan foydalanmoqchisiz?",
+                "confirm_booking": "✅ Buyurtmani tasdiqlaysizmi?",
+                "booking_successful": "✅ Buyurtma muvaffaqiyatli yaratildi!"
+            },
+            "buttons": {
+                "contact": "📞 Contactni jo'natish",
+                "back": "⬅️ Orqaga",
+                "confirm": "✅ Tasdiqlash",
+                "rejected": "❌ Bekor qilish",
+                "issue": "\uD83D\uDCDD Shikoyat",
+                "offer": "\uD83D\uDCA1 Taklif",
+                "booking": "\uD83D\uDCDD Sartaroshga yozilish",
+                "contact_menu": "☎\uFE0F Bog'lanish",
+                "location": "\uD83D\uDCCD Lokatsiya",
+                "booking_history": "\uD83D\uDCCB Bronlar tarixi",
+                "price_list": "\uD83D\uDCB5 Narxlar",
+                "change_lang": "\uD83C\uDDFA\uD83C\uDDFF\uD83C\uDDF7\uD83C\uDDFA Tilni o'zgartirish",
+                "eng": "\uD83C\uDDFA\uD83C\uDDF8 eng",
+                "uz": "\uD83C\uDDFA\uD83C\uDDFF uz",
+                "ru": "\uD83C\uDDF7\uD83C\uDDFA ru",
+                "today": "\uD83D\uDCC5 Bugun",
+                "another_day": "\uD83D\uDCCC Boshqa kun",
+                "hair": "\uD83D\uDC87\uD83C\uDFFB\u200D♂\uFE0F Soch olish",
+                "beard": "\uD83E\uDDD4\uD83C\uDFFB\u200D♂\uFE0F Soqol olish"
+            }
         },
 
         "barber": {
@@ -172,6 +243,7 @@
                 "barber_not_found_msg": "😕 Bunday ismli barber topilmadi. Iltimos, roʻyxatdan birortasini tanlang yoki ortga qayting.",
                 "barber_add_msg": "✂️ Yangi barber qo‘shish uchun telefon raqamini kiriting:",
                 "barber_add_success_msg": "✅ Yangi barber qo‘shildi!\n📱 Telefon raqami: {phone}",
+                "barber_request_msg": "📩 Barberlikka qo‘shildingiz.",
                 "barber_add_phone_msg": "📞 Barber telefon raqamini kiriting:",
                 "barber_info_msg": "👤 Ismi: {name}\n📞 Telefon: {phone_number}\n📄 Tavsif: {description}\n⭐️ Reyting: {rating}\n🕘 Ish vaqti: {from_hour} - {to_hour}\n🖼 Rasm: {photo}",
                 "barber_edit_phone_msg": "📞 Barber telefon raqamini qayta kiriting:",
@@ -188,6 +260,7 @@
                 "admins_msg": "👨‍💼 Administratorlar\nBot boshqaruvida qatnashadigan administratorlar roʻyxati.",
                 "admin_add_msg": "➕ Yangi administrator qoʻshish\nIltimos, qoʻshmoqchi boʻlgan administratorning 📱 telefon raqamini quyidagi formatda yuboring:\n\n+998 XX XXX XX XX",
                 "admin_add_success_msg": "✅ Administrator muvaffiyatli qoʻshildi!\nU endi bot boshqaruvida qatnashishi mumkin.",
+                "admin_add_request_msg": "📩 Administratorlikka qo'shildingiz.",
                 "admin_info_msg": "ℹ️ Administrator maʼlumotlari\n👤 Ism: {name}\n📱 Telefon: {phone}\n\n🛠 Mavjud tugmalar:\n{buttons}",
                 "admin_edit_phone_msg": "📱 Telefon raqamini oʻzgartirish\nAdministratorning yangi telefon raqamini kiriting:\n\n+998 XX XXX XX XX",
                 "admin_edit_phone_success_msg": "📞 Telefon raqami muvaffiyatli yangilandi.",
@@ -200,6 +273,18 @@
                 "language_msg": "🌐 Tilni tanlash\nSizga qulay bo‘lgan interfeys tilini belgilang.",
                 "language_selected_msg": "✅ Til tanlandi!",
 
+                "infos_msg": "📝 Salon haqidagi ma'lumotlarni tahrirlash",
+                "info_contact_msg": "📞 Aloqa ma'lumotlari\n\n📱 Telefon va 🏢 Barber shop ma'lumotlarini kiriting: (+998901234567\nPerfect Barbershop)",
+                "info_location_msg": "📍 Manzil\n🌐 Lokatsiyasini yuboring va 🏠 Addressni kiriting:",
+                "ask_address_msg": "🏠 Manzilni kiriting:",
+                "ask_location_msg": "📍 Lokatsiyani yuboring:",
+                "location_received_msg": "📍 Lokatsiya muvaffaqiyatli qabul qilindi.",
+                "address_received_msg": "🏠 Manzil muvaffaqiyatli qabul qilindi.",
+                "location_not_set_msg": "❌ Lokatsiya belgilanmagan.",
+                "address_not_set_msg": "❌ Manzil belgilanmagan.",
+                "info_price_list_msg": "💰 Xizmatlar va Narxlar ro'yxatini kiriting:",
+                "infos_updated_msg": "✅ Ma'lumotlar muvaffaqiyatli yangilandi.",
+
                 "clients_msg": "📕 Mijozlar\nMijozlar haqidagi ma’lumotlar va ularning faolligi.",
                 "client_last_list_msg": "📋 So'nggi 5 ta mijozlar ro‘yxati",
                 "client_list_msg": "👥 Barcha mijozlar ro'yxati",
@@ -210,7 +295,7 @@
                 "client_ban_msg": "⛔️ Mijoz muvaffiyatli bloklandi!\n\n🛑 U endi botdan foydalana olmaydi.",
                 "client_unban_msg": "✅ Mijoz blokdan chiqarildi!\n\n🎉 Endi u yana botdan foydalanishi mumkin.",
 
-                "analytics_msg": "📊 Statistika\nKunlik va oylik ishlash natijalari, daromadlar va faollik tahlili.",
+                "analytics_msg": "📊 Statistika\nHaflatik va oylik ishlash natijalari va faollik tahlili.",
 
                 "user_menu_msg": "📋 Asosiy menyu\nKerakli bo‘limni tanlang:"
             },
@@ -222,6 +307,7 @@
                 "reject": "🚫 Bekor qilish",
                 "back": "🔙 Orqaga",
                 "back_main": "🏠 Asosiy menyu",
+                "location": "📍 Manzilni yuboring",
 
                 "notifications": "📮 Xabarnoma",
                 "input_text": "📝 Matnni kiriting",
@@ -267,7 +353,12 @@
                 "admin_delete": "🗑️ Adminni o'chirish",
 
                 "language": "🌐 Til",
-                
+
+                "infos": "🗂 Ma'lumotlar",
+                "info_contact": "📞 Kontakt ma'lumotlari",
+                "info_location": "📍 Lokatsiya ma'lumotlari",
+                "info_price_list": "💈 Xizmatlar ma'lumotlari",
+
                 "clients": "👥 Mijozlar",
                 "client_list": "📋 Klientlar ro‘yxati",
                 "client_search": "🔍 Klientni qidirish",
@@ -276,6 +367,10 @@
                 "client_unban": "✅ Blokdan chiqarish",
 
                 "analytics": "📊 Analitika",
+                "weekly_clients": "📅 Haftalik mijozlar",
+                "barber_activities": "✂️ Barber faoliyati",
+                "barber_ratings": "⭐ Barber reytinglari",
+                "top_services": "🏆 Eng yaxshi xizmatlar",
 
                 "user_menu": "🔰 Menyu"
             }
@@ -284,15 +379,174 @@
 
     "🇷🇺 ru": {
         "start_msg": "👋 Добро пожаловать!\n\nЧтобы начать пользоваться ботом, выберите нужный раздел из меню ниже.",
+        "survey": {
+            "visit_card_title": "✂️ Ваша запись",
+            "ask_rating": "⭐ Пожалуйста, оцените:",
+            "comment": "💬 Пожалуйста, оставьте комментарий:",
+            "comment_button": "✍️ Оставить отзыв",
+            "thank_you_rate": "🎉 Спасибо! Ваша оценка: {score} ⭐",
+            "thank_you_comment": "🎉 Спасибо! Ваш комментарий получен.",
+            "error": "❌ Произошла ошибка. Попробуйте снова."
+        },
         "errors": {
+            "error_lang": "❌ Неверный язык. Пожалуйста, выберите один из поддерживаемых языков.",
+            "error_conf": "❗ Пожалуйста, подтвердите ваши данные",
             "unknown_command": "❗ Неизвестная команда. Пожалуйста, выберите одну из кнопок ниже.",
             "photo_required_msg": "📸 Пожалуйста, отправьте фото как изображение, не как файл.",
             "invalid_button_format": "❗ Неверный формат кнопки. Введите в виде: Текст - ссылка.",
             "invalid_phone_number_msg": "❌ Неверный формат номера телефона. Введите так:\n998901234567 или +998901234567",
             "invalid_duration_msg": "❌ Неверная длительность! Введите в минутах (например, 30) или HH:MM (например, 01:30).",
             "invalid_time_range_msg": "❌ Пожалуйста, введите рабочее время в правильном формате (например: 09:00 - 18:00)",
+            "invalid_date_format_msg": "📅 Неверный формат даты!\n\nВведите так: 18-08 15:00-16:30",
+            "end_time_must_be_after_start_time_msg": "❌ Время окончания должно быть позже времени начала.",
             "invalid_price_msg": "❌ Неверная цена! Введите только число. Например: 50000",
             "no_access_button": "❌ У вас нет прав для использования этой кнопки."
+        },
+
+        "client": {
+            "message_text": {
+                "phone": "Пожалуйста, введите свой номер телефона\nНапример — +998991234567",
+                "name": "Пожалуйста, введите ваше имя:\nНапример: Исмаил",
+                "error_phone": "Пожалуйста, введите правильный номер телефона\nНапример — +998991234567",
+                "error_name": "Пожалуйста, введите правильное имя\nНапример — Исмаил",
+                "confirmed_userinfo": "Подтверждаете ли вы свои данные?\n",
+                "conf_phone": "📞 Ваш номер телефона: ",
+                "conf_name": "📃 Ваше имя: ",
+                "issue": "Пожалуйста, напишите вашу жалобу:",
+                "issue_received": "Ваше сообщение успешно отправлено",
+                "error_issue": "Ошибка при отправке сообщения",
+                "problem": "❗ Проблема или предложение: ",
+                "issue_or_offer": "Если у вас есть жалоба или предложение, выберите одну из кнопок",
+                "offer": "Пожалуйста, напишите ваше предложение:",
+                "menu": "Главное меню",
+                "show_contact": "Номер телефона для связи.\n☎️  —  +998991234567",
+                "show_location": "Для посещения нашего салона вот локация 😊",
+                "change_language": "Выберите язык, на который хотите изменить 😊",
+                "booking_history": "📋 История бронирований",
+                "no_booking_history": "У вас пока нет заказов 🤷‍♂️",
+                "barber_name": "К какому парикмахеру хотите записаться?\nПожалуйста, выберите одного из парикмахеров 😊",
+                "select_date": "На какой день хотите записаться к парикмахеру?",
+                "another_day": "Пожалуйста, выберите дату",
+                "select_time": "На какое время хотите записаться к парикмахеру 👀",
+                "conf_barber_name": "📃 Имя парикмахера: ",
+                "conf_day": "📆 Дата: ",
+                "conf_time": "🕔 Время: ",
+                "service_types": "📋 Тип услуги:",
+                "sana": "Пожалуйста, выберите дату",
+                "payment": "Пожалуйста, выберите способ оплаты 😊",
+                "service_type": "Пожалуйста, выберите тип услуги",
+                "optionforservices": "Какую услугу вы хотите получить?",
+                "confirm_booking": "✅ Подтверждаете заказ?",
+                "booking_successful": "✅ Заказ успешно создан!"
+            },
+            "buttons": {
+                "contact": "📞 Отправить контакт",
+                "back": "⬅️ Назад",
+                "confirm": "✅ Подтвердить",
+                "rejected": "❌ Отменить",
+                "issue": "📝 Жалоба",
+                "offer": "💡 Предложение",
+                "booking": "📝 Записаться к парикмахеру",
+                "contact_menu": "☎️ Контакты",
+                "location": "📍 Локация",
+                "booking_history": "📋 История броней",
+                "price_list": "💵 Цены",
+                "change_lang": "🇺🇿🇷🇺 Изменить язык",
+                "eng": "🇺🇸 eng",
+                "uz": "🇺🇿 uz",
+                "ru": "🇷🇺 ru",
+                "today": "📅 Сегодня",
+                "another_day": "📌 Другой день",
+                "hair": "💇‍♂️ Стрижка",
+                "beard": "🧔‍♂️ Борода"
+            }
+        },
+
+        "barber": {
+            "message": {
+                "main_menu_msg": "🏠 Главное меню — выберите нужный раздел:",
+
+                "bookings_msg": "📅 Все ваши брони",
+                "bookings_today_msg": "📅 Ваши сегодняшние брони",
+                "bookings_none_msg": "❌ На сегодня брони не найдены.",
+                "bookings_otherday_msg": "📆 Для просмотра броней выберите дату",
+                "bookings_otherday_next_msg": "📌 Ваши брони на выбранный день:",
+                "booking_details_msg": "📌 Заказ №{id}\n\n👤 Клиент: {client}\n🛎️ Услуга: {service}\n💵 Цена: {price}\n🕒 Время: {start_time} - {end_time}\n📋 Статус: {status}",
+
+                "breaks_msg": "⏸️ Мои перерывы",
+                "break_not_found_msg": "❌ Перерывы не найдены.",
+                "break_add_reason_msg": "📝 Причина перерыва:",
+                "break_add_time_msg": "🕒 Введите время перерыва:",
+                "break_add_confirm_msg": "❓ Подтверждаете добавление перерыва?",
+                "break_add_success_msg": "✅ Перерыв успешно добавлен!",
+                "break_edit_msg": "✏️ Введите ID перерыва для редактирования:",
+                "break_edit_time_msg": "🕒 Введите время окончания перерыва:",
+                "break_edit_success_msg": "✅ Перерыв успешно отредактирован!",
+                "break_delete_msg": "❌ Введите ID перерыва для удаления:",
+                "break_delete_confirm_msg": "❓ Подтверждаете удаление перерыва?",
+                "break_delete_success_msg": "✅ Перерыв успешно удалён!",
+
+                "type_not_found_msg": "❌ Тип услуги не найден!",
+                "type_add_msg": "➕ Введите название нового типа услуги. Например: - Детская стрижка",
+                "type_added_msg": "✅ Новый тип услуги успешно создан!",
+                "type_delete_msg": "❌ Введите ID типа услуги для удаления:",
+                "type_delete_confirm_msg": "❓ Подтверждаете удаление данного типа услуги?",
+                "type_delete_success_msg": "✅ Тип услуги {type_name} успешно удалён!",
+                "services_msg": "💼 Мои услуги",
+                "service_not_found_msg": "❌ Услуга не найдена",
+                "service_add_msg": "✏️ Введите название новой услуги для добавления.",
+                "service_added_msg": "✅ Новая услуга успешно создана!",
+                "service_delete_msg": "❌ Введите ID услуги для удаления:",
+                "service_delete_confirm_msg": "❓ Подтверждаете удаление данной услуги?",
+                "service_delete_success_msg": "✅ Услуга {service_name} успешно удалена!",
+                "name_edit_msg": "✏️ Изменить имя:",
+                "description_edit_msg": "✏️ Изменить описание:",
+                "duration_edit_msg": "🕒 Изменить продолжительность:",
+                "price_edit_msg": "💵 Изменить цену:",
+
+                "cabinet_msg": "📦 Мой кабинет",
+                "phone_edit_msg": "📞 Изменить номер телефона:",
+                "about_edit_msg": "ℹ️ Изменить информацию обо мне:",
+                "photo_edit_msg": "📸 Изменить фото:",
+                "time_edit_msg": "🕒 Изменить рабочее время:",
+                "language_edit_msg": "🌐 Изменить язык:",
+
+                "user_menu_msg": "🔰 Меню"
+            },
+            "button": {
+                "back": "🔙 Назад",
+                "back_main": "🏠 Главное меню",
+                "confirm": "✅ Подтвердить",
+
+                "bookings": "📅 Мои брони",
+                "bookings_today": "📅 Сегодняшние брони",
+                "bookings_otherday": "📆 Брони на другой день",
+
+                "breaks": "⏸️ Перерывы",
+                "breaks_all": "⏸️ Все перерывы",
+                "break_add": "📝 Добавить перерыв",
+                "break_edit": "✏️ Редактировать перерыв",
+                "break_delete": "❌ Удалить перерыв",
+
+                "types": "💼 Мои услуги",
+                "type_add": "➕ Добавить новый тип услуги",
+                "type_delete": "🗑 Удалить тип услуги",
+                "service_add": "➕ Добавить услугу",
+                "service_delete": "🗑 Удалить услугу",
+                "name_edit": "✏️ Изменить имя",
+                "description_edit": "✏️ Изменить описание",
+                "duration_edit": "🕒 Изменить продолжительность",
+                "price_edit": "💵 Изменить цену",
+
+                "cabinet": "📦 Мой кабинет",
+                "phone_edit": "📞 Мой телефон",
+                "about_edit": "ℹ️ Обо мне",
+                "photo_edit": "📸 Моё фото",
+                "time_edit": "🕒 Моё рабочее время",
+                "language_edit": "🌐 Мой язык",
+
+                "user_menu": "🔰 Меню"
+            }
         },
 
         "director": {
@@ -392,6 +646,18 @@
                 "language_msg": "🌐 Выбор языка\nВыберите удобный язык интерфейса.",
                 "language_selected_msg": "✅ Язык выбран!",
 
+                "infos_msg": "📝 Редактировать информацию о салоне",
+                "info_contact_msg": "📞 Контактные данные\n\n📱 Телефон и 🏢 информацию о барбершопе введите так: (+998901234567\nPerfect Barbershop)",
+                "info_location_msg": "📍 Адрес\n🌐 Отправьте локацию и введите 🏠 адрес:",
+                "ask_address_msg": "🏠 Введите адрес:",
+                "ask_location_msg": "📍 Отправьте локацию:",
+                "location_received_msg": "📍 Локация успешно получена.",
+                "address_received_msg": "🏠 Адрес успешно получен.",
+                "location_not_set_msg": "❌ Локация не установлена.",
+                "address_not_set_msg": "❌ Адрес не установлен.",
+                "info_price_list_msg": "💰 Введите список услуг и цен:",
+                "infos_updated_msg": "✅ Информация успешно обновлена.",
+
                 "clients_msg": "📕 Клиенты\nИнформация о клиентах и их активности.",
                 "client_last_list_msg": "📋 Последние 5 клиентов",
                 "client_list_msg": "👥 Список всех клиентов",
@@ -459,6 +725,11 @@
                 "admin_delete": "🗑️ Удалить админа",
 
                 "language": "🌐 Язык",
+                
+                "infos": "🗂 Информация",
+                "info_contact": "📞 Контактные данные",
+                "info_location": "📍 Адрес",
+                "info_price_list": "💈 Услуги и цены",
 
                 "clients": "👥 Клиенты",
                 "client_list": "📋 Список клиентов",
@@ -468,6 +739,10 @@
                 "client_unban": "✅ Разблокировать",
 
                 "analytics": "📊 Аналитика",
+                "weekly_clients": "📅 Еженедельные клиенты",
+                "barber_activities": "✂️ Активность барберов",
+                "barber_ratings": "⭐ Рейтинги барберов",
+                "top_services": "🏆 Топ услуг",
 
                 "user_menu": "🔰 Меню"
             }

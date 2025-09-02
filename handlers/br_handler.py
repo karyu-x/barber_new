@@ -7,7 +7,6 @@ from typing import Optional
 from aiogram import Router, F
 from aiogram.types import Message
 from aiogram.fsm.context import FSMContext
-from datetime import datetime
 
 from configs import functions as cf
 from databases import database as db
@@ -50,6 +49,7 @@ async def get_times_of_bookings(my_infos, date):
         else:
             booking_times[f"🏁 {booking.get('start_time').split('T')[1][:5]}"] = booking
     return booking_times
+
 
 
 ## Booking info
@@ -332,14 +332,17 @@ def get_service_info(lang, service_data):
 
 
 ## Get cabinet info
-def get_cabinet_info(my_infos, lang):
+async def get_cabinet_info(my_infos, lang):
+    rating = await db.get_barber_rating_by_id(my_infos.get("id"))
+    if not rating:
+        rating = {"rating": "❌"}
     cabinet_info = (
         f"🆔 ID: <b>{my_infos.get('id', 'N/A')}</b>\n"
         f"🛩 {'Телеграм ID' if lang == '🇷🇺 ru' else 'Telegram ID'}: <b>{my_infos.get('telegram_id', '❌')}</b>\n"
         f"👤 {'Имя' if lang == '🇷🇺 ru' else 'Ism'}: <b>{my_infos.get('first_name', '❌')}</b>\n"
         f"📞 {'Телефон' if lang == '🇷🇺 ru' else 'Telefon'}: <b>{my_infos.get('phone_number', '❌')}</b>\n"
         f"📝 {'Описание' if lang == '🇷🇺 ru' else 'Tavsif'}: <b>{my_infos.get('description', '❌')}</b>\n"
-        f"⭐ {'Рейтинг' if lang == '🇷🇺 ru' else 'Reyting'}: <b>{my_infos.get('rating', '❌')}</b>\n"
+        f"⭐ {'Рейтинг' if lang == '🇷🇺 ru' else 'Reyting'}: <b>{rating.get('rating', '❌')}</b>\n"
         f"🕒 {'Время работы' if lang == '🇷🇺 ru' else 'Ish vaqti'}: <b>{my_infos.get('default_from_hour', '❌')} - {my_infos.get('default_to_hour', '❌')}</b>\n"
     )
 
@@ -381,7 +384,7 @@ async def show_main_menu(message: Message, state: FSMContext):
         await state.set_state(st.barber.types)
 
     elif text == cf.get_text(lang, role, "button", "cabinet"):
-        msg = get_cabinet_info(my_infos, lang)
+        msg = await get_cabinet_info(my_infos, lang)
         if my_infos.get("photo"):
             await message.bot.send_photo(
                 chat_id=user_id,
@@ -400,6 +403,14 @@ async def show_main_menu(message: Message, state: FSMContext):
             )
 
         await state.set_state(st.barber.cabinet)
+
+    elif text == cf.get_text(lang, role, "button", "user_menu"):
+        await message.bot.send_message(
+            chat_id=user_id,
+            text=cf.get_text(lang, role, "message", "main_menu_msg"),
+            reply_markup=kb_r.us_main_menu(lang, my_infos.get("roles"))
+        )
+        await state.set_state(st.user.main_menu)
 
     else:
         await show_error(message, state)
@@ -974,7 +985,7 @@ async def edit_phone(message: Message, state: FSMContext):
     if text == cf.get_text(lang, role, "button", "back"):
         await message.bot.send_message(
             chat_id=user_id,
-            text=get_cabinet_info(my_infos, lang),
+            text= await get_cabinet_info(my_infos, lang),
             parse_mode="HTML",
             reply_markup=kb_r.br_cabinet(lang)
         )
@@ -998,7 +1009,7 @@ async def edit_phone(message: Message, state: FSMContext):
         await db.update_barber_by_id(my_infos.get("id"), {"phone_number": my_infos.get("phone_number")})
         await message.bot.send_message(
             chat_id=user_id,
-            text=get_cabinet_info(my_infos, lang),
+            text= await get_cabinet_info(my_infos, lang),
             parse_mode="HTML",
             reply_markup=kb_r.br_cabinet(lang)
         )
@@ -1013,7 +1024,7 @@ async def edit_about(message: Message, state: FSMContext):
     if text == cf.get_text(lang, role, "button", "back"):
         await message.bot.send_message(
             chat_id=user_id,
-            text=get_cabinet_info(my_infos, lang),
+            text= await get_cabinet_info(my_infos, lang),
             parse_mode="HTML",
             reply_markup=kb_r.br_cabinet(lang)
         )
@@ -1032,7 +1043,7 @@ async def edit_about(message: Message, state: FSMContext):
         await db.update_barber_by_id(my_infos.get("id"), {"description": my_infos.get("description")})
         await message.bot.send_message(
             chat_id=user_id,
-            text=get_cabinet_info(my_infos, lang),
+            text= await get_cabinet_info(my_infos, lang),
             parse_mode="HTML",
             reply_markup=kb_r.br_cabinet(lang)
         )
@@ -1047,7 +1058,7 @@ async def edit_photo(message: Message, state: FSMContext):
     if text == cf.get_text(lang, role, "button", "back"):
         await message.bot.send_message(
             chat_id=user_id,
-            text=get_cabinet_info(my_infos, lang),
+            text= await get_cabinet_info(my_infos, lang),
             parse_mode="HTML",
             reply_markup=kb_r.br_cabinet(lang)
         )
@@ -1071,7 +1082,7 @@ async def edit_photo(message: Message, state: FSMContext):
         await db.update_barber_by_id(my_infos.get("id"), {"photo": my_infos.get("photo")})
         await message.bot.send_message(
             chat_id=user_id,
-            text=get_cabinet_info(my_infos, lang),
+            text= await get_cabinet_info(my_infos, lang),
             parse_mode="HTML",
             reply_markup=kb_r.br_cabinet(lang)
         )
@@ -1086,7 +1097,7 @@ async def edit_time(message: Message, state: FSMContext):
     if text == cf.get_text(lang, role, "button", "back"):
         await message.bot.send_message(
             chat_id=user_id,
-            text=get_cabinet_info(my_infos, lang),
+            text= await get_cabinet_info(my_infos, lang),
             parse_mode="HTML",
             reply_markup=kb_r.br_cabinet(lang)
         )
@@ -1125,7 +1136,7 @@ async def edit_time(message: Message, state: FSMContext):
         await db.update_barber_by_id(my_infos.get("id"), datas)
         await message.bot.send_message(
             chat_id=user_id,
-            text=get_cabinet_info(my_infos, lang),
+            text= await get_cabinet_info(my_infos, lang),
             parse_mode="HTML",
             reply_markup=kb_r.br_cabinet(lang)
         )
@@ -1140,7 +1151,7 @@ async def edit_language(message: Message, state: FSMContext):
     if text == cf.get_text(lang, role, "button", "back"):
         await message.bot.send_message(
             chat_id=user_id,
-            text=get_cabinet_info(my_infos, lang),
+            text= await get_cabinet_info(my_infos, lang),
             parse_mode="HTML",
             reply_markup=kb_r.br_cabinet(lang)
         )
@@ -1225,7 +1236,7 @@ async def add_type(message: Message, state: FSMContext):
             parse_mode="HTML",
             reply_markup=await kb_r.br_types(lang, my_infos.get("telegram_id"))
         )
-        await state.set_state(st.barber.main_menu)
+        await state.set_state(st.barber.types)
 
     elif text == cf.get_text(lang, role, "button", "back_main"):
         await message.bot.send_message(
@@ -1581,6 +1592,7 @@ async def edit_service_name(message: Message, state: FSMContext):
     if text == cf.get_text(lang, role, "button", "back"):
         await message.bot.send_message(
             chat_id=user_id,
+            parse_mode="HTML",
             text=get_service_info(lang, service_data),
             reply_markup=kb_r.br_service_detail(lang)
         )
@@ -1614,6 +1626,7 @@ async def edit_service_description(message: Message, state: FSMContext):
     if text == cf.get_text(lang, role, "button", "back"):
         await message.bot.send_message(
             chat_id=user_id,
+            parse_mode="HTML",
             text=get_service_info(lang, service_data),
             reply_markup=kb_r.br_service_detail(lang)
         )
@@ -1647,6 +1660,7 @@ async def edit_service_duration(message: Message, state: FSMContext):
     if text == cf.get_text(lang, role, "button", "back"):
         await message.bot.send_message(
             chat_id=user_id,
+            parse_mode="HTML",
             text=get_service_info(lang, service_data),
             reply_markup=kb_r.br_service_detail(lang)
         )
@@ -1702,6 +1716,7 @@ async def edit_service_price(message: Message, state: FSMContext):
     if text == cf.get_text(lang, role, "button", "back"):
         await message.bot.send_message(
             chat_id=user_id,
+            parse_mode="HTML",
             text=get_service_info(lang, service_data),
             reply_markup=kb_r.br_service_detail(lang)
         )

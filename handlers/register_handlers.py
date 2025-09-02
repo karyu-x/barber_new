@@ -28,13 +28,21 @@ def pick_role(roles: list[int]) -> int:
 async def cmd_bot_cb(call: CallbackQuery, state: FSMContext):
     uid = call.from_user.id
     user = await db.get_user_by_id(telegram_id=uid)
+
+    if not user:  
+        await call.bot.send_message(uid, cf.translations["start"], reply_markup=kb.start_key())
+        await state.set_state(st.user.language)  
+        await call.answer()
+        return
+
     roles = user.get("roles")
     lang = user.get("language") or "🇺🇿 uz"
     role = pick_role(roles)
     caption_key = {
         ROLE_DIRECTOR: ("director", kb.dr_main_menu(lang), st.director.main_menu),
         ROLE_ADMIN:    ("director", kb.ad_main_menu(lang, uid), st.admin.main_menu),
-        ROLE_BARBER:   ("barber", kb.br_main_menu(lang), st.barber.main_menu)
+        ROLE_BARBER:   ("barber", kb.br_main_menu(lang), st.barber.main_menu),
+        ROLE_CLIENT:  ("client", kb.us_main_menu(lang, user.get("roles")), st.user.main_menu)
     }[role]
     _, kb_builder, sts = caption_key
     caption = cf.get_text(lang, "start_msg")
@@ -53,7 +61,7 @@ async def cmd_bot_cb(call: CallbackQuery, state: FSMContext):
     else:
         await call.bot.send_message(uid, caption, reply_markup=kb_builder)
 
-    await state.update_data( lang=lang, my_infos=user )
+    await state.update_data(lang=lang, my_infos=user)
     await state.set_state(sts)
 
     await call.answer()
@@ -63,13 +71,20 @@ async def cmd_bot_cb(call: CallbackQuery, state: FSMContext):
 async def cmd_bot(message: Message, state: FSMContext):
     uid = message.from_user.id
     user = await db.get_user_by_id(telegram_id=uid)
+
+    if not user: 
+        await message.bot.send_message(uid, cf.translations["start"], reply_markup=kb.start_key())
+        await state.set_state(st.user.language)  
+        return
+
     roles = user.get("roles")
     lang = user.get("language") or "🇺🇿 uz"
     role = pick_role(roles)
     caption_key = {
         ROLE_DIRECTOR: ("director", kb.dr_main_menu(lang), st.director.main_menu),
         ROLE_ADMIN:    ("director", kb.ad_main_menu(lang, uid), st.admin.main_menu),
-        ROLE_BARBER:   ("barber", kb.br_main_menu(lang), st.barber.main_menu)
+        ROLE_BARBER:   ("barber", kb.br_main_menu(lang), st.barber.main_menu),
+        ROLE_CLIENT:  ("client", kb.us_main_menu(lang, user.get("roles")), st.user.main_menu)
     }[role]
     _, kb_builder, sts = caption_key
     caption = cf.get_text(lang, "start_msg")
@@ -86,14 +101,19 @@ async def cmd_bot(message: Message, state: FSMContext):
     else:
         await bot.send_message(uid, caption, reply_markup=kb_builder)
 
-    await state.update_data( lang=lang, my_infos=user )
+    await state.update_data(lang=lang, my_infos=user)
     await state.set_state(sts)
 
-from middlewares.ban import BanMiddleware  
-from handlers.br_handler import barber_router
-from handlers.ad_handler import admin_router
-from handlers.dr_handler import director_router
 
+from middlewares.ban import BanMiddleware  
+from .cl_handler import user_router
+from .br_handler import barber_router
+from .ad_handler import admin_router
+from .dr_handler import director_router
+from .rate_booking import rate_router
+
+router.include_router(rate_router)
+router.include_router(user_router)
 router.include_router(barber_router)
 router.include_router(admin_router)
 router.include_router(director_router)
