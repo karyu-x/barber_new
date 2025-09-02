@@ -88,6 +88,7 @@ async def handle(request: web.Request):
     try:
         data = await request.json()
         update = Update.model_validate(data)
+        logger.info(f"Получен апдейт: {update}")
         await dp.feed_update(bot, update)
     except (JSONDecodeError, ValidationError) as e:
         logger.warning("Некорректный апдейт/JSON: %s", e)
