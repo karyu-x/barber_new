@@ -110,4 +110,5 @@ def create_app() -> web.Application:
 
 # -------------------- entrypoint --------------------
 if __name__ == "__main__":
+    PORT = int(os.getenv("PORT", "8080"))
     web.run_app(create_app(), host="0.0.0.0", port=PORT)
