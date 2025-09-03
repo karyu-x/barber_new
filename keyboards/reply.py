@@ -327,7 +327,7 @@ def language(lang):
 async def barber_name(lang):
     barber_with_tg_id = {}
     keyboard = ReplyKeyboardBuilder()
-    names = await db.all_barbers_info(1)
+    names = await db.get_barbers_all()
     for i in names:
         barber_with_tg_id[i["first_name"]] = i["telegram_id"]
         keyboard.add(KeyboardButton(text=i["first_name"]))
@@ -351,7 +351,7 @@ async def booking_history(lang, tg_id):
 async def types_button(lang, tg_id):
     type_with_id = {}
     keyboard = ReplyKeyboardBuilder()
-    service_type_barber = await db.barber_service_type(tg_id)
+    service_type_barber = await db.get_barber_types_and_services(tg_id)
     for i in service_type_barber:
         keyboard.add(KeyboardButton(text=i["name"]))
         type_with_id[i["name"]] = i["id"]
