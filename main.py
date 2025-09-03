@@ -27,7 +27,6 @@ WEBHOOK_SECRET = config("WEBHOOK_SECRET", default="")
 WEBHOOK_PATH = f"/webhook/{WEBHOOK_SECRET}" if WEBHOOK_SECRET else "/webhook"
 WEBHOOK_HOST = config("WEBHOOK_URL", default="")
 WEBHOOK_URL = f"{WEBHOOK_HOST}/webhook" if WEBHOOK_HOST else ""
-PORT = int(os.getenv("PORT", 8000))
 
 # -------------------- lifecycle hooks --------------------
 async def on_startup(app: web.Application):
@@ -110,4 +109,5 @@ def create_app() -> web.Application:
 
 # -------------------- entrypoint --------------------
 if __name__ == "__main__":
+    PORT = int(os.getenv("PORT", 8080))
     web.run_app(create_app(), host="0.0.0.0", port=PORT)
