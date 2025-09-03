@@ -14,20 +14,21 @@ from configs.app_scheduler import get_scheduler, run_survey_dispatch
 
 # -------------------- logging --------------------
 log_formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
-
 console_handler = logging.StreamHandler()
 console_handler.setFormatter(log_formatter)
-
 logging.basicConfig(level=logging.INFO, handlers=[console_handler])
 logger = logging.getLogger(__name__)
 
-# -------------------- config --------------------
 
+# -------------------- config --------------------
 WEBHOOK_SECRET = config("WEBHOOK_SECRET", default="")
 WEBHOOK_PATH = f"/webhook/{WEBHOOK_SECRET}" if WEBHOOK_SECRET else "/webhook"
+
 WEBHOOK_HOST = config("WEBHOOK_URL", default="")
-WEBHOOK_URL = f"{WEBHOOK_HOST}/webhook" if WEBHOOK_HOST else ""
-PORT = int(os.getenv("PORT", 8000))
+WEBHOOK_URL = f"{WEBHOOK_HOST}{WEBHOOK_PATH}" if WEBHOOK_HOST else ""
+
+PORT = int(os.getenv("PORT", 8080))
+
 
 # -------------------- lifecycle hooks --------------------
 async def on_startup(app: web.Application):
@@ -35,7 +36,6 @@ async def on_startup(app: web.Application):
         sch = get_scheduler()
         try:
             sch.remove_job("survey-pull")
-
         except Exception:
             pass
 
@@ -50,6 +50,7 @@ async def on_startup(app: web.Application):
             sch.start()
 
         sch.print_jobs()
+
         await bot.set_webhook(
             WEBHOOK_URL,
             allowed_updates=["message", "callback_query"]
@@ -57,6 +58,7 @@ async def on_startup(app: web.Application):
         logger.info("✅ Webhook установлен: %s", WEBHOOK_URL)
     else:
         logger.warning("⚠️ WEBHOOK_URL не задан — вебхук не будет установлен")
+
 
 async def on_shutdown(app: web.Application):
     try:
@@ -71,6 +73,7 @@ async def on_shutdown(app: web.Application):
         except Exception:
             pass
 
+
 async def on_cleanup(app: web.Application):
     try:
         sch = get_scheduler()
@@ -80,22 +83,33 @@ async def on_cleanup(app: web.Application):
     except Exception as e:
         logger.exception("Ошибка при закрытии клиентской сессии: %s", e)
 
+
 # -------------------- handlers --------------------
 async def health(_request: web.Request):
     return web.json_response({"status": "ok"})
 
+
 async def handle(request: web.Request):
     try:
         data = await request.json()
+        logger.info(f"📩 RAW update: {data}")  # логируем всё, что приходит
         update = Update.model_validate(data)
         await dp.feed_update(bot, update)
     except (JSONDecodeError, ValidationError) as e:
         logger.warning("Некорректный апдейт/JSON: %s", e)
     except Exception as e:
         logger.exception("Ошибка обработки апдейта: %s", e)
-        await bot.send_message(chat_id="@logginggs", text=f"Ошибка в webhook:\n\n<b>{e}</b>", parse_mode="HTML")
+        try:
+            await bot.send_message(
+                chat_id="@logginggs",
+                text=f"Ошибка в webhook:\n\n<b>{e}</b>",
+                parse_mode="HTML"
+            )
+        except Exception:
+            pass
         return web.Response(status=500, text="error")
     return web.Response(status=200)
+
 
 # -------------------- app factory --------------------
 def create_app() -> web.Application:
@@ -108,7 +122,7 @@ def create_app() -> web.Application:
     app.on_cleanup.append(on_cleanup)
     return app
 
+
 # -------------------- entrypoint --------------------
 if __name__ == "__main__":
-    PORT = int(os.getenv("PORT", "8080"))
     web.run_app(create_app(), host="0.0.0.0", port=PORT)
