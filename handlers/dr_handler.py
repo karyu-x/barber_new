@@ -1366,8 +1366,6 @@ async def settings(call: CallbackQuery, state: FSMContext):
     t_language = "setting_btn:language"
     t_back = "setting_btn:back"
 
-    print(action)
-
     async def services():
         await call.message.edit_text(
             cf.get_text(lang, role, "message", "services_prices_msg"),

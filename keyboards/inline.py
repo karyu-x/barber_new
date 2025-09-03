@@ -213,7 +213,7 @@ def infos(lang):
         InlineKeyboardButton(text=cf.get_text(lang, role, "button", "info_location"), callback_data="info_btn:location"),
         InlineKeyboardButton(text=cf.get_text(lang, role, "button", "info_price_list"), callback_data="info_btn:price_list"),
         InlineKeyboardButton(text=cf.get_text(lang, role, "button", "back"), callback_data="info_btn:back"),
-        InlineKeyboardButton(text=cf.get_text(lang, role, "button", "back_main"), callback_data="info_btn:main"),
+        InlineKeyboardButton(text=cf.get_text(lang, role, "button", "back_main"), callback_data="info_btn:back_main"),
     )
     kb.adjust(1)
     return kb.as_markup()
