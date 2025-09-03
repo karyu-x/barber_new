@@ -11,6 +11,11 @@ from handlers.register_handlers import bot, dp
 from databases.database import close_session 
 from configs.app_scheduler import get_scheduler, run_survey_dispatch
 
+print("Bot:", bot)
+print("Dispatcher:", dp)
+print("Scheduler:", get_scheduler())
+print("Database session closer:", close_session)
+print("Survey dispatcher:", run_survey_dispatch)
 
 # -------------------- logging --------------------
 log_formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
@@ -26,7 +31,6 @@ WEBHOOK_PATH = f"/webhook/{WEBHOOK_SECRET}" if WEBHOOK_SECRET else "/webhook"
 
 WEBHOOK_HOST = config("WEBHOOK_URL", default="")
 WEBHOOK_URL = f"{WEBHOOK_HOST}/webhook" if WEBHOOK_HOST else ""
-PORT = int(os.getenv("PORT", 8000))
 
 # -------------------- lifecycle hooks --------------------
 async def on_startup(app: web.Application):
@@ -89,7 +93,6 @@ async def health(_request: web.Request):
 async def handle(request: web.Request):
     try:
         data = await request.json()
-        logger.info(f"📩 RAW update: {data}") 
         update = Update.model_validate(data)
         await dp.feed_update(bot, update)
     except (JSONDecodeError, ValidationError) as e:
