@@ -388,7 +388,7 @@ async def show_time_slots(lang, dates, barber_id, service_id):
     time_now = datetime.now().time()
     day = datetime.now().strftime("%Y-%m-%d")
 
-    for i in time_slots["available_slots"]:
+    for i in time_slots.get("available_slots", []):
         try:
             slot_time = datetime.strptime(i, "%H:%M").time()
         except ValueError:
