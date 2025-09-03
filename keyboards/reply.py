@@ -388,19 +388,20 @@ async def show_time_slots(lang, dates, barber_id, service_id):
     time_now = datetime.now().time()
     day = datetime.now().strftime("%Y-%m-%d")
 
-    for i in time_slots.get("available_slots", []):
-        try:
-            slot_time = datetime.strptime(i, "%H:%M").time()
-        except ValueError:
-            continue
+    if time_slots:
+        for i in time_slots.get("available_slots", []):
+            try:
+                slot_time = datetime.strptime(i, "%H:%M").time()
+            except ValueError:
+                continue
 
-        if str(dates) == day:
-            if time_now < slot_time:
+            if str(dates) == day:
+                if time_now < slot_time:
+                    keyboard.add(KeyboardButton(text=i))
+                    available_slots.append(i)
+            else:
                 keyboard.add(KeyboardButton(text=i))
                 available_slots.append(i)
-        else:
-            keyboard.add(KeyboardButton(text=i))
-            available_slots.append(i)
 
     keyboard.add(KeyboardButton(text=cf.get_text(lang, "client", "buttons", "back")))
     keyboard.adjust(3)

@@ -413,23 +413,7 @@ async def barber_service_type(tg_id):
 
 
 async def get_time_api(date, barber_id, service_id):
-    url = f"{BASE_URL}/api/booking/available-slots/{date}/{barber_id}/{service_id}/"
-    try:
-        async with aiohttp.ClientSession() as session:
-            async with session.get(url) as response:
-                if response.status == 200:
-                    data = await response.json()
-                    return data
-
-                elif response.status == 404:
-                    return await response.json()
-
-                else:
-                    return f"An error occurred: {response.status}"
-
-    except aiohttp.ClientError as e:
-        print(f"A network error occurred: ")
-        return f"Network error:{e}"
+    return await api_request("GET", f"/api/booking/available-slots/{date}/{barber_id}/{service_id}/")
     
 
 ########################################### BOOKINGS ###########################################
