@@ -473,7 +473,7 @@ async def time(message: Message, state: FSMContext):
         await state.set_state(st.user.date)
     
     elif message.text == cf.get_text(lang, role, "buttons", "today"):
-        dates = datetime.today().date()
+        dates = datetime.today(cf.tashkent).date()
         service["date"] = dates
         reply_markup, _ = await kb.show_time_slots(lang, dates, barber.get("id"), service['id'])
         await state.update_data(service=service)
