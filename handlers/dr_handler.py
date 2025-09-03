@@ -2436,7 +2436,7 @@ async def edit_barber_time(message: Message, state: FSMContext):
 
     datas = {"default_from_hour": from_hour,
              "default_to_hour": to_hour}
-    await db.update_barber_by_id(barber_id, datas)
+    await db.update_working_hours_by_id(barber_id, datas)
 
     barber = await db.get_user_by_id(telegram_id=barber_telegram_id)
     await message.bot.send_message(

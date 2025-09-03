@@ -175,6 +175,9 @@ async def create_barber_by_phone(barber_phone):
 async def update_barber_by_id(barber_id, data):
     return await api_request("PATCH", f"/api/auth/users/{barber_id}/", json=data)
 
+async def update_working_hours_by_id(barber_id, data):
+    return await api_request("PATCH", f"/api/booking/working-hours/{barber_id}/set-hours/", json=data)
+
 async def delete_barber_by_phone(barber_phone):
     data = {"role_id": 1}
     return await api_request("PATCH", f"/api/auth/users/remove_role/{barber_phone}/", json=data)
