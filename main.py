@@ -94,6 +94,7 @@ async def handle(request: web.Request):
     except Exception as e:
         logger.exception("Ошибка обработки апдейта: %s", e)
         await bot.send_message(chat_id="@logginggs", text=f"Ошибка в webhook:\n\n<b>{e}</b>", parse_mode="HTML")
+        return web.Response(status=500, text="error")
     return web.Response(status=200)
 
 # -------------------- app factory --------------------
