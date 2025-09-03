@@ -87,7 +87,6 @@ async def health(_request: web.Request):
 async def handle(request: web.Request):
     try:
         data = await request.json()
-        logger.info(f"📩 RAW update: {data}") 
         update = Update.model_validate(data)
         await dp.feed_update(bot, update)
     except (JSONDecodeError, ValidationError) as e:
