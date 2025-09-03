@@ -168,6 +168,9 @@ async def get_barbers_all():
 async def get_barber_rating_by_id(barber_id):
     return await api_request("GET", f"/api/auth/users/get_rating_by_barber_id/{barber_id}/")
 
+async def get_barber_hours_by_telegram(telegram_id):
+    return await api_request("GET", f"/api/booking/working-hours/by-telegram/{telegram_id}/")
+
 async def create_barber_by_phone(barber_phone):
     data = {"role_id": 1}
     return await api_request("PATCH", f"/api/auth/users/add_role/{barber_phone}/", json=data)

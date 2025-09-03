@@ -4,7 +4,7 @@ from datetime import datetime, date, time
 from itertools import groupby
 from typing import Optional
 
-from aiogram import Router, F
+from aiogram import Router
 from aiogram.types import Message
 from aiogram.fsm.context import FSMContext
 

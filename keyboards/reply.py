@@ -366,7 +366,7 @@ async def services_button(lang, type_id):
     services = await db.get_barber_services(type_id)
     for i in services:
         keyboard.add(KeyboardButton(text=i["name"].strip()))
-        service_with_id["name"] = i["id"]
+        service_with_id[i["name"]] = i["id"]
     keyboard.add(KeyboardButton(text=cf.get_text(lang, "client", "buttons", "back")))
     keyboard.adjust(2, 1)
     return keyboard.as_markup(resize_keyboard=True), service_with_id
@@ -385,7 +385,7 @@ async def show_time_slots(lang, dates, barber_id, service_id):
     available_slots = []
     keyboard = ReplyKeyboardBuilder()
     time_slots = await db.get_time_api(dates, barber_id, service_id)
-    time_now = datetime.now().strftime("%H:%M")
+    time_now = datetime.now().time()
     day = datetime.now().strftime("%Y-%m-%d")
 
     for i in time_slots["available_slots"]:

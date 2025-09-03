@@ -3,7 +3,7 @@ import re
 import logging
 
 from aiogram import Router, F
-from aiogram.types import Message, CallbackQuery
+from aiogram.types import Message, CallbackQuery, InlineKeyboardMarkup
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.storage.base import StorageKey
 from datetime import datetime
@@ -61,11 +61,21 @@ async def navigate_back_or_main(entity, state, target_state, target_text, target
 
     if isinstance(entity, CallbackQuery):
         if "back" in action or action == "back":
-            if entity.message.text != final_text or entity.message.reply_markup != reply_markup:
-                await entity.message.edit_text(final_text, parse_mode="HTML", reply_markup=reply_markup)
+            if isinstance(reply_markup, InlineKeyboardMarkup):
+                if entity.message.text != final_text or entity.message.reply_markup != reply_markup:
+                    await entity.message.edit_text(
+                        final_text, parse_mode="HTML", reply_markup=reply_markup
+                    )
+            else:
+                await entity.message.delete()
+                await entity.bot.send_message(
+                    user_id, final_text, parse_mode="HTML", reply_markup=reply_markup
+                )
         else:  
             await entity.message.delete()
-            await entity.bot.send_message(user_id, final_text, parse_mode="HTML", reply_markup=reply_markup)
+            await entity.bot.send_message(
+                user_id, final_text, parse_mode="HTML", reply_markup=reply_markup
+            )
         await entity.answer()
 
     elif isinstance(entity, Message):
