@@ -2226,8 +2226,8 @@ async def edit_barber_time(message: Message, state: FSMContext):
         await show_error(message, state, "invalid_time_range_msg")
         return
 
-    datas = {"default_from_hour": from_hour,
-             "default_to_hour": to_hour}
+    datas = {"from_hour": from_hour,
+             "to_hour": to_hour}
     await db.update_working_hours_by_id(barber_id, datas)
 
     barber = await db.get_user_by_id(telegram_id=barber_telegram_id)
