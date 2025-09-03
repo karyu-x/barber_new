@@ -1,4 +1,4 @@
-import json, random, asyncio, logging, csv, io
+import json, random, asyncio, logging, csv, io, pytz
 
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -7,6 +7,8 @@ from aiogram.types import FSInputFile, BufferedInputFile
 from configs import functions as cf
 
 logger = logging.getLogger(__name__)
+
+tashkent = pytz.timezone("Asia/Tashkent")
 
 ROLE_ID_TO_KEY = {
     1: "barber",

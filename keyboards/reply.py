@@ -385,8 +385,8 @@ async def show_time_slots(lang, dates, barber_id, service_id):
     available_slots = []
     keyboard = ReplyKeyboardBuilder()
     time_slots = await db.get_time_api(dates, barber_id, service_id)
-    time_now = datetime.now().time()
-    day = datetime.now().strftime("%Y-%m-%d")
+    time_now = datetime.now(cf.tashkent).time()
+    day = datetime.now(cf.tashkent).strftime("%Y-%m-%d")
 
     if time_slots:
         for i in time_slots.get("available_slots", []):
@@ -409,7 +409,7 @@ async def show_time_slots(lang, dates, barber_id, service_id):
 
 
 def get_30_day_range_from_today():
-    today = datetime.now()
+    today = datetime.now(cf.tashkent)
     start_date = today + timedelta(days=1)
     date_list = [(start_date + timedelta(days=i)).strftime("%d-%m-%Y") for i in range(30)]
     return date_list
@@ -424,4 +424,4 @@ async def another_day(lang):
         keyboard.add(KeyboardButton(text=f"{i}"))
     keyboard.add(KeyboardButton(text=cf.get_text(lang, "client", "buttons", "back")))
     keyboard.adjust(2)
-    return keyboard.as_markup(resize_keyboard=True), another_day
+    return keyboard.as_markup(resize_keyboard=True), another_day_btn
