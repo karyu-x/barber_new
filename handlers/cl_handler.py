@@ -548,7 +548,7 @@ async def check_selected_date(message: Message, state: FSMContext):
         dates = message.text.split("-")
         new_date = dates[2] + "-" + dates[1] + "-" + dates[0]
         service["date"] = new_date
-        reply_markup, _ = await kb.show_time_slots(lang, dates, barber.get("id"), service['id'])
+        reply_markup, _ = await kb.show_time_slots(lang, new_date, barber.get("id"), service['id'])
         await state.update_data(service=service)
         await message.bot.send_chat_action(chat_id=user_id, action=ChatAction.TYPING)
         await message.answer(text=cf.get_text(lang, role,'message_text', 'select_time'),
