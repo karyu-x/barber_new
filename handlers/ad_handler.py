@@ -5,6 +5,7 @@ import logging
 from aiogram import Router, F
 from aiogram.types import Message, CallbackQuery
 from aiogram.fsm.context import FSMContext
+from aiogram.fsm.storage.base import StorageKey
 from datetime import datetime
 
 from configs import functions as cf
@@ -1998,6 +1999,23 @@ async def add_barber(message: Message, state: FSMContext):
         return
 
     await db.create_barber_by_phone(phone)
+    user = await db.get_user_by_id(phone=phone)
+    user_lang = "🇺🇿 uz" if user.get("lang") == "uz" else "🇷🇺 ru"
+    user_tg = user.get("telegram_id")
+
+    storage = state.storage
+    barber_ctx = FSMContext(
+        storage=storage,
+        key=StorageKey(bot_id=message.bot.id, chat_id=user_tg, user_id=user_tg)
+    )
+    await message.bot.send_message(
+        chat_id=user_tg, 
+        text=cf.get_text(lang, role, "message", "barber_add_request_msg"), 
+        reply_markup=kb_r.br_main_menu(lang=user_lang)
+    )
+    await barber_ctx.set_state(st.barber.main_menu)
+
+
     await message.bot.send_message(
         chat_id=user_id,
         text=cf.get_text(lang, role, "message", "barber_add_success_msg").format(phone=phone)

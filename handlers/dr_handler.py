@@ -2200,7 +2200,7 @@ async def add_barber(message: Message, state: FSMContext):
         key=StorageKey(bot_id=message.bot.id, chat_id=user_tg, user_id=user_tg)
     )
     await message.bot.send_message(
-        chat_id=user.get("id"), 
+        chat_id=user_tg, 
         text=cf.get_text(lang, role, "message", "barber_add_request_msg"), 
         reply_markup=kb_r.br_main_menu(lang=user_lang)
     )
@@ -2574,7 +2574,7 @@ async def add_admin(message: Message, state: FSMContext):
         key=StorageKey(bot_id=message.bot.id, chat_id=user_tg, user_id=user_tg)
     )
     await message.bot.send_message(
-        chat_id=user.get("id"), 
+        chat_id=user_tg, 
         text=cf.get_text(lang, role, "message", "admin_add_request_msg"), 
         reply_markup=kb_r.ad_main_menu(lang=user_lang, telegram_id=user_tg)
     )

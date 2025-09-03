@@ -324,16 +324,16 @@ def language(lang):
     return keyboard.as_markup(resize_keyboard=True)
 
 
-barber_with_telegramid = {}
 async def barber_name(lang):
+    barber_with_tg_id = {}
     keyboard = ReplyKeyboardBuilder()
     names = await db.all_barbers_info(1)
     for i in names:
-        barber_with_telegramid[i["first_name"]] = i["telegram_id"]
-        keyboard.add(KeyboardButton(text=f'{i["first_name"]}'))
+        barber_with_tg_id[i["first_name"]] = i["telegram_id"]
+        keyboard.add(KeyboardButton(text=i["first_name"]))
     keyboard.add(KeyboardButton(text=cf.get_text(lang, "client", "buttons", "back")))
     keyboard.adjust(2, 1)
-    return keyboard.as_markup(resize_keyboard=True)
+    return keyboard.as_markup(resize_keyboard=True), barber_with_tg_id
 
 
 async def booking_history(lang, tg_id):
@@ -348,34 +348,28 @@ async def booking_history(lang, tg_id):
     return keyboard.as_markup(resize_keyboard=True)
 
 
-selected_service = {}
-async def services(lang, tg_id):
+async def types_button(lang, tg_id):
+    type_with_id = {}
     keyboard = ReplyKeyboardBuilder()
     service_type_barber = await db.barber_service_type(tg_id)
     for i in service_type_barber:
-        for k, v in i.items():
-            if k == 'name':
-                keyboard.add(KeyboardButton(text=f"{v}"))
-                selected_service[i["name"]] = i["id"]
-                selected_service["barber_id"] = i["barber"]
+        keyboard.add(KeyboardButton(text=i["name"]))
+        type_with_id[i["name"]] = i["id"]
     keyboard.add(KeyboardButton(text=cf.get_text(lang, "client", "buttons", "back")))
     keyboard.adjust(2, 1)
-    return keyboard.as_markup(resize_keyboard=True)
+    return keyboard.as_markup(resize_keyboard=True), type_with_id
 
 
-check_selected_types = []
-async def type_of_selected_service(lang, barber_id):
+async def services_button(lang, type_id):
+    service_with_id = {}
     keyboard = ReplyKeyboardBuilder()
-    servicetypes = await db.choosed_service(barber_id)
-    for i in servicetypes:
-        for k, v in i.items():
-            if k == "name":
-                keyboard.add(KeyboardButton(text=f'{v.strip()}'))
-                check_selected_types.append(v)
-                selected_service["service_id"] = i["id"]
+    services = await db.get_barber_services(type_id)
+    for i in services:
+        keyboard.add(KeyboardButton(text=i["name"].strip()))
+        service_with_id["name"] = i["id"]
     keyboard.add(KeyboardButton(text=cf.get_text(lang, "client", "buttons", "back")))
     keyboard.adjust(2, 1)
-    return keyboard.as_markup(resize_keyboard=True)
+    return keyboard.as_markup(resize_keyboard=True), service_with_id
 
 
 async def date(lang):
@@ -387,26 +381,30 @@ async def date(lang):
     return keyboard.as_markup(resize_keyboard=True)
 
 
-time_slot = []
 async def show_time_slots(lang, dates, barber_id, service_id):
+    available_slots = []
     keyboard = ReplyKeyboardBuilder()
     time_slots = await db.get_time_api(dates, barber_id, service_id)
-    time_slots_list = time_slots["available_slots"]
     time_now = datetime.now().strftime("%H:%M")
     day = datetime.now().strftime("%Y-%m-%d")
 
-    for i in time_slots_list:
+    for i in time_slots["available_slots"]:
+        try:
+            slot_time = datetime.strptime(i, "%H:%M").time()
+        except ValueError:
+            continue
+
         if str(dates) == day:
-            if time_now < i:
-                keyboard.add(KeyboardButton(text=f"{i}"))
-                time_slot.append(str(i))
+            if time_now < slot_time:
+                keyboard.add(KeyboardButton(text=i))
+                available_slots.append(i)
         else:
-            keyboard.add(KeyboardButton(text=f"{i}"))
-            time_slot.append(str(i))
+            keyboard.add(KeyboardButton(text=i))
+            available_slots.append(i)
 
     keyboard.add(KeyboardButton(text=cf.get_text(lang, "client", "buttons", "back")))
     keyboard.adjust(3)
-    return keyboard.as_markup(resize_keyboard=True)
+    return keyboard.as_markup(resize_keyboard=True), available_slots
 
 
 def get_30_day_range_from_today():
@@ -416,8 +414,8 @@ def get_30_day_range_from_today():
     return date_list
 
 
-another_day_btn = []
 async def another_day(lang):
+    another_day_btn = []
     keyboard = ReplyKeyboardBuilder()
     dates = get_30_day_range_from_today()
     for i in dates:
@@ -425,12 +423,4 @@ async def another_day(lang):
         keyboard.add(KeyboardButton(text=f"{i}"))
     keyboard.add(KeyboardButton(text=cf.get_text(lang, "client", "buttons", "back")))
     keyboard.adjust(2)
-    return keyboard.as_markup(resize_keyboard=True)
-
-
-def show_hair_cut_price(lang):
-    keyboard = ReplyKeyboardBuilder()
-    keyboard.add(KeyboardButton(text=cf.get_text(lang, "client", "buttons", "booking")),
-                 KeyboardButton(text=cf.get_text(lang, "client", "buttons", "back")))
-    keyboard.adjust(1)
-    return keyboard.as_markup(resize_keyboard=True)
+    return keyboard.as_markup(resize_keyboard=True), another_day
