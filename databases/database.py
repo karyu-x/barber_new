@@ -326,7 +326,7 @@ async def create_user(telegram_id, phone, first_name, language):
 
 
 async def user_booking_history(tg_id):
-    return await api_request("GET", f"{BASE_URL}/api/booking/booking-history/{tg_id}/")
+    return await api_request("GET", f"/api/booking/booking-history/{tg_id}/")
 
 
 async def get_time_api(date, barber_id, service_id):
