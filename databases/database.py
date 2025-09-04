@@ -236,7 +236,7 @@ async def booking_forward_by_id(booking_id, barber_id):
 ################################# ==== BARBER TYPES ==== #################################
 
 async def get_barber_types_and_services(barber_id):
-    return await api_request("GET", f"/api/service-types/by-telegram/{barber_id}") or []
+    return await api_request("GET", f"/api/service-types/by-telegram/{barber_id}/") or []
 
 async def get_barber_types(barber_id):
     return await api_request("GET", f"/api/service-types/only-type-by-telegram/{barber_id}/") or []
