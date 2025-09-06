@@ -1998,7 +1998,15 @@ async def add_barber(message: Message, state: FSMContext):
         await show_error(message, state, "invalid_phone_number_msg")
         return
 
-    await db.create_barber_by_phone(phone)
+    barber = await db.create_barber_by_phone(phone)
+
+    if not barber:
+        await message.bot.send_message(
+            chat_id=user_id,
+            text=cf.get_text(lang, role, "message", "no_user_exists_msg")
+        )
+        return
+
     user = await db.get_user_by_id(phone=phone)
     user_lang = "🇺🇿 uz" if user.get("lang") == "uz" else "🇷🇺 ru"
     user_tg = user.get("telegram_id")

@@ -1133,13 +1133,19 @@ async def edit_time(message: Message, state: FSMContext):
         my_infos["default_from_hour"] = from_hour
         my_infos["default_to_hour"] = to_hour
 
-        await db.update_barber_by_id(my_infos.get("id"), datas)
+        datas = {
+            "from_hour": from_hour,
+            "to_hour": to_hour
+        }
+        await db.update_working_hours_by_id(my_infos["id"], datas)
+
         await message.bot.send_message(
             chat_id=user_id,
             text= await get_cabinet_info(my_infos, lang),
             parse_mode="HTML",
             reply_markup=kb_r.br_cabinet(lang)
         )
+        await state.update_data(my_infos=my_infos)
         await state.set_state(st.barber.cabinet)
 
 
