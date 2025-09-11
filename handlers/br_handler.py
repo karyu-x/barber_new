@@ -1175,8 +1175,8 @@ async def edit_language(message: Message, state: FSMContext):
         await db.update_barber_by_id(my_infos.get("id"), {"language": "uz" if text.endswith("uz") else "ru"})
         await message.bot.send_message(
             chat_id=user_id,
-            text=cf.get_text(lang, role, "message", "language_select_msg"),
-            reply_markup=kb_r.br_cabinet(lang)
+            text=cf.get_text(lang, role, "message", "language_selected_msg"),
+            reply_markup=kb_r.br_cabinet(text)
         )
         await state.set_state(st.barber.cabinet)
     
