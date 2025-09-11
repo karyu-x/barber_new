@@ -135,6 +135,7 @@
                 "photo_edit_msg": "📸 Rasmni o'zgartirish:",
                 "time_edit_msg": "🕒 Ish vaqtini o'zgartirish:",
                 "language_edit_msg": "🌐 Tilni o'zgartirish:",
+                "language_selected_msg": "✅ Til tanlandi!",
 
                 "user_menu_msg": "🔰 Menyu"
             },
@@ -511,6 +512,7 @@
                 "photo_edit_msg": "📸 Изменить фото:",
                 "time_edit_msg": "🕒 Изменить рабочее время:",
                 "language_edit_msg": "🌐 Изменить язык:",
+                "language_selected_msg": "✅ Язык выбран!",
 
                 "user_menu_msg": "🔰 Меню"
             },
@@ -684,6 +686,7 @@
                 "reject": "🚫 Отмена",
                 "back": "🔙 Назад",
                 "back_main": "🏠 Главное меню",
+                "location": "📍 Отправить локацию",
 
                 "notifications": "📮 Уведомления",
                 "input_text": "📝 Ввести текст",
