@@ -2,7 +2,7 @@ import re
 
 from datetime import datetime, date, time
 from itertools import groupby
-from typing import Optional, Union, Any
+from typing import Optional
 
 from aiogram import Router
 from aiogram.types import Message
@@ -28,8 +28,6 @@ async def get_user_context(entity, state):
     if isinstance(entity, Message):
         text = (getattr(entity, "text", "") or "").strip()
         return user_id, data, lang, text
-
-    return user_id, data, lang, None
 
 
 ## Error
@@ -67,18 +65,12 @@ async def get_booking_info(lang, booking):
     if isinstance(service, int):
         service = await db.get_barber_service_by_id(service)
 
-    def fmt_time(dt: Union[str, datetime]) -> str:
-        if isinstance(dt, datetime):
-            return dt.strftime("%d.%m.%Y %H:%M")
-
-        if isinstance(dt, str):
-            try:
-                t = datetime.fromisoformat(dt)
-                return t.strftime("%d.%m.%Y %H:%M")
-            except ValueError:
-                return dt
-
-        return str(dt)
+    def fmt_time(dt):
+        try:
+            t = datetime.fromisoformat(dt)
+            return t.strftime("%d.%m.%Y %H:%M")
+        except Exception:
+            return dt
 
     if lang == "🇷🇺 ru":
         status_map = {
@@ -233,8 +225,8 @@ def get_break_info(break_info, lang):
 
 
 ## Get labels
-def get_labels(lang: str) -> dict[str, Any]:
-    lbl: dict[str, dict[str, str]] = {
+def get_labels(lang: str) -> dict:
+    LBL = {
         "🇺🇿 uz": {
             "title": "💈 <b>Xizmat turlari va xizmatlar</b>",
             "no_types": "❌ Xizmat turlari topilmadi.",
@@ -256,33 +248,30 @@ def get_labels(lang: str) -> dict[str, Any]:
             "dash": "—",
         },
     }
+    labels = LBL.get(lang, LBL["🇺🇿 uz"])
 
-    labels = lbl.get(lang, lbl["🇺🇿 uz"])
-
-    def fmt_price(value: Optional[float | int | str]) -> str:
-        if value in (None, ""):
+    def fmt_price(value) -> str:
+        if value is None:
             return labels["dash"]
         try:
             return f"{int(value):,} {labels['currency']}".replace(",", " ")
-        except (ValueError, TypeError):
+        except Exception:
             return f"{value} {labels['currency']}"
 
-    def fmt_duration(d: Optional[str]) -> str:
+    def fmt_duration(d: str | None) -> str:
         if not d:
             return labels["dash"]
         parts = str(d).split(":")
-        return ":".join(parts[:2]) if len(parts) >= 2 else str(d)
+        return ":".join(parts[:2]) if len(parts) >= 2 else d
 
-    def fmt_desc(t: Optional[str]) -> str:
+    def fmt_desc(t: str | None) -> str:
         t = (t or "").strip()
-        return t or labels["dash"]
+        return t if t else labels["dash"]
 
-    return {
-        **labels,  # базовые тексты
-        "fmt_price": fmt_price,
-        "fmt_duration": fmt_duration,
-        "fmt_desc": fmt_desc,
-    }
+    labels["fmt_price"] = fmt_price
+    labels["fmt_duration"] = fmt_duration
+    labels["fmt_desc"] = fmt_desc
+    return labels
 
 
 ## Get types and services
@@ -596,7 +585,7 @@ async def show_breaks(message: Message, state: FSMContext):
         await message.bot.send_message(
             chat_id=user_id,
             text=cf.get_text(lang, role, "message", "break_edit_msg"),
-            reply_markup=await kb_r.break_buttons(lang, my_infos["id"])
+            reply_markup=kb_r.back_main(lang)
         )
         await state.set_state(st.barber.break_edit)
 
@@ -604,7 +593,7 @@ async def show_breaks(message: Message, state: FSMContext):
         await message.bot.send_message(
             chat_id=user_id,
             text=cf.get_text(lang, role, "message", "break_delete_msg"),
-            reply_markup=await kb_r.break_buttons(lang, my_infos["id"])
+            reply_markup=kb_r.back_main(lang)
         )
         await state.set_state(st.barber.break_delete)
 
@@ -615,6 +604,7 @@ async def show_breaks(message: Message, state: FSMContext):
 @router.message(st.barber.break_add_reason)
 async def add_break(message: Message, state: FSMContext):
     user_id, data, lang, text = await get_user_context(message, state)
+    my_infos = data.get("my_infos")
 
     if text == cf.get_text(lang, role, "button", "back"):
         await message.bot.send_message(
@@ -720,6 +710,7 @@ async def add_break_time(message: Message, state: FSMContext):
 @router.message(st.barber.break_add_confirm)
 async def confirm_add_break(message: Message, state: FSMContext):
     user_id, data, lang, text = await get_user_context(message, state)
+    my_infos = data.get("my_infos")
     datas = data.get("break_datas")
 
     if text == cf.get_text(lang, role, "button", "confirm"):
@@ -775,7 +766,7 @@ async def edit_break(message: Message, state: FSMContext):
 
     else:
 
-        if text[0].isdigit():
+        if text.isdigit():
             barber_break = await db.get_barber_break_by_id(text, my_infos.get("id"))
 
             if barber_break:
@@ -799,7 +790,7 @@ async def edit_break(message: Message, state: FSMContext):
 @router.message(st.barber.break_edit_time)
 async def edit_break_time(message: Message, state: FSMContext):
     user_id, data, lang, text = await get_user_context(message, state)
-    break_data = data.get("break_data")
+    my_infos = data.get("my_infos")
 
     if text == cf.get_text(lang, role, "button", "back"):
         await message.bot.send_message(
@@ -818,43 +809,32 @@ async def edit_break_time(message: Message, state: FSMContext):
         await state.set_state(st.barber.main_menu)
 
     else:
-        if not break_data:
-            await show_error(message, state, "no_break_data_msg")
-            return
-
+        break_data = data.get("break_data")
         start_time = BreaksRenderer._parse_iso(break_data.get("start_time"))
 
         try:
             h, m = map(int, text.split(":"))
-            end_time = datetime.combine(
-                start_time.date(), time(h, m)
-            ).replace(tzinfo=start_time.tzinfo)
-
+            end_time = datetime.combine(start_time.date(), time(h, m)).replace(tzinfo=start_time.tzinfo)
             if end_time <= start_time:
                 await show_error(message, state, "end_time_must_be_after_start_time_msg")
                 return
-
-        except ValueError:
+        except Exception:
             await show_error(message, state, "invalid_time_format_msg")
             return
 
         break_data["end_time"] = end_time.isoformat()
+        datas = { "end_time": end_time.isoformat() }
         await state.update_data(break_data=break_data)
+        await db.update_barber_break_by_id(break_data.get("id"), data=datas)
 
-        await db.update_barber_break_by_id(
-            break_data.get("id"), data={"end_time": end_time.isoformat()}
-        )
-
-        await message.bot.send_message(
-            user_id, cf.get_text(lang, role, "message", "break_edit_success_msg")
-        )
+        await message.bot.send_message(user_id, cf.get_text(lang, role, "message", "break_edit_success_msg"))
         await message.bot.send_message(
             chat_id=user_id,
             text=cf.get_text(lang, role, "message", "breaks_msg"),
-            reply_markup=kb_r.br_breaks(lang),
+            reply_markup=kb_r.br_breaks(lang)
         )
         await state.set_state(st.barber.breaks)
-
+    
     await state.update_data(break_data=None)
 
 
@@ -881,7 +861,7 @@ async def delete_break(message: Message, state: FSMContext):
 
     else:
 
-        if text[0].isdigit():
+        if text.isdigit():
             barber_break = await db.get_barber_break_by_id(text, my_infos.get("id"))
 
             if barber_break:
@@ -1147,6 +1127,9 @@ async def edit_time(message: Message, state: FSMContext):
             await show_error(message, state, "invalid_time_range_msg")
             return
 
+        datas = {"default_from_hour": from_hour,
+                "default_to_hour": to_hour}
+
         my_infos["default_from_hour"] = from_hour
         my_infos["default_to_hour"] = to_hour
 
@@ -1192,8 +1175,8 @@ async def edit_language(message: Message, state: FSMContext):
         await db.update_barber_by_id(my_infos.get("id"), {"language": "uz" if text.endswith("uz") else "ru"})
         await message.bot.send_message(
             chat_id=user_id,
-            text=cf.get_text(text, role, "message", "language_selected_msg"),
-            reply_markup=kb_r.br_cabinet(text)
+            text=cf.get_text(lang, role, "message", "language_select_msg"),
+            reply_markup=kb_r.br_cabinet(lang)
         )
         await state.set_state(st.barber.cabinet)
     
@@ -1204,6 +1187,7 @@ async def edit_language(message: Message, state: FSMContext):
 @router.message(st.barber.types)
 async def show_types(message: Message, state: FSMContext):
     user_id, data, lang, text = await get_user_context(message, state)
+    my_infos = data.get("my_infos")
 
     if text == cf.get_text(lang, role, "button", "back"):
         await message.bot.send_message(
@@ -1754,12 +1738,13 @@ async def edit_service_price(message: Message, state: FSMContext):
 
     else:
         def _parse_price(s: str) -> int | None:
-            price_re = re.compile(r"\d+")
-            digits = "".join(price_re.findall(s))
+            PRICE_RE = re.compile(r"\d+")
+            digits = "".join(PRICE_RE.findall(s))
             if not digits:
                 return None
             return int(digits)
 
+        price = _parse_price(text)
         price = _parse_price(text)
         if not price or price <= 0:
             await message.bot.send_message(
