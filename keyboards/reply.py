@@ -213,7 +213,7 @@ def br_breaks(lang):
 async def break_buttons(lang, barber_id):
     kb = ReplyKeyboardBuilder()
     role = "barber"
-    breaks = db.get_barber_breaks(barber_id)
+    breaks = await db.get_barber_breaks(barber_id)
     for brk in breaks:
         kb.add(
             KeyboardButton(text=f"{brk['id']} {brk['start_time'].split('T')[1][:5]} - {brk['end_time'].split('T')[1][:5]}")
