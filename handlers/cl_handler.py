@@ -554,7 +554,8 @@ async def check_selected_date(message: Message, state: FSMContext):
         await state.set_state(st.user.time)
 
     elif message.text in another_day_btn:
-        dates = message.text.split("-")
+        text_spl = message.text.split(" ")
+        dates = text_spl[0].split("-")
         new_date = dates[2] + "-" + dates[1] + "-" + dates[0]
         service["date"] = new_date
         reply_markup, _ = await kb.show_time_slots(lang, new_date, barber.get("id"), service['id'])
