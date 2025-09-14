@@ -433,6 +433,7 @@ def get_30_day_range_from_today(lang: str) -> list[str]:
         (start_date + timedelta(days=i)).strftime(f"%d-%m-%Y ({names[(start_date + timedelta(days=i)).weekday()]})")
         for i in range(30)
     ]
+    print(date_list)
     return date_list
 
 
@@ -442,7 +443,7 @@ async def another_day(lang):
     dates = get_30_day_range_from_today(lang)
     for i in dates:
         another_day_btn.append(i)
-        keyboard.add(KeyboardButton(text=f"{i}"))
+        keyboard.add(KeyboardButton(text=i))
     keyboard.add(KeyboardButton(text=cf.get_text(lang, "client", "buttons", "back")))
     keyboard.adjust(2)
     return keyboard.as_markup(resize_keyboard=True), another_day_btn
