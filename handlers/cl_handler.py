@@ -487,6 +487,7 @@ async def time(message: Message, state: FSMContext):
         await message.bot.send_chat_action(chat_id=user_id, action=ChatAction.TYPING)
         await message.answer(text=cf.get_text(lang, role,'message_text', 'another_day'),
                                 reply_markup=reply_markup)
+        await state.update_data(last_state="another_day")
         await state.set_state(st.user.check_selected_date)
 
     else:
@@ -504,11 +505,19 @@ async def check_selected_time(message: Message, state: FSMContext):
     _, time_slot = await kb.show_time_slots(lang, service.get("date"), barber.get("id"), service.get("id"))
 
     if message.text == cf.get_text(lang, role, "buttons", "back"):
-        service_info = get_service_info(lang, service)
-        await message.bot.send_chat_action(chat_id=user_id, action=ChatAction.TYPING)
-        await message.answer(service_info, parse_mode="HTML")
-        await message.answer(text=cf.get_text(lang, role,'message_text', 'select_date'), reply_markup=await kb.date(lang))
-        await state.set_state(st.user.time)
+        if data["last_state"] == "another_day":
+            reply_markup, _ = await kb.another_day(lang)
+            await message.bot.send_chat_action(chat_id=user_id, action=ChatAction.TYPING)
+            await message.answer(text=cf.get_text(lang, role, 'message_text', 'another_day'),
+                                 reply_markup=reply_markup)
+            await state.set_state(st.user.check_selected_date)
+
+        else:
+            service_info = get_service_info(lang, service)
+            await message.bot.send_chat_action(chat_id=user_id, action=ChatAction.TYPING)
+            await message.answer(service_info, parse_mode="HTML")
+            await message.answer(text=cf.get_text(lang, role,'message_text', 'select_date'), reply_markup=await kb.date(lang))
+            await state.set_state(st.user.time)
 
     elif message.text in time_slot:
         service["time"] = message.text

@@ -23,6 +23,8 @@
             "invalid_duration_msg": "❌ Noto‘g‘ri davomiylik! Davomiylikni daqiqalarda (masalan, 30) yoki HH:MM (masalan, 01:30)",
             "invalid_date_format_msg": "📅 Sana noto‘g‘ri formatda kiritildi!\n\nIltimos, sanani quyidagicha yozing: 18-08 15:00-16:30",
             "invalid_time_range_msg": "⏱️ Vaqt noto‘g‘ri formatda kiritildi!\n\nTo‘g‘ri misol: 15:00-16:30",
+            "invalid_time_format_msg": "❌ Noto‘g‘ri vaqt formati. Iltimos, 'soat:dakika' ko‘rinishida kiriting.",
+            "no_break_data_msg": "❌ Tanaffus ma’lumotlari topilmadi. Iltimos, qaytadan urinib ko‘ring.",
             "invalid_price_msg": "❌ Noto‘g‘ri narx! Iltimos, narxni faqat raqam bilan kiriting. Masalan: 50000",
             "no_access_button": "❌ Sizda ushbu tugmani ishlatish huquqi yo‘q",
             "end_time_must_be_after_start_time_msg": "❌ Tugash vaqti boshlanish vaqtidan keyin bo'lishi kerak."
@@ -135,6 +137,7 @@
                 "photo_edit_msg": "📸 Rasmni o'zgartirish:",
                 "time_edit_msg": "🕒 Ish vaqtini o'zgartirish:",
                 "language_edit_msg": "🌐 Tilni o'zgartirish:",
+                "language_selected_msg": "✅ Til tanlandi!",
 
                 "user_menu_msg": "🔰 Menyu"
             },
@@ -398,6 +401,8 @@
             "invalid_phone_number_msg": "❌ Неверный формат номера телефона. Введите так:\n998901234567 или +998901234567",
             "invalid_duration_msg": "❌ Неверная длительность! Введите в минутах (например, 30) или HH:MM (например, 01:30).",
             "invalid_time_range_msg": "❌ Пожалуйста, введите рабочее время в правильном формате (например: 09:00 - 18:00)",
+            "invalid_time_format_msg": "❌ Неверный формат времени. Пожалуйста, введите в виде 'часы:минуты'.",
+            "no_break_data_msg": "❌ Данные о перерыве не найдены. Попробуйте ещё раз.",
             "invalid_date_format_msg": "📅 Неверный формат даты!\n\nВведите так: 18-08 15:00-16:30",
             "end_time_must_be_after_start_time_msg": "❌ Время окончания должно быть позже времени начала.",
             "invalid_price_msg": "❌ Неверная цена! Введите только число. Например: 50000",
@@ -511,6 +516,7 @@
                 "photo_edit_msg": "📸 Изменить фото:",
                 "time_edit_msg": "🕒 Изменить рабочее время:",
                 "language_edit_msg": "🌐 Изменить язык:",
+                "language_selected_msg": "✅ Язык выбран!",
 
                 "user_menu_msg": "🔰 Меню"
             },
@@ -684,6 +690,7 @@
                 "reject": "🚫 Отмена",
                 "back": "🔙 Назад",
                 "back_main": "🏠 Главное меню",
+                "location": "📍 Отправить локацию",
 
                 "notifications": "📮 Уведомления",
                 "input_text": "📝 Ввести текст",

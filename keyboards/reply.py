@@ -209,6 +209,19 @@ def br_breaks(lang):
     kb.adjust(1, 2, 1)
     return kb.as_markup(resize_keyboard=True, input_field_placeholder=cf.translations["input_field_msg"])
 
+
+async def break_buttons(lang, barber_id):
+    kb = ReplyKeyboardBuilder()
+    role = "barber"
+    breaks = db.get_barber_breaks(barber_id)
+    for brk in breaks:
+        kb.add(
+            KeyboardButton(text=f"{brk['id']} {brk['start_time'].split('T')[1][:5]} - {brk['end_time'].split('T')[1][:5]}")
+        )
+    kb.adjust(2)
+    kb.add(KeyboardButton(text=cf.get_text(lang, role, "button", "back_main")), KeyboardButton(text=cf.get_text(lang, role, "button", "back")))
+    return kb.as_markup(resize_keyboard=True, input_field_placeholder=cf.translations["input_field_msg"])
+
 ####################################################  SERVICES & TYPES ##############################################################
 
 async def br_types(lang, barber_id):
@@ -408,17 +421,25 @@ async def show_time_slots(lang, dates, barber_id, service_id):
     return keyboard.as_markup(resize_keyboard=True), available_slots
 
 
-def get_30_day_range_from_today():
+def get_30_day_range_from_today(lang: str) -> list[str]:
     today = datetime.now(cf.tashkent)
     start_date = today + timedelta(days=1)
-    date_list = [(start_date + timedelta(days=i)).strftime("%d-%m-%Y") for i in range(30)]
+    weekdays = {
+        "🇺🇿 uz": ["Dushanba", "Seshanba", "Chorshanba", "Payshanba", "Juma", "Shanba", "Yakshanba"],
+        "🇷🇺 ru": ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Воскресенье"],
+    }
+    names = weekdays.get(lang, weekdays["🇺🇿 uz"])
+    date_list = [
+        (start_date + timedelta(days=i)).strftime(f"%d-%m-%Y ({names[(start_date + timedelta(days=i)).weekday()]})")
+        for i in range(30)
+    ]
     return date_list
 
 
 async def another_day(lang):
     another_day_btn = []
     keyboard = ReplyKeyboardBuilder()
-    dates = get_30_day_range_from_today()
+    dates = get_30_day_range_from_today(lang)
     for i in dates:
         another_day_btn.append(i)
         keyboard.add(KeyboardButton(text=f"{i}"))
