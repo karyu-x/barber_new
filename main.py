@@ -1,3 +1,4 @@
+import asyncio
 import os
 import logging
 from json import JSONDecodeError
@@ -117,8 +118,16 @@ def create_app() -> web.Application:
     app.on_cleanup.append(on_cleanup)
     return app
 
+async def main():
+    await dp.start_polling(bot)
 
 # -------------------- entrypoint --------------------
 if __name__ == "__main__":
-    PORT = int(os.getenv("PORT", "8080"))
-    web.run_app(create_app(), host="0.0.0.0", port=PORT)
+
+    if WEBHOOK_URL:
+        PORT = int(os.getenv("PORT", "8080"))
+        web.run_app(create_app(), host="0.0.0.0", port=PORT)
+
+    else:
+        asyncio.run(main())
+
