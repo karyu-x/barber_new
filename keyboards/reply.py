@@ -219,7 +219,7 @@ async def break_buttons(lang, barber_id):
             KeyboardButton(text=f"{brk['id']} {brk['start_time'].split('T')[1][:5]} - {brk['end_time'].split('T')[1][:5]}")
         )
     kb.adjust(2)
-    kb.add(KeyboardButton(text=cf.get_text(lang, role, "button", "back_main")), KeyboardButton(text=cf.get_text(lang, role, "button", "back")))
+    kb.row(KeyboardButton(text=cf.get_text(lang, role, "button", "back_main")), KeyboardButton(text=cf.get_text(lang, role, "button", "back")))
     return kb.as_markup(resize_keyboard=True, input_field_placeholder=cf.translations["input_field_msg"])
 
 ####################################################  SERVICES & TYPES ##############################################################
