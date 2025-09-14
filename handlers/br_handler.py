@@ -585,7 +585,7 @@ async def show_breaks(message: Message, state: FSMContext):
         await message.bot.send_message(
             chat_id=user_id,
             text=cf.get_text(lang, role, "message", "break_edit_msg"),
-            reply_markup=kb_r.back_main(lang)
+            reply_markup=await kb_r.break_buttons(lang, my_infos["id"])
         )
         await state.set_state(st.barber.break_edit)
 
@@ -593,7 +593,7 @@ async def show_breaks(message: Message, state: FSMContext):
         await message.bot.send_message(
             chat_id=user_id,
             text=cf.get_text(lang, role, "message", "break_delete_msg"),
-            reply_markup=kb_r.back_main(lang)
+            reply_markup=await kb_r.break_buttons(lang, my_infos["id"])
         )
         await state.set_state(st.barber.break_delete)
 
@@ -766,8 +766,8 @@ async def edit_break(message: Message, state: FSMContext):
 
     else:
 
-        if text.isdigit():
-            barber_break = await db.get_barber_break_by_id(text, my_infos.get("id"))
+        if text[0].isdigit():
+            barber_break = await db.get_barber_break_by_id(text[0], my_infos.get("id"))
 
             if barber_break:
                 await state.update_data(break_data=barber_break)
@@ -861,8 +861,8 @@ async def delete_break(message: Message, state: FSMContext):
 
     else:
 
-        if text.isdigit():
-            barber_break = await db.get_barber_break_by_id(text, my_infos.get("id"))
+        if text[0].isdigit():
+            barber_break = await db.get_barber_break_by_id(text[0], my_infos.get("id"))
 
             if barber_break:
                 await state.update_data(break_data=barber_break)
