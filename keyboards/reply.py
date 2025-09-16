@@ -95,7 +95,7 @@ def ad_main_menu(lang, telegram_id):
         kb.adjust(2)
         return kb.as_markup(resize_keyboard=True, input_field_placeholder=cf.translations["input_field_msg"])
     else:
-        return "no buttons"
+        return None
 
 
 def dr_main_menu(lang):

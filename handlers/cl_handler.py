@@ -282,7 +282,7 @@ async def menu_check_button(message: Message, state: FSMContext):
 
             elif message.text == admin_menu and 4 in roles:
                 role = "director"
-                if kb.ad_main_menu(lang, user_id) != "no buttons":
+                if kb.ad_main_menu(lang, user_id) is not None:
                     await message.answer(
                         text=cf.get_text(lang, role, "message", "main_menu_msg"),
                         reply_markup=kb.ad_main_menu(lang, telegram_id=user_id)
