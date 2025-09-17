@@ -480,6 +480,7 @@ async def time(message: Message, state: FSMContext):
         await message.bot.send_chat_action(chat_id=user_id, action=ChatAction.TYPING)
         await message.answer(text=cf.get_text(lang, role,'message_text', 'select_time'),
                              reply_markup=reply_markup)
+        await state.update_data(last_state="today")
         await state.set_state(st.user.check_selected_time)
 
     elif message.text == cf.get_text(lang, role,"buttons", "another_day"):
