@@ -505,7 +505,7 @@ async def check_selected_time(message: Message, state: FSMContext):
     _, time_slot = await kb.show_time_slots(lang, service.get("date"), barber.get("id"), service.get("id"))
 
     if message.text == cf.get_text(lang, role, "buttons", "back"):
-        if data["last_state"] == "another_day":
+        if data.get("last_state") == "another_day":
             reply_markup, _ = await kb.another_day(lang)
             await message.bot.send_chat_action(chat_id=user_id, action=ChatAction.TYPING)
             await message.answer(text=cf.get_text(lang, role, 'message_text', 'another_day'),
