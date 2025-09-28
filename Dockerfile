@@ -6,7 +6,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
-#COPY .env .env
+COPY .env .env
 
 
 CMD ["python", "main.py"]
